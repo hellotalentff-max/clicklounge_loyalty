@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLS Control Hub — ClickCard Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green:#2d6e5f; --green-dk:#1e4d42; --green-lt:#e8f4f0;
+  --amber:#c49a1a; --amber-lt:#fff8e0;
+  --rust:#b05a2a; --rust-lt:#fdf0e8;
+  --cream:#f7f3ed; --cream-dk:#ede5d8;
+  --white:#ffffff;
+  --text:#1a2824; --text-mid:#4a6058; --text-light:#8fa89e;
+  --border:rgba(45,110,95,.14);
+  --red:#c0392b; --red-lt:#fdf0ef;
+  --blue:#2470a0; --blue-lt:#eef4fb;
+  --shadow:0 2px 12px rgba(30,77,66,.08);
+  --radius:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;}
+
+/* ── AUTH ── */
+#auth-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(160deg,var(--green-dk) 0%,#1a3d35 100%);}
+.auth-box{background:#fff;border-radius:20px;padding:2.5rem;width:min(90vw,380px);box-shadow:0 20px 60px rgba(0,0,0,.25);}
+.auth-logo{font-family:'Instrument Serif',serif;font-size:1.6rem;color:var(--green-dk);text-align:center;margin-bottom:.3rem;}
+.auth-sub{font-size:.78rem;color:var(--text-light);text-align:center;letter-spacing:.12em;text-transform:uppercase;font-family:'DM Mono',monospace;margin-bottom:2rem;}
+.auth-input{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:.75rem 1rem;font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--text);outline:none;transition:border-color .2s;background:var(--cream);}
+.auth-input:focus{border-color:var(--green);}
+.auth-btn{width:100%;margin-top:1rem;background:var(--green);color:#fff;font-family:'DM Mono',monospace;font-size:.82rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;padding:.85rem;border-radius:10px;border:none;cursor:pointer;transition:background .2s;}
+.auth-btn:hover{background:var(--green-dk);}
+.auth-err{color:var(--red);font-size:.82rem;text-align:center;margin-top:.6rem;display:none;}
+
+/* ── LAYOUT ── */
+#app{display:none;min-height:100vh;}
+.top-bar{background:var(--green-dk);color:#fff;padding:.9rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.top-brand{font-family:'Instrument Serif',serif;font-size:1.2rem;}
+.top-brand span{font-size:.7rem;font-family:'DM Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.55);display:block;}
+.top-right{display:flex;align-items:center;gap:.8rem;}
+.staff-badge{font-size:.72rem;font-family:'DM Mono',monospace;background:rgba(255,255,255,.12);padding:.3rem .8rem;border-radius:100px;letter-spacing:.08em;}
+.logout-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:.75rem;font-family:'DM Mono',monospace;padding:.3rem .85rem;border-radius:100px;cursor:pointer;transition:background .2s;}
+.logout-btn:hover{background:rgba(255,255,255,.2);}
+
+.tabs{display:flex;background:var(--white);border-bottom:1px solid var(--border);padding:0 1.5rem;overflow-x:auto;scrollbar-width:none;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{font-size:.8rem;font-weight:600;color:var(--text-light);padding:.9rem 1.2rem;cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap;transition:color .2s,border-color .2s;}
+.tab.active{color:var(--green);border-bottom-color:var(--green);}
+
+.pane{display:none;padding:1.5rem;}
+.pane.active{display:block;}
+
+/* ── STAT CARDS ── */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-bottom:1.5rem;}
+.stat{background:var(--white);border-radius:var(--radius);padding:1.1rem 1.3rem;border:1px solid var(--border);}
+.stat-label{font-size:.72rem;color:var(--text-light);font-family:'DM Mono',monospace;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.4rem;}
+.stat-val{font-size:1.8rem;font-weight:600;color:var(--text);font-family:'DM Mono',monospace;line-height:1;}
+.stat-sub{font-size:.75rem;color:var(--text-light);margin-top:.3rem;}
+
+/* ── CARDS & TABLES ── */
+.card{background:var(--white);border-radius:var(--radius);border:1px solid var(--border);padding:1.3rem;margin-bottom:1rem;}
+.card-title{font-size:.78rem;font-family:'DM Mono',monospace;color:var(--text-light);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1rem;}
+.search-bar{display:flex;gap:.6rem;margin-bottom:1rem;}
+.search-in{flex:1;border:1.5px solid var(--border);border-radius:8px;padding:.6rem .9rem;font-family:'DM Sans',sans-serif;font-size:.87rem;color:var(--text);outline:none;background:var(--cream);}
+.search-in:focus{border-color:var(--green);}
+.btn{font-family:'DM Mono',monospace;font-size:.78rem;font-weight:500;letter-spacing:.06em;padding:.55rem 1.1rem;border-radius:8px;border:none;cursor:pointer;transition:all .15s;}
+.btn-green{background:var(--green);color:#fff;}
+.btn-green:hover{background:var(--green-dk);}
+.btn-amber{background:var(--amber);color:#fff;}
+.btn-amber:hover{background:#a07a10;}
+.btn-red{background:var(--red-lt);color:var(--red);border:1px solid rgba(192,57,43,.2);}
+.btn-red:hover{background:#fce8e6;}
+.btn-outline{background:transparent;color:var(--green);border:1.5px solid var(--green);}
+.btn-outline:hover{background:var(--green-lt);}
+.btn-sm{padding:.38rem .75rem;font-size:.72rem;}
+
+table{width:100%;border-collapse:collapse;font-size:.84rem;}
+th{text-align:left;font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-light);padding:.6rem .8rem;border-bottom:1px solid var(--border);}
+td{padding:.7rem .8rem;border-bottom:1px solid rgba(45,110,95,.06);color:var(--text-mid);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--cream);}
+
+/* ── TIER BADGES ── */
+.tier{display:inline-block;font-family:'DM Mono',monospace;font-size:.68rem;font-weight:500;letter-spacing:.08em;padding:.2rem .65rem;border-radius:100px;text-transform:uppercase;}
+.tier-bronze{background:#f5e6cc;color:#8a5a2a;}
+.tier-silver{background:#dde0e8;color:#4a5068;}
+.tier-gold{background:#fff0b0;color:#7a5a08;}
+.tier-vip{background:#d0f0e8;color:#1a5040;}
+
+/* ── MODAL ── */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center;padding:1rem;}
+.modal-bg.open{display:flex;}
+.modal{background:#fff;border-radius:18px;width:min(94vw,520px);max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.2);}
+.modal-head{padding:1.3rem 1.5rem .8rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.modal-head h3{font-family:'Instrument Serif',serif;font-size:1.25rem;color:var(--green-dk);}
+.modal-close{background:var(--cream-dk);border:none;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:1rem;color:var(--text-mid);}
+.modal-body{padding:1.2rem 1.5rem 1.5rem;}
+.form-row{margin-bottom:1rem;}
+.form-label{font-size:.75rem;font-weight:600;color:var(--text-mid);display:block;margin-bottom:.35rem;font-family:'DM Mono',monospace;letter-spacing:.06em;text-transform:uppercase;}
+.form-input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:.65rem .9rem;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--text);outline:none;transition:border-color .2s;background:var(--cream);}
+.form-input:focus{border-color:var(--green);}
+select.form-input{cursor:pointer;}
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;}
+
+/* ── ACTIVITY LOG ── */
+.log-item{display:flex;gap:.8rem;padding:.65rem 0;border-bottom:1px solid rgba(45,110,95,.06);align-items:flex-start;}
+.log-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:.35rem;}
+.log-dot.green{background:var(--green);}
+.log-dot.amber{background:var(--amber);}
+.log-dot.red{background:var(--red);}
+.log-dot.blue{background:var(--blue);}
+.log-text{font-size:.83rem;color:var(--text-mid);line-height:1.5;}
+.log-time{font-size:.72rem;color:var(--text-light);font-family:'DM Mono',monospace;margin-top:.1rem;}
+
+/* ── VERIFICATION ── */
+.verify-box{background:var(--cream);border-radius:var(--radius);padding:1.2rem;border:1.5px dashed var(--border);text-align:center;}
+.verify-icon{font-size:2rem;margin-bottom:.5rem;}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--green-dk);color:#fff;font-size:.82rem;font-family:'DM Mono',monospace;padding:.7rem 1.2rem;border-radius:10px;z-index:999;opacity:0;transform:translateY(8px);transition:all .3s;pointer-events:none;}
+#toast.show{opacity:1;transform:translateY(0);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px){
+  .form-row-2{grid-template-columns:1fr;}
+  .pane{padding:1rem;}
+  .stats-row{grid-template-columns:1fr 1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="auth-screen">
+  <div class="auth-box">
+    <div class="auth-logo">Click Lounge Studio</div>
+    <div class="auth-sub">Control Hub · ClickCard Admin</div>
+    <div class="form-row">
+      <label class="form-label">Staff Name</label>
+      <input class="auth-input" id="auth-name" placeholder="Your name">
+    </div>
+    <div class="form-row">
+      <label class="form-label">Admin PIN</label>
+      <input class="auth-input" id="auth-pin" type="password" placeholder="••••" onkeydown="if(event.key==='Enter')login()">
+    </div>
+    <button class="auth-btn" onclick="login()">Sign In →</button>
+    <div class="auth-err" id="auth-err">Incorrect PIN. Try again.</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="top-bar">
+    <div class="top-brand">CLS Control Hub <span>ClickCard Loyalty Admin</span></div>
+    <div class="top-right">
+      <div class="staff-badge" id="staff-name-badge">Staff</div>
+      <button class="logout-btn" onclick="logout()">Sign Out</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('dashboard',this)">Dashboard</div>
+    <div class="tab" onclick="switchTab('clients',this)">Clients</div>
+    <div class="tab" onclick="switchTab('log-points',this)">Log Points</div>
+    <div class="tab" onclick="switchTab('verify',this)">Verify & Redeem</div>
+    <div class="tab" onclick="switchTab('activity',this)">Activity Log</div>
+    <div class="tab" onclick="switchTab('settings',this)">Settings</div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="pane-dashboard" class="pane active">
+    <div class="stats-row" id="dash-stats"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+      <div class="card">
+        <div class="card-title">Tier Breakdown</div>
+        <div id="dash-tiers"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Recent Activity</div>
+        <div id="dash-activity" style="max-height:260px;overflow-y:auto;"></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:1rem;">
+      <div class="card-title">Top Clients by Points</div>
+      <table><thead><tr><th>Client</th><th>Points</th><th>Tier</th><th>Sessions</th><th>Referrals Made</th></tr></thead>
+      <tbody id="dash-top"></tbody></table>
+    </div>
+  </div>
+
+  <!-- CLIENTS -->
+  <div id="pane-clients" class="pane">
+    <div class="search-bar">
+      <input class="search-in" id="client-search" placeholder="Search by name, phone or email..." oninput="renderClients()">
+      <button class="btn btn-green" onclick="openAddClient()">+ Add Client</button>
+    </div>
+    <div class="card" style="padding:0;">
+      <table><thead><tr><th>Name</th><th>Contact</th><th>Points</th><th>Tier</th><th>Sessions</th><th>Referrals</th><th>Joined</th><th>Actions</th></tr></thead>
+      <tbody id="clients-table"></tbody></table>
+    </div>
+  </div>
+
+  <!-- LOG POINTS -->
+  <div id="pane-log-points" class="pane">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;max-width:800px;">
+      <div class="card">
+        <div class="card-title">Log Session Points</div>
+        <div class="form-row">
+          <label class="form-label">Client</label>
+          <select class="form-input" id="lp-client"></select>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Amount Paid (₱)</label>
+          <input class="form-input" id="lp-amount" type="number" min="0" placeholder="e.g. 1500" oninput="calcLpPoints()">
+        </div>
+        <div class="form-row">
+          <label class="form-label">Package / Session Type</label>
+          <input class="form-input" id="lp-package" placeholder="e.g. Fam Bam, Styleshots...">
+        </div>
+        <div style="background:var(--green-lt);border-radius:8px;padding:.8rem 1rem;margin-bottom:1rem;font-size:.85rem;color:var(--green-dk);font-family:'DM Mono',monospace;">
+          Points to award: <strong id="lp-pts-preview">—</strong>
+        </div>
+        <button class="btn btn-green" style="width:100%;" onclick="logSession()">Log Session →</button>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Log Bonus Points</div>
+        <div class="form-row">
+          <label class="form-label">Client</label>
+          <select class="form-input" id="bp-client"></select>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Bonus Type</label>
+          <select class="form-input" id="bp-type" onchange="updateBonusDesc()">
+            <option value="referral" data-pts="5">Referral made (+5 pts)</option>
+            <option value="referral-vip" data-pts="10">Referral made — VIP client (+10 pts)</option>
+            <option value="ig-tag" data-pts="2">Tagged us on IG/FB (+2 pts)</option>
+            <option value="google-review" data-pts="3">Google review (+3 pts)</option>
+            <option value="birthday" data-pts="5">Birthday month bonus (+5 pts)</option>
+            <option value="manual" data-pts="0">Manual adjustment</option>
+          </select>
+        </div>
+        <div class="form-row" id="bp-ref-row" style="display:none;">
+          <label class="form-label">Referred by (new client name)</label>
+          <input class="form-input" id="bp-ref-name" placeholder="Name of new client">
+        </div>
+        <div class="form-row" id="bp-proof-row">
+          <label class="form-label">Proof / Note (optional)</label>
+          <input class="form-input" id="bp-proof" placeholder="e.g. showed IG post, screenshot confirmed">
+        </div>
+        <div class="form-row" id="bp-manual-row" style="display:none;">
+          <label class="form-label">Points Amount</label>
+          <input class="form-input" id="bp-manual-pts" type="number" placeholder="e.g. 3">
+        </div>
+        <div style="background:var(--amber-lt);border-radius:8px;padding:.8rem 1rem;margin-bottom:1rem;font-size:.85rem;color:#7a5a08;font-family:'DM Mono',monospace;" id="bp-desc">
+          +5 pts will be added after verification
+        </div>
+        <button class="btn btn-amber" style="width:100%;" onclick="logBonus()">Log Bonus Points →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- VERIFY & REDEEM -->
+  <div id="pane-verify" class="pane">
+    <div style="max-width:600px;">
+      <div class="card">
+        <div class="card-title">Verify Client & Apply Perks</div>
+        <div class="search-bar">
+          <input class="search-in" id="verify-search" placeholder="Search client name or phone...">
+          <button class="btn btn-green" onclick="verifyClient()">Lookup →</button>
+        </div>
+        <div id="verify-result"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Verify Gift Code</div>
+        <p style="font-size:.82rem;color:var(--text-light);margin-bottom:.8rem;">For birthday gift spinner codes shown to walk-in clients.</p>
+        <div class="search-bar">
+          <input class="search-in" id="code-input" placeholder="Enter CLS-XXXXXXXX code...">
+          <button class="btn btn-outline" onclick="verifyCode()">Verify →</button>
+        </div>
+        <div id="code-result"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Log Perk Redemption</div>
+        <div class="form-row">
+          <label class="form-label">Client</label>
+          <select class="form-input" id="redeem-client"></select>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Perk Redeemed</label>
+          <select class="form-input" id="redeem-perk">
+            <option>Free 5-min extension</option>
+            <option>Free backdrop change</option>
+            <option>Free Basic HMU (Gold · 1× per year)</option>
+            <option>Free 4R print</option>
+            <option>Free digital copy upgrade</option>
+            <option>Free outfit change</option>
+            <option>Free annual mini session (VIP)</option>
+            <option>Birthday month surprise gift</option>
+            <option>Social media feature (Gold+)</option>
+            <option>Gift spinner prize</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Notes</label>
+          <input class="form-input" id="redeem-note" placeholder="e.g. applied at start of session">
+        </div>
+        <button class="btn btn-green" style="width:100%;margin-top:.3rem;" onclick="logRedemption()">Record Redemption →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTIVITY LOG -->
+  <div id="pane-activity" class="pane">
+    <div style="display:flex;gap:.6rem;align-items:center;margin-bottom:1rem;flex-wrap:wrap;">
+      <input class="search-in" style="max-width:280px;" id="act-search" placeholder="Filter by client or type..." oninput="renderActivity()">
+      <select class="search-in" style="max-width:180px;" id="act-filter" onchange="renderActivity()">
+        <option value="">All types</option>
+        <option value="session">Session</option>
+        <option value="bonus">Bonus</option>
+        <option value="redemption">Redemption</option>
+        <option value="client">Client Added</option>
+      </select>
+      <button class="btn btn-outline btn-sm" onclick="exportCSV()">Export CSV</button>
+    </div>
+    <div class="card" style="padding:0;">
+      <table><thead><tr><th>Date & Time</th><th>Client</th><th>Type</th><th>Detail</th><th>Points</th><th>Staff</th></tr></thead>
+      <tbody id="activity-table"></tbody></table>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div id="pane-settings" class="pane">
+    <div style="max-width:560px;">
+      <div class="card">
+        <div class="card-title">Staff PINs</div>
+        <p style="font-size:.82rem;color:var(--text-light);margin-bottom:1rem;">Add or remove staff members. Each staff member needs a unique 4-digit PIN.</p>
+        <div id="staff-list"></div>
+        <div style="display:flex;gap:.6rem;margin-top:1rem;flex-wrap:wrap;">
+          <input class="form-input" style="flex:1;min-width:140px;" id="new-staff-name" placeholder="Staff name">
+          <input class="form-input" style="width:100px;" id="new-staff-pin" type="password" maxlength="6" placeholder="PIN">
+          <button class="btn btn-green" onclick="addStaff()">Add</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Points Configuration</div>
+        <div class="form-row-2">
+          <div class="form-row">
+            <label class="form-label">₱ per 1 point</label>
+            <input class="form-input" id="cfg-rate" type="number" value="100">
+          </div>
+          <div class="form-row">
+            <label class="form-label">Bronze max pts</label>
+            <input class="form-input" id="cfg-bronze" type="number" value="49">
+          </div>
+          <div class="form-row">
+            <label class="form-label">Silver max pts</label>
+            <input class="form-input" id="cfg-silver" type="number" value="149">
+          </div>
+          <div class="form-row">
+            <label class="form-label">Gold max pts</label>
+            <input class="form-input" id="cfg-gold" type="number" value="299">
+          </div>
+          <div class="form-row">
+            <label class="form-label">Referral pts (standard)</label>
+            <input class="form-input" id="cfg-ref" type="number" value="5">
+          </div>
+          <div class="form-row">
+            <label class="form-label">Referral pts (VIP)</label>
+            <input class="form-input" id="cfg-ref-vip" type="number" value="10">
+          </div>
+        </div>
+        <button class="btn btn-green" onclick="saveConfig()">Save Configuration →</button>
+      </div>
+      <div class="card">
+        <div class="card-title" style="color:var(--red);">Danger Zone</div>
+        <p style="font-size:.82rem;color:var(--text-light);margin-bottom:1rem;">These actions are irreversible. Use with extreme caution.</p>
+        <button class="btn btn-red" onclick="clearAllData()">Clear ALL Client Data</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-bg" id="modal-client">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modal-client-title">Add Client</h3>
+      <button class="modal-close" onclick="closeModal('modal-client')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="edit-client-id">
+      <div class="form-row-2">
+        <div class="form-row">
+          <label class="form-label">Full Name *</label>
+          <input class="form-input" id="c-name" placeholder="e.g. Maria Santos">
+        </div>
+        <div class="form-row">
+          <label class="form-label">Phone *</label>
+          <input class="form-input" id="c-phone" placeholder="09XXXXXXXXX">
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Email</label>
+        <input class="form-input" id="c-email" placeholder="email@example.com">
+      </div>
+      <div class="form-row-2">
+        <div class="form-row">
+          <label class="form-label">Birthday (Month/Day)</label>
+          <input class="form-input" id="c-bday" placeholder="e.g. 03/15">
+        </div>
+        <div class="form-row">
+          <label class="form-label">Referred by</label>
+          <input class="form-input" id="c-referred" placeholder="Name of referrer">
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">Notes</label>
+        <input class="form-input" id="c-notes" placeholder="Any notes about this client">
+      </div>
+      <button class="btn btn-green" style="width:100%;margin-top:.5rem;" onclick="saveClient()">Save Client →</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ══════════════════════════════════
+// STORAGE HELPERS
+// ══════════════════════════════════
+const DB_KEY = 'cls_admin_db';
+const loadDB = () => { try { return JSON.parse(localStorage.getItem(DB_KEY)) || initDB(); } catch(e) { return initDB(); } };
+const saveDB = db => localStorage.setItem(DB_KEY, JSON.stringify(db));
+function initDB() {
+  return { clients:[], activity:[], staff:[{name:'Admin',pin:'1234'}], config:{ rate:100, bronze:49, silver:149, gold:299, ref:5, refVip:10 } };
+}
+let DB = loadDB();
+let currentStaff = '';
+
+// ══════════════════════════════════
+// AUTH
+// ══════════════════════════════════
+function login() {
+  const name = document.getElementById('auth-name').value.trim();
+  const pin  = document.getElementById('auth-pin').value.trim();
+  const err  = document.getElementById('auth-err');
+  const staff = DB.staff.find(s => s.pin === pin);
+  if (!name || !staff) { err.style.display='block'; return; }
+  currentStaff = name;
+  err.style.display='none';
+  document.getElementById('auth-screen').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('staff-name-badge').textContent = name;
+  renderAll();
+}
+function logout() {
+  currentStaff = '';
+  document.getElementById('auth-screen').style.display='flex';
+  document.getElementById('app').style.display='none';
+  document.getElementById('auth-pin').value='';
+  document.getElementById('auth-name').value='';
+}
+
+// ══════════════════════════════════
+// TABS
+// ══════════════════════════════════
+function switchTab(id, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('pane-'+id).classList.add('active');
+  if(id==='clients') renderClients();
+  if(id==='dashboard') renderDashboard();
+  if(id==='log-points') { populateClientDropdowns(); calcLpPoints(); updateBonusDesc(); }
+  if(id==='verify') populateClientDropdowns();
+  if(id==='activity') renderActivity();
+  if(id==='settings') renderSettings();
+}
+
+// ══════════════════════════════════
+// HELPERS
+// ══════════════════════════════════
+function getTier(pts) {
+  const c = DB.config;
+  if(pts >= c.gold+1) return {name:'VIP', class:'tier-vip', emoji:'💎'};
+  if(pts >= c.silver+1) return {name:'Gold', class:'tier-gold', emoji:'🥇'};
+  if(pts >= c.bronze+1) return {name:'Silver', class:'tier-silver', emoji:'🥈'};
+  return {name:'Bronze', class:'tier-bronze', emoji:'🥉'};
+}
+function fmt(n) { return n.toLocaleString(); }
+function fmtDate(iso) { const d=new Date(iso); return d.toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'})+' '+d.toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'}); }
+function toast(msg, dur=3000) {
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), dur);
+}
+function uid() { return Date.now().toString(36)+Math.random().toString(36).slice(2,6).toUpperCase(); }
+
+// ══════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════
+function renderDashboard() {
+  const clients = DB.clients;
+  const acts = DB.activity;
+  const totalPts = clients.reduce((s,c)=>s+c.points,0);
+  const tiers = {Bronze:0,Silver:0,Gold:0,VIP:0};
+  clients.forEach(c => tiers[getTier(c.points).name]++);
+  const totalSessions = acts.filter(a=>a.type==='session').length;
+
+  document.getElementById('dash-stats').innerHTML = `
+    <div class="stat"><div class="stat-label">Total Clients</div><div class="stat-val">${clients.length}</div><div class="stat-sub">enrolled members</div></div>
+    <div class="stat"><div class="stat-label">Total Points Issued</div><div class="stat-val">${fmt(totalPts)}</div><div class="stat-sub">across all clients</div></div>
+    <div class="stat"><div class="stat-label">Sessions Logged</div><div class="stat-val">${totalSessions}</div><div class="stat-sub">all time</div></div>
+    <div class="stat"><div class="stat-label">VIP Members</div><div class="stat-val">${tiers.VIP}</div><div class="stat-sub">${clients.length?Math.round(tiers.VIP/clients.length*100):0}% of members</div></div>
+  `;
+
+  document.getElementById('dash-tiers').innerHTML = Object.entries(tiers).map(([name,count])=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid rgba(45,110,95,.07);">
+      <span class="tier tier-${name.toLowerCase()}">${name}</span>
+      <span style="font-family:'DM Mono',monospace;font-size:.9rem;color:var(--text);">${count} <span style="font-size:.72rem;color:var(--text-light);">clients</span></span>
+    </div>`).join('');
+
+  const recent = [...acts].reverse().slice(0,6);
+  document.getElementById('dash-activity').innerHTML = recent.map(a => `
+    <div class="log-item">
+      <div class="log-dot ${a.type==='session'?'green':a.type==='bonus'?'amber':a.type==='redemption'?'blue':'green'}"></div>
+      <div><div class="log-text">${a.clientName} — ${a.detail}</div><div class="log-time">${fmtDate(a.ts)}</div></div>
+    </div>`).join('') || '<div style="font-size:.82rem;color:var(--text-light);padding:.5rem 0;">No activity yet.</div>';
+
+  const top = [...clients].sort((a,b)=>b.points-a.points).slice(0,8);
+  document.getElementById('dash-top').innerHTML = top.map(c=>`
+    <tr><td style="font-weight:500;color:var(--text);">${c.name}</td>
+    <td style="font-family:'DM Mono',monospace;color:var(--green);font-weight:600;">${fmt(c.points)}</td>
+    <td><span class="tier tier-${getTier(c.points).name.toLowerCase()}">${getTier(c.points).emoji} ${getTier(c.points).name}</span></td>
+    <td>${c.sessions||0}</td><td>${c.referralsMade||0}</td></tr>`).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--text-light);padding:1.5rem;">No clients yet. Add your first client!</td></tr>';
+}
+
+// ══════════════════════════════════
+// CLIENTS
+// ══════════════════════════════════
+function renderClients() {
+  const q = (document.getElementById('client-search')?.value||'').toLowerCase();
+  const clients = DB.clients.filter(c =>
+    c.name.toLowerCase().includes(q) || c.phone.includes(q) || (c.email||'').toLowerCase().includes(q)
+  );
+  document.getElementById('clients-table').innerHTML = clients.map(c => {
+    const t = getTier(c.points);
+    return `<tr>
+      <td style="font-weight:500;color:var(--text);">${c.name}</td>
+      <td style="font-size:.8rem;">${c.phone}${c.email?'<br><span style="color:var(--text-light);">'+c.email+'</span>':''}</td>
+      <td style="font-family:'DM Mono',monospace;color:var(--green);font-weight:600;">${fmt(c.points)}</td>
+      <td><span class="tier tier-${t.name.toLowerCase()}">${t.emoji} ${t.name}</span></td>
+      <td>${c.sessions||0}</td>
+      <td>${c.referralsMade||0}</td>
+      <td style="font-size:.78rem;color:var(--text-light);">${new Date(c.joinedAt).toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'})}</td>
+      <td><button class="btn btn-outline btn-sm" onclick="openEditClient('${c.id}')">Edit</button></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="8" style="text-align:center;color:var(--text-light);padding:2rem;">No clients found.</td></tr>';
+}
+
+function openAddClient() {
+  ['c-name','c-phone','c-email','c-bday','c-referred','c-notes'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('edit-client-id').value='';
+  document.getElementById('modal-client-title').textContent='Add New Client';
+  openModal('modal-client');
+}
+function openEditClient(id) {
+  const c = DB.clients.find(x=>x.id===id); if(!c) return;
+  document.getElementById('edit-client-id').value=id;
+  document.getElementById('c-name').value=c.name;
+  document.getElementById('c-phone').value=c.phone;
+  document.getElementById('c-email').value=c.email||'';
+  document.getElementById('c-bday').value=c.birthday||'';
+  document.getElementById('c-referred').value=c.referredBy||'';
+  document.getElementById('c-notes').value=c.notes||'';
+  document.getElementById('modal-client-title').textContent='Edit Client';
+  openModal('modal-client');
+}
+function saveClient() {
+  const name=document.getElementById('c-name').value.trim();
+  const phone=document.getElementById('c-phone').value.trim();
+  if(!name||!phone){toast('Name and phone are required');return;}
+  const id=document.getElementById('edit-client-id').value;
+  const data={name,phone,email:document.getElementById('c-email').value.trim(),birthday:document.getElementById('c-bday').value.trim(),referredBy:document.getElementById('c-referred').value.trim(),notes:document.getElementById('c-notes').value.trim()};
+  if(id){
+    const idx=DB.clients.findIndex(c=>c.id===id);
+    if(idx>-1) Object.assign(DB.clients[idx],data);
+    addActivity('client',DB.clients.find(c=>c.id===id),'Client profile updated','',0);
+  } else {
+    const nc={id:uid(),points:0,sessions:0,referralsMade:0,joinedAt:new Date().toISOString(),...data};
+    DB.clients.push(nc);
+    addActivity('client',nc,'New client enrolled','',0);
+    // if referred by someone, give referrer bonus
+    if(data.referredBy) {
+      const ref=DB.clients.find(c=>c.name.toLowerCase()===data.referredBy.toLowerCase());
+      if(ref){
+        const refPts = getTier(ref.points).name==='VIP' ? DB.config.refVip : DB.config.ref;
+        ref.points += refPts; ref.referralsMade = (ref.referralsMade||0)+1;
+        addActivity('bonus',ref,`Referral bonus — referred ${name}`,`Verified: new client ${name} enrolled`,refPts);
+        toast(`✓ ${ref.name} earned +${refPts} referral points!`,4000);
+      }
+    }
+  }
+  saveDB(); closeModal('modal-client'); renderClients(); toast(id?'Client updated!':'Client enrolled!');
+}
+
+// ══════════════════════════════════
+// LOG POINTS
+// ══════════════════════════════════
+function populateClientDropdowns() {
+  const opts = DB.clients.map(c=>`<option value="${c.id}">${c.name} (${c.phone}) — ${fmt(c.points)} pts</option>`).join('');
+  const empty = '<option value="">— Select client —</option>';
+  ['lp-client','bp-client','redeem-client'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.innerHTML=empty+opts;
+  });
+}
+function calcLpPoints() {
+  const amt=parseFloat(document.getElementById('lp-amount')?.value)||0;
+  const pts=Math.floor(amt/DB.config.rate);
+  document.getElementById('lp-pts-preview').textContent = pts ? `+${pts} pts` : '—';
+}
+function logSession() {
+  const cid=document.getElementById('lp-client').value;
+  const amt=parseFloat(document.getElementById('lp-amount').value)||0;
+  const pkg=document.getElementById('lp-package').value.trim();
+  if(!cid){toast('Select a client');return;}
+  if(!amt){toast('Enter the amount paid');return;}
+  const c=DB.clients.find(x=>x.id===cid); if(!c) return;
+  const pts=Math.floor(amt/DB.config.rate);
+  const prevTier=getTier(c.points).name;
+  c.points+=pts; c.sessions=(c.sessions||0)+1;
+  addActivity('session',c,`Session logged — ${pkg||'package'}`,`₱${fmt(amt)} paid · ${pkg}`,pts);
+  saveDB();
+  const newTier=getTier(c.points).name;
+  if(newTier!==prevTier) toast(`🎉 ${c.name} just reached ${newTier}!`,4000);
+  else toast(`✓ +${pts} pts added to ${c.name}`);
+  document.getElementById('lp-amount').value='';
+  document.getElementById('lp-package').value='';
+  calcLpPoints(); populateClientDropdowns();
+}
+function updateBonusDesc() {
+  const sel=document.getElementById('bp-type');
+  const opt=sel.options[sel.selectedIndex];
+  const pts=parseInt(opt.dataset.pts)||0;
+  const isRef=sel.value==='referral'||sel.value==='referral-vip';
+  const isManual=sel.value==='manual';
+  document.getElementById('bp-ref-row').style.display=isRef?'block':'none';
+  document.getElementById('bp-manual-row').style.display=isManual?'block':'none';
+  document.getElementById('bp-desc').textContent=isManual?'Enter points manually':pts?`+${pts} pts will be added after verification`:'Custom amount';
+}
+function logBonus() {
+  const cid=document.getElementById('bp-client').value;
+  if(!cid){toast('Select a client');return;}
+  const sel=document.getElementById('bp-type');
+  const opt=sel.options[sel.selectedIndex];
+  let pts=parseInt(opt.dataset.pts)||0;
+  if(sel.value==='manual') pts=parseInt(document.getElementById('bp-manual-pts').value)||0;
+  if(!pts){toast('Enter points amount');return;}
+  const c=DB.clients.find(x=>x.id===cid); if(!c) return;
+  const proof=document.getElementById('bp-proof').value.trim();
+  const refName=document.getElementById('bp-ref-name').value.trim();
+  const detail=opt.text+(refName?` — ${refName}`:'')+(proof?` [${proof}]`:'');
+  c.points+=pts;
+  addActivity('bonus',c,detail,proof,pts);
+  saveDB(); toast(`✓ +${pts} pts added to ${c.name}`); populateClientDropdowns();
+  document.getElementById('bp-proof').value=''; document.getElementById('bp-ref-name').value='';
+}
+
+// ══════════════════════════════════
+// VERIFY
+// ══════════════════════════════════
+function verifyClient() {
+  const q=document.getElementById('verify-search').value.trim().toLowerCase();
+  const box=document.getElementById('verify-result');
+  if(!q){box.innerHTML='';return;}
+  const c=DB.clients.find(x=>x.name.toLowerCase().includes(q)||x.phone.includes(q));
+  if(!c){box.innerHTML=`<div class="verify-box"><div class="verify-icon">🔍</div><p style="font-size:.85rem;color:var(--text-light);">No client found. Check the name or phone number.</p></div>`;return;}
+  const t=getTier(c.points);
+  const perks={Bronze:['Digital ClickCard membership','Birthday month surprise gift','Access to member-only promos','Priority booking via DM','1 free backdrop change'],Silver:['All Bronze perks','FREE 5-min session extension','10% discount on add-ons','Early access to new set designs','1 free digital copy upgrade','Name in CLS Wall of Fans'],Gold:['All Silver perks','FREE Basic HMU (1× per year)','15% off add-ons','1 free outfit change per session','Complimentary 4R print per visit','Featured on CLS social media','Dedicated booking slot'],VIP:['All Gold perks','FREE annual mini session (20 mins)','20% off ALL add-ons','Exclusive VIP-only set designs','First access to new packages','Behind-the-scenes studio tour','Personal thank-you from the team','Referral bonus: +10 pts per friend']};
+  const recentActs=[...DB.activity].filter(a=>a.clientId===c.id).reverse().slice(0,3);
+  box.innerHTML=`
+    <div style="background:var(--green-lt);border-radius:12px;padding:1.2rem;margin-top:.8rem;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.8rem;">
+        <div>
+          <div style="font-family:'Instrument Serif',serif;font-size:1.3rem;color:var(--green-dk);">${c.name}</div>
+          <div style="font-size:.78rem;color:var(--text-mid);">${c.phone}${c.email?' · '+c.email:''}</div>
+        </div>
+        <div style="text-align:right;">
+          <span class="tier tier-${t.name.toLowerCase()}">${t.emoji} ${t.name}</span>
+          <div style="font-family:'DM Mono',monospace;font-size:1.4rem;font-weight:600;color:var(--green);margin-top:.3rem;">${fmt(c.points)} pts</div>
+        </div>
+      </div>
+      <div style="font-size:.78rem;font-weight:600;color:var(--green-dk);margin-bottom:.4rem;font-family:'DM Mono',monospace;letter-spacing:.06em;text-transform:uppercase;">Active Perks for This Visit</div>
+      <ul style="list-style:none;font-size:.82rem;color:var(--green-dk);">
+        ${(perks[t.name]||[]).map(p=>`<li style="padding:.25rem 0;">✦ ${p}</li>`).join('')}
+      </ul>
+      ${recentActs.length?`<div style="margin-top:.8rem;font-size:.78rem;font-weight:600;color:var(--text-light);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.3rem;">Last 3 Visits</div>
+      ${recentActs.map(a=>`<div style="font-size:.78rem;color:var(--text-mid);padding:.2rem 0;">${fmtDate(a.ts)} — ${a.detail}</div>`).join('')}`:''}
+    </div>`;
+}
+function verifyCode() {
+  const code=document.getElementById('code-input').value.trim().toUpperCase();
+  const box=document.getElementById('code-result');
+  if(!code.startsWith('CLS-')||code.length<8){box.innerHTML='<div style="font-size:.83rem;color:var(--red);margin-top:.6rem;">Invalid code format. Must start with CLS-</div>';return;}
+  // codes are not stored server-side (generated client-side); just validate format & show guidance
+  box.innerHTML=`<div class="verify-box" style="margin-top:.8rem;background:var(--blue-lt);border-color:var(--blue);">
+    <div class="verify-icon">✅</div>
+    <div style="font-weight:600;color:var(--blue);margin-bottom:.3rem;">Code format valid: ${code}</div>
+    <div style="font-size:.82rem;color:var(--text-mid);">Ask the client to show their phone screen with the full gift result visible. Confirm the code matches, then apply the reward and log it as a redemption above.</div>
+  </div>`;
+}
+function logRedemption() {
+  const cid=document.getElementById('redeem-client').value;
+  const perk=document.getElementById('redeem-perk').value;
+  const note=document.getElementById('redeem-note').value.trim();
+  if(!cid){toast('Select a client');return;}
+  const c=DB.clients.find(x=>x.id===cid); if(!c) return;
+  addActivity('redemption',c,`Perk redeemed: ${perk}`,note,0);
+  saveDB(); toast(`✓ Redemption logged for ${c.name}`);
+  document.getElementById('redeem-note').value='';
+}
+
+// ══════════════════════════════════
+// ACTIVITY
+// ══════════════════════════════════
+function addActivity(type,client,detail,proof,points) {
+  DB.activity.push({id:uid(),ts:new Date().toISOString(),type,clientId:client.id,clientName:client.name,detail,proof,points,staff:currentStaff});
+}
+function renderActivity() {
+  const q=(document.getElementById('act-search')?.value||'').toLowerCase();
+  const f=document.getElementById('act-filter')?.value||'';
+  const acts=[...DB.activity].reverse().filter(a=>{
+    const matchQ=a.clientName.toLowerCase().includes(q)||a.detail.toLowerCase().includes(q);
+    const matchF=!f||(f==='bonus'&&a.type==='bonus')||(f==='session'&&a.type==='session')||(f==='redemption'&&a.type==='redemption')||(f==='client'&&a.type==='client');
+    return matchQ&&matchF;
+  });
+  const dotMap={session:'green',bonus:'amber',redemption:'blue',client:'green'};
+  const typeLabel={session:'Session',bonus:'Bonus Pts',redemption:'Redemption',client:'Enrollment'};
+  document.getElementById('activity-table').innerHTML=acts.map(a=>`
+    <tr>
+      <td style="font-size:.78rem;color:var(--text-light);font-family:'DM Mono',monospace;">${fmtDate(a.ts)}</td>
+      <td style="font-weight:500;">${a.clientName}</td>
+      <td><span style="font-size:.72rem;font-family:'DM Mono',monospace;background:var(--cream-dk);padding:.2rem .6rem;border-radius:100px;">${typeLabel[a.type]||a.type}</span></td>
+      <td style="font-size:.82rem;color:var(--text-mid);">${a.detail}${a.proof?'<br><span style="font-size:.75rem;color:var(--text-light);">['+a.proof+']</span>':''}</td>
+      <td style="font-family:'DM Mono',monospace;color:${a.points>0?'var(--green)':a.points<0?'var(--red)':'var(--text-light)'};">${a.points>0?'+':a.points<0?'':''}${a.points||'—'}</td>
+      <td style="font-size:.78rem;color:var(--text-light);">${a.staff||'—'}</td>
+    </tr>`).join('')||'<tr><td colspan="6" style="text-align:center;color:var(--text-light);padding:2rem;">No activity logged yet.</td></tr>';
+}
+
+// ══════════════════════════════════
+// SETTINGS
+// ══════════════════════════════════
+function renderSettings() {
+  document.getElementById('cfg-rate').value=DB.config.rate;
+  document.getElementById('cfg-bronze').value=DB.config.bronze;
+  document.getElementById('cfg-silver').value=DB.config.silver;
+  document.getElementById('cfg-gold').value=DB.config.gold;
+  document.getElementById('cfg-ref').value=DB.config.ref;
+  document.getElementById('cfg-ref-vip').value=DB.config.refVip;
+  document.getElementById('staff-list').innerHTML=DB.staff.map((s,i)=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border);">
+      <span style="font-size:.87rem;">${s.name}</span>
+      <span style="display:flex;gap:.5rem;align-items:center;">
+        <span style="font-family:'DM Mono',monospace;font-size:.75rem;color:var(--text-light);">PIN: ${'•'.repeat(s.pin.length)}</span>
+        ${i>0?`<button class="btn btn-red btn-sm" onclick="removeStaff(${i})">Remove</button>`:'<span style="font-size:.72rem;color:var(--text-light);">owner</span>'}
+      </span>
+    </div>`).join('');
+}
+function addStaff() {
+  const name=document.getElementById('new-staff-name').value.trim();
+  const pin=document.getElementById('new-staff-pin').value.trim();
+  if(!name||!pin){toast('Name and PIN required');return;}
+  if(DB.staff.some(s=>s.pin===pin)){toast('PIN already in use');return;}
+  DB.staff.push({name,pin}); saveDB(); renderSettings();
+  document.getElementById('new-staff-name').value=''; document.getElementById('new-staff-pin').value='';
+  toast(`${name} added as staff`);
+}
+function removeStaff(i) {
+  if(!confirm('Remove this staff member?')) return;
+  DB.staff.splice(i,1); saveDB(); renderSettings();
+}
+function saveConfig() {
+  DB.config={rate:parseInt(document.getElementById('cfg-rate').value)||100,bronze:parseInt(document.getElementById('cfg-bronze').value)||49,silver:parseInt(document.getElementById('cfg-silver').value)||149,gold:parseInt(document.getElementById('cfg-gold').value)||299,ref:parseInt(document.getElementById('cfg-ref').value)||5,refVip:parseInt(document.getElementById('cfg-ref-vip').value)||10};
+  saveDB(); toast('Configuration saved!');
+}
+function clearAllData() {
+  if(!confirm('This will DELETE all client data, points, and activity. Are you absolutely sure?')) return;
+  if(!confirm('Last chance — this cannot be undone!')) return;
+  DB=initDB(); saveDB(); renderAll(); toast('All data cleared.');
+}
+
+// ══════════════════════════════════
+// EXPORT
+// ══════════════════════════════════
+function exportCSV() {
+  const rows=[['Date','Client','Type','Detail','Points','Staff']];
+  DB.activity.forEach(a=>rows.push([fmtDate(a.ts),a.clientName,a.type,a.detail,a.points,a.staff||'']));
+  const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download='cls-activity-'+new Date().toISOString().slice(0,10)+'.csv'; a.click();
+}
+
+// ══════════════════════════════════
+// MODALS
+// ══════════════════════════════════
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+
+// ══════════════════════════════════
+// INIT
+// ══════════════════════════════════
+function renderAll(){renderDashboard();}
+</script>
+</body>
+</html>
