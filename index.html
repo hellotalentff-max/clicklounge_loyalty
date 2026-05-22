@@ -314,23 +314,33 @@ select.form-input{cursor:pointer;}
         <div class="card-title">Log Perk Redemption</div>
         <div class="form-row">
           <label class="form-label">Client</label>
-          <select class="form-input" id="redeem-client"></select>
+          <select class="form-input" id="redeem-client" onchange="updateRedeemPreview()"></select>
         </div>
         <div class="form-row">
           <label class="form-label">Perk Redeemed</label>
-          <select class="form-input" id="redeem-perk">
-            <option>Free 5-min extension</option>
-            <option>Free backdrop change</option>
-            <option>Free Basic HMU (Gold · 1× per year)</option>
-            <option>Free 4R print</option>
-            <option>Free digital copy upgrade</option>
-            <option>Free outfit change</option>
-            <option>Free annual mini session (VIP)</option>
-            <option>Birthday month surprise gift</option>
-            <option>Social media feature (Gold+)</option>
-            <option>Gift spinner prize</option>
+          <select class="form-input" id="redeem-perk" onchange="updateRedeemPreview()">
+            <optgroup label="— Free Tier Privileges (0 pts) —">
+              <option value="Free backdrop change|0">Free backdrop change — Bronze+ · FREE</option>
+              <option value="Priority booking|0">Priority booking — Bronze+ · FREE</option>
+              <option value="Early access to new set designs|0">Early access to new set designs — Silver+ · FREE</option>
+              <option value="Featured on CLS social media|0">Featured on social media — Gold+ · FREE</option>
+              <option value="Dedicated booking slot|0">Dedicated booking slot — Gold+ · FREE</option>
+              <option value="Behind-the-scenes tour|0">Behind-the-scenes tour — VIP · FREE</option>
+              <option value="Birthday month surprise gift|0">Birthday month surprise gift · FREE</option>
+              <option value="Gift spinner prize|0">Gift spinner prize · FREE</option>
+            </optgroup>
+            <optgroup label="— Points Rewards (deducted) —">
+              <option value="Free 5-min extension|10">Free 5-min extension · 10 pts</option>
+              <option value="Free digital copy upgrade|15">Free digital copy upgrade · 15 pts</option>
+              <option value="Free 4R print|20">Free 4R print · 20 pts</option>
+              <option value="Free outfit change|25">Free outfit change · 25 pts</option>
+              <option value="Free Basic HMU|50">Free Basic HMU — Gold+ · 50 pts</option>
+              <option value="Free annual mini session (20 mins)|100">Free annual mini session — VIP · 100 pts</option>
+            </optgroup>
           </select>
         </div>
+        <!-- Live preview -->
+        <div id="redeem-preview" style="border-radius:10px;padding:.85rem 1rem;margin-bottom:.8rem;font-size:.84rem;display:none;"></div>
         <div class="form-row">
           <label class="form-label">Notes</label>
           <input class="form-input" id="redeem-note" placeholder="e.g. applied at start of session">
@@ -344,23 +354,31 @@ select.form-input{cursor:pointer;}
   <div id="pane-redemptions" class="pane">
     <div style="display:flex;gap:.6rem;align-items:center;margin-bottom:1rem;flex-wrap:wrap;">
       <input class="search-in" style="max-width:260px;" id="red-search" placeholder="Filter by client or perk..." oninput="renderRedemptions()">
-      <select class="search-in" style="max-width:200px;" id="red-filter" onchange="renderRedemptions()">
+      <select class="search-in" style="max-width:220px;" id="red-filter" onchange="renderRedemptions()">
         <option value="">All perks</option>
-        <option>Free 5-min extension</option>
-        <option>Free backdrop change</option>
-        <option>Free Basic HMU (Gold · 1× per year)</option>
-        <option>Free 4R print</option>
-        <option>Free digital copy upgrade</option>
-        <option>Free outfit change</option>
-        <option>Free annual mini session (VIP)</option>
-        <option>Birthday month surprise gift</option>
-        <option>Social media feature (Gold+)</option>
-        <option>Gift spinner prize</option>
+        <optgroup label="Free Privileges">
+          <option>Free backdrop change</option>
+          <option>Priority booking</option>
+          <option>Early access to new set designs</option>
+          <option>Featured on CLS social media</option>
+          <option>Dedicated booking slot</option>
+          <option>Behind-the-scenes tour</option>
+          <option>Birthday month surprise gift</option>
+          <option>Gift spinner prize</option>
+        </optgroup>
+        <optgroup label="Points Rewards">
+          <option>Free 5-min extension</option>
+          <option>Free digital copy upgrade</option>
+          <option>Free 4R print</option>
+          <option>Free outfit change</option>
+          <option>Free Basic HMU</option>
+          <option>Free annual mini session (20 mins)</option>
+        </optgroup>
       </select>
       <button class="btn btn-outline btn-sm" onclick="exportRedemptionsCSV()">Export CSV</button>
     </div>
     <div class="card" style="padding:0;">
-      <table><thead><tr><th>Date & Time</th><th>Client</th><th>Tier at Redemption</th><th>Perk Redeemed</th><th>Notes</th><th>Staff</th></tr></thead>
+      <table><thead><tr><th>Date & Time</th><th>Client</th><th>Tier at Redemption</th><th>Perk Redeemed</th><th>Pts Cost</th><th>Notes</th><th>Staff</th></tr></thead>
       <tbody id="redemptions-table"></tbody></table>
     </div>
   </div>
@@ -941,15 +959,82 @@ function verifyCode() {
     <div style="font-size:.82rem;color:var(--text-mid);">Ask the client to show their phone screen with the full gift result visible. Confirm the code matches, then apply the reward and log it as a redemption above.</div>
   </div>`;
 }
+// Perk point costs map
+const PERK_COSTS = {
+  'Free 5-min extension': 10,
+  'Free digital copy upgrade': 15,
+  'Free 4R print': 20,
+  'Free outfit change': 25,
+  'Free Basic HMU': 50,
+  'Free annual mini session (20 mins)': 100,
+};
+
+function getPerkFromSelect() {
+  const sel = document.getElementById('redeem-perk');
+  const val = sel.value; // format: "Perk Name|cost"
+  const [perkName, costStr] = val.split('|');
+  return { perkName: perkName.trim(), cost: parseInt(costStr) || 0 };
+}
+
+function updateRedeemPreview() {
+  const preview = document.getElementById('redeem-preview');
+  const cid = document.getElementById('redeem-client').value;
+  const { perkName, cost } = getPerkFromSelect();
+  if (!cid || !perkName) { preview.style.display = 'none'; return; }
+  const c = DB.clients.find(x => x.id === cid);
+  if (!c) { preview.style.display = 'none'; return; }
+
+  if (cost === 0) {
+    preview.style.display = 'block';
+    preview.style.background = 'var(--green-lt)';
+    preview.style.border = '1px solid rgba(45,110,95,.2)';
+    preview.innerHTML = `<strong style="color:var(--green);">✓ Free Tier Privilege</strong> — No points deducted.<br>
+      <span style="font-size:.78rem;color:var(--text-mid);">${c.name} has <strong>${fmt(c.points)} pts</strong> · stays at <strong>${fmt(c.points)} pts</strong> after redemption.</span>`;
+  } else {
+    const after = c.points - cost;
+    const canAfford = after >= 0;
+    preview.style.display = 'block';
+    preview.style.background = canAfford ? 'var(--amber-lt)' : 'var(--red-lt)';
+    preview.style.border = `1px solid ${canAfford ? 'rgba(196,154,26,.3)' : 'rgba(192,57,43,.3)'}`;
+    if (canAfford) {
+      const tierBefore = getTier(c.points).name;
+      const tierAfter = getTier(after).name;
+      preview.innerHTML = `<strong style="color:var(--amber);">−${cost} pts will be deducted</strong><br>
+        <span style="font-size:.78rem;color:var(--text-mid);">${c.name}: <strong>${fmt(c.points)} pts</strong> → <strong>${fmt(after)} pts</strong>
+        ${tierBefore !== tierAfter ? `<span style="color:var(--rust);"> · Tier changes from ${tierBefore} to ${tierAfter}!</span>` : ''}</span>`;
+    } else {
+      preview.innerHTML = `<strong style="color:var(--red);">⚠ Insufficient points</strong><br>
+        <span style="font-size:.78rem;color:var(--red);">${c.name} only has <strong>${fmt(c.points)} pts</strong> — needs ${fmt(cost)} pts for this reward.</span>`;
+    }
+  }
+}
+
 function logRedemption() {
-  const cid=document.getElementById('redeem-client').value;
-  const perk=document.getElementById('redeem-perk').value;
-  const note=document.getElementById('redeem-note').value.trim();
-  if(!cid){toast('Select a client');return;}
-  const c=DB.clients.find(x=>x.id===cid); if(!c) return;
-  addActivity('redemption',c,`Perk redeemed: ${perk}`,note,0);
-  saveDB(); toast(`✓ Redemption logged for ${c.name}`);
-  document.getElementById('redeem-note').value='';
+  const cid = document.getElementById('redeem-client').value;
+  const note = document.getElementById('redeem-note').value.trim();
+  if (!cid) { toast('Select a client'); return; }
+  const c = DB.clients.find(x => x.id === cid); if (!c) return;
+  const { perkName, cost } = getPerkFromSelect();
+
+  // Check sufficient points for paid perks
+  if (cost > 0 && c.points < cost) {
+    toast(`⚠ ${c.name} only has ${c.points} pts — needs ${cost} pts for this perk`, 4000);
+    return;
+  }
+
+  // Confirm deduction
+  if (cost > 0) {
+    if (!confirm(`Deduct ${cost} pts from ${c.name}?\n\nCurrent: ${c.points} pts → After: ${c.points - cost} pts`)) return;
+    c.points -= cost;
+    saveDB();
+  }
+
+  addActivity('redemption', c, `Perk redeemed: ${perkName}`, note, cost > 0 ? -cost : 0);
+  saveDB();
+  toast(`✓ ${perkName} logged${cost > 0 ? ` · −${cost} pts from ${c.name}` : ''}`);
+  document.getElementById('redeem-note').value = '';
+  document.getElementById('redeem-preview').style.display = 'none';
+  populateClientDropdowns();
 }
 
 // ══════════════════════════════════
@@ -1094,12 +1179,18 @@ function openClientHistory(id) {
       <thead><tr>
         <th style="text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Date & Time</th>
         <th style="text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Perk Redeemed</th>
+        <th style="text-align:center;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Pts Cost</th>
         <th style="text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Notes</th>
         <th style="text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Staff</th>
       </tr></thead>
       <tbody>${redems.map(r=>`<tr>
         <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);color:var(--text-light);font-size:.78rem;font-family:'DM Mono',monospace;">${fmtDate(r.ts)}</td>
         <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);font-weight:500;">${r.detail.replace('Perk redeemed: ','')}</td>
+        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);text-align:center;">
+          ${r.points===0
+            ? '<span style="background:var(--green-lt);color:var(--green);border-radius:100px;padding:.15rem .6rem;font-size:.7rem;font-weight:700;font-family:DM Mono,monospace;">FREE</span>'
+            : `<span style="background:var(--red-lt);color:var(--red);border-radius:100px;padding:.15rem .6rem;font-size:.7rem;font-weight:700;font-family:DM Mono,monospace;">${r.points} pts</span>`}
+        </td>
         <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);color:var(--text-mid);">${r.proof||'—'}</td>
         <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);color:var(--text-light);">${r.staff||'—'}</td>
       </tr>`).join('')}</tbody>
@@ -1176,15 +1267,23 @@ function renderRedemptions() {
   document.getElementById('redemptions-table').innerHTML = redems.map(r => {
     const c = DB.clients.find(x => x.id === r.clientId);
     const tier = c ? getTier(c.points) : {emoji:'',name:'—',class:'tier-bronze'};
+    const ptsCost = r.points; // stored as negative for deductions
+    const isFree = ptsCost === 0;
     return `<tr>
       <td style="font-size:.78rem;color:var(--text-light);font-family:'DM Mono',monospace;">${fmtDate(r.ts)}</td>
       <td style="font-weight:500;">${r.clientName}</td>
       <td><span class="tier tier-${tier.name.toLowerCase()}">${tier.emoji} ${tier.name}</span></td>
       <td>${r.detail.replace('Perk redeemed: ','')}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:.82rem;text-align:center;">
+        ${isFree
+          ? '<span style="background:var(--green-lt);color:var(--green);border-radius:100px;padding:.15rem .65rem;font-size:.7rem;font-weight:700;">FREE</span>'
+          : `<span style="background:var(--red-lt);color:var(--red);border-radius:100px;padding:.15rem .65rem;font-size:.7rem;font-weight:700;">${ptsCost} pts</span>`
+        }
+      </td>
       <td style="font-size:.82rem;color:var(--text-mid);">${r.proof||'—'}</td>
       <td style="font-size:.78rem;color:var(--text-light);">${r.staff||'—'}</td>
     </tr>`;
-  }).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--text-light);padding:2rem;">No redemptions recorded yet.</td></tr>';
+  }).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--text-light);padding:2rem;">No redemptions recorded yet.</td></tr>';
 }
 
 function exportRedemptionsCSV() {
