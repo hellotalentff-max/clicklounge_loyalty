@@ -154,6 +154,7 @@ select.form-input{cursor:pointer;}
   <div class="top-bar">
     <div class="top-brand">CLS Control Hub <span>ClickCard Loyalty Admin</span></div>
     <div class="top-right">
+      <div id="sync-badge" onclick="syncFromSheet()" title="Click to sync" style="font-size:.72rem;font-family:'DM Mono',monospace;background:rgba(255,255,255,.1);padding:.3rem .8rem;border-radius:100px;letter-spacing:.08em;cursor:pointer;transition:background .2s;">↻ Not synced</div>
       <div class="staff-badge" id="staff-name-badge">Staff</div>
       <button class="logout-btn" onclick="logout()">Sign Out</button>
     </div>
@@ -164,6 +165,7 @@ select.form-input{cursor:pointer;}
     <div class="tab" onclick="switchTab('clients',this)">Clients</div>
     <div class="tab" onclick="switchTab('log-points',this)">Log Points</div>
     <div class="tab" onclick="switchTab('verify',this)">Verify & Redeem</div>
+    <div class="tab" onclick="switchTab('redemptions',this)">Redemptions</div>
     <div class="tab" onclick="switchTab('activity',this)">Activity Log</div>
     <div class="tab" onclick="switchTab('settings',this)">Settings</div>
   </div>
@@ -192,11 +194,37 @@ select.form-input{cursor:pointer;}
   <div id="pane-clients" class="pane">
     <div class="search-bar">
       <input class="search-in" id="client-search" placeholder="Search by name, phone or email..." oninput="renderClients()">
+      <button class="btn btn-outline" onclick="syncFromSheet()">↻ Sync Sheet</button>
       <button class="btn btn-green" onclick="openAddClient()">+ Add Client</button>
     </div>
     <div class="card" style="padding:0;">
-      <table><thead><tr><th>Name</th><th>Contact</th><th>Points</th><th>Tier</th><th>Sessions</th><th>Referrals</th><th>Joined</th><th>Actions</th></tr></thead>
+      <table><thead><tr><th>Name</th><th>Type</th><th>Email</th><th>Points</th><th>Tier</th><th>Sessions</th><th>Total Spent</th><th>Joined</th><th>Actions</th></tr></thead>
       <tbody id="clients-table"></tbody></table>
+    </div>
+  </div>
+
+  <!-- CLIENT HISTORY MODAL -->
+  <div class="modal-bg" id="modal-history">
+    <div class="modal" style="width:min(96vw,700px);">
+      <div class="modal-head">
+        <h3 id="history-title">Client History</h3>
+        <button class="modal-close" onclick="closeModal('modal-history')">✕</button>
+      </div>
+      <div class="modal-body" style="padding:.5rem 1.2rem 1.5rem;">
+        <!-- Summary strip -->
+        <div id="history-summary" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-bottom:1.2rem;"></div>
+        <!-- Tabs inside modal -->
+        <div style="display:flex;border-bottom:1px solid var(--border);margin-bottom:.8rem;">
+          <button onclick="switchHistoryTab('sessions',this)" class="htab htab-active" style="font-size:.78rem;font-weight:600;color:var(--green);padding:.55rem 1rem;border:none;background:none;cursor:pointer;border-bottom:2px solid var(--green);">Sessions</button>
+          <button onclick="switchHistoryTab('redemptions',this)" class="htab" style="font-size:.78rem;font-weight:600;color:var(--text-light);padding:.55rem 1rem;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;">Redemptions</button>
+          <button onclick="switchHistoryTab('bonus',this)" class="htab" style="font-size:.78rem;font-weight:600;color:var(--text-light);padding:.55rem 1rem;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;">Bonus Points</button>
+          <button onclick="switchHistoryTab('og-sales',this)" class="htab" style="font-size:.78rem;font-weight:600;color:var(--text-light);padding:.55rem 1rem;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;">OG Sales</button>
+        </div>
+        <div id="history-sessions"></div>
+        <div id="history-redemptions" style="display:none;"></div>
+        <div id="history-bonus" style="display:none;"></div>
+        <div id="history-og-sales" style="display:none;"></div>
+      </div>
     </div>
   </div>
 
@@ -312,6 +340,31 @@ select.form-input{cursor:pointer;}
     </div>
   </div>
 
+  <!-- REDEMPTIONS -->
+  <div id="pane-redemptions" class="pane">
+    <div style="display:flex;gap:.6rem;align-items:center;margin-bottom:1rem;flex-wrap:wrap;">
+      <input class="search-in" style="max-width:260px;" id="red-search" placeholder="Filter by client or perk..." oninput="renderRedemptions()">
+      <select class="search-in" style="max-width:200px;" id="red-filter" onchange="renderRedemptions()">
+        <option value="">All perks</option>
+        <option>Free 5-min extension</option>
+        <option>Free backdrop change</option>
+        <option>Free Basic HMU (Gold · 1× per year)</option>
+        <option>Free 4R print</option>
+        <option>Free digital copy upgrade</option>
+        <option>Free outfit change</option>
+        <option>Free annual mini session (VIP)</option>
+        <option>Birthday month surprise gift</option>
+        <option>Social media feature (Gold+)</option>
+        <option>Gift spinner prize</option>
+      </select>
+      <button class="btn btn-outline btn-sm" onclick="exportRedemptionsCSV()">Export CSV</button>
+    </div>
+    <div class="card" style="padding:0;">
+      <table><thead><tr><th>Date & Time</th><th>Client</th><th>Tier at Redemption</th><th>Perk Redeemed</th><th>Notes</th><th>Staff</th></tr></thead>
+      <tbody id="redemptions-table"></tbody></table>
+    </div>
+  </div>
+
   <!-- ACTIVITY LOG -->
   <div id="pane-activity" class="pane">
     <div style="display:flex;gap:.6rem;align-items:center;margin-bottom:1rem;flex-wrap:wrap;">
@@ -375,6 +428,15 @@ select.form-input{cursor:pointer;}
         <button class="btn btn-green" onclick="saveConfig()">Save Configuration →</button>
       </div>
       <div class="card">
+        <div class="card-title">OG Sales Sheet Sync</div>
+        <p style="font-size:.82rem;color:var(--text-light);margin-bottom:1rem;">Pull client records from the OG SALES SHEET tab. Matches by client name and sums the TOTAL column for points.</p>
+        <div style="background:var(--cream);border-radius:8px;padding:.8rem 1rem;font-size:.82rem;color:var(--text-mid);margin-bottom:1rem;font-family:'DM Mono',monospace;">
+          Sheet: <strong>SALES 2023</strong> · Columns: Date, Name, Package, Total
+        </div>
+        <button class="btn btn-green" onclick="syncOGSales()" style="width:100%;">↻ Sync OG Sales Sheet →</button>
+        <div id="og-sync-result" style="margin-top:.8rem;font-size:.82rem;color:var(--text-mid);"></div>
+      </div>
+      <div class="card">
         <div class="card-title" style="color:var(--red);">Danger Zone</div>
         <p style="font-size:.82rem;color:var(--text-light);margin-bottom:1rem;">These actions are irreversible. Use with extreme caution.</p>
         <button class="btn btn-red" onclick="clearAllData()">Clear ALL Client Data</button>
@@ -432,13 +494,139 @@ select.form-input{cursor:pointer;}
 // STORAGE HELPERS
 // ══════════════════════════════════
 const DB_KEY = 'cls_admin_db';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx_Y5nH34Rq16JJ2AxBDr30ttmDFuic61OqoC0u3Wq0zogHEhfoV6qE7uiNagI43flVgw/exec';
+
 const loadDB = () => { try { return JSON.parse(localStorage.getItem(DB_KEY)) || initDB(); } catch(e) { return initDB(); } };
 const saveDB = db => localStorage.setItem(DB_KEY, JSON.stringify(db));
 function initDB() {
-  return { clients:[], activity:[], staff:[{name:'Admin',pin:'1234'}], config:{ rate:100, bronze:49, silver:149, gold:299, ref:5, refVip:10 } };
+  return { clients:[], activity:[], staff:[{name:'Admin',pin:'1234'}], config:{ rate:100, bronze:49, silver:149, gold:299, ref:5, refVip:10 }, lastSync:null };
 }
 let DB = loadDB();
 let currentStaff = '';
+let SHEET_CLIENTS = [];     // live from Google Sheet
+let SHEET_TRANSACTIONS = []; // live from Google Sheet
+let syncStatus = 'idle';
+
+// ── SHEET API ──
+async function callScript(params) {
+  const url = SCRIPT_URL + '?' + new URLSearchParams(params).toString();
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  return res.json();
+}
+
+async function syncFromSheet() {
+  if (syncStatus === 'syncing') return;
+  syncStatus = 'syncing';
+  updateSyncBadge('syncing');
+  try {
+    // Fetch clients
+    const cData = await callScript({ action: 'getClients' });
+    SHEET_CLIENTS = (cData.clients || cData.data || []).filter(r => r['FB Name'] || r['Client Name']);
+
+    // Fetch transactions
+    const tData = await callScript({ action: 'getTransactions' });
+    SHEET_TRANSACTIONS = (tData.transactions || tData.data || []).filter(r => r['Invoice #'] || r['ID']);
+
+    // Merge sheet clients into DB.clients — auto-enroll anyone not yet in local DB
+    let newCount = 0;
+    SHEET_CLIENTS.forEach(sc => {
+      const name = (sc['FB Name'] || sc['Client Name'] || '').trim();
+      const email = (sc['Email'] || '').trim();
+      const type = (sc['Type'] || '').trim();
+      const dateAdded = sc['Date Added'] || new Date().toISOString();
+      if (!name) return;
+      const existing = DB.clients.find(c =>
+        c.name.toLowerCase() === name.toLowerCase() ||
+        (email && c.email && c.email.toLowerCase() === email.toLowerCase())
+      );
+      if (!existing) {
+        // Auto-enroll new client
+        const nc = { id: uid(), name, email, phone: sc['Phone'] || sc['Mobile'] || '', birthday: sc['Birthday'] || '', type, joinedAt: dateAdded, points: 0, sessions: 0, referralsMade: 0, notes: 'Auto-enrolled from POS', source: 'sheet' };
+        DB.clients.push(nc);
+        addActivity('client', nc, `Auto-enrolled from POS — ${type || 'client'}`, '', 0);
+        newCount++;
+      } else if (!existing.email && email) {
+        existing.email = email; // fill in missing email
+      }
+    });
+
+    // Calculate points for every client from transactions
+    DB.clients.forEach(c => {
+      const cNameLower = c.name.toLowerCase().trim();
+      const cFirst = cNameLower.split(' ')[0];
+      let totalSpend = 0;
+      let sessions = 0;
+      SHEET_TRANSACTIONS.forEach(tx => {
+        const txClient = (tx['Client Name'] || tx['Client'] || '').toLowerCase().trim();
+        if (!txClient) return;
+        const txFirst = txClient.split(' ')[0];
+        const isMatch =
+          txClient === cNameLower ||
+          txClient.includes(cNameLower) ||
+          cNameLower.includes(txClient) ||
+          (cFirst.length > 2 && txFirst === cFirst &&
+           txClient.split(' ').some(w => w.length > 2 && cNameLower.includes(w)));
+        if (isMatch) {
+          const amt = parseFloat(tx['Total'] || 0);
+          if (amt > 0) { totalSpend += amt; sessions++; }
+        }
+      });
+      // Points from spend (Transactions) + OG Sales + any manual bonus points stored locally
+      const spendPts = Math.floor(totalSpend / 100);
+
+      // Add points from OG SALES 2023 if already loaded
+      let ogSpend = 0;
+      if (SHEET_OG_SALES.length > 0) {
+        SHEET_OG_SALES.forEach(row => {
+          const rowName = (row['Name']||'').toLowerCase().trim();
+          if (!rowName) return;
+          const rowFirst = rowName.split(' ')[0];
+          const cFirst2 = cNameLower.split(' ')[0];
+          const isOGMatch = rowName === cNameLower || rowName.includes(cNameLower) ||
+            cNameLower.includes(rowName) ||
+            (cFirst2.length > 2 && rowFirst === cFirst2);
+          if (isOGMatch) ogSpend += parseFloat(row['Total']||0);
+        });
+      }
+      const ogPts = Math.floor(ogSpend / 100);
+
+      const bonusPts = DB.activity
+        .filter(a => a.clientId === c.id && a.type === 'bonus')
+        .reduce((s, a) => s + (a.points || 0), 0);
+      c.points = spendPts + ogPts + bonusPts;
+      c.sessions = sessions;
+      c.totalSpend = totalSpend;
+      c.ogSpend = ogSpend;
+    });
+
+    DB.lastSync = new Date().toISOString();
+    saveDB(DB);
+    syncStatus = 'done';
+    updateSyncBadge('done', newCount);
+    if (newCount > 0) toast(`✓ Synced — ${newCount} new client${newCount>1?'s':''} auto-enrolled!`, 4000);
+    else toast('✓ Synced with Google Sheet');
+    renderAll();
+  } catch(err) {
+    syncStatus = 'error';
+    updateSyncBadge('error');
+    toast('⚠ Sync failed — check connection', 4000);
+  }
+}
+
+function updateSyncBadge(status, newCount) {
+  const el = document.getElementById('sync-badge');
+  if (!el) return;
+  const map = {
+    syncing: ['🔄 Syncing…', 'rgba(255,255,255,.15)'],
+    done:    [`✓ Synced${DB.lastSync ? ' · ' + new Date(DB.lastSync).toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'}) : ''}`, 'rgba(74,160,130,.4)'],
+    error:   ['⚠ Sync failed', 'rgba(192,57,43,.4)'],
+    idle:    ['↻ Not synced', 'rgba(255,255,255,.1)'],
+  };
+  const [label, bg] = map[status] || map.idle;
+  el.textContent = label;
+  el.style.background = bg;
+}
 
 // ══════════════════════════════════
 // AUTH
@@ -455,6 +643,8 @@ function login() {
   document.getElementById('app').style.display='block';
   document.getElementById('staff-name-badge').textContent = name;
   renderAll();
+  // Auto-sync from sheet on login
+  setTimeout(syncFromSheet, 400);
 }
 function logout() {
   currentStaff = '';
@@ -476,6 +666,7 @@ function switchTab(id, el) {
   if(id==='dashboard') renderDashboard();
   if(id==='log-points') { populateClientDropdowns(); calcLpPoints(); updateBonusDesc(); }
   if(id==='verify') populateClientDropdowns();
+  if(id==='redemptions') renderRedemptions();
   if(id==='activity') renderActivity();
   if(id==='settings') renderSettings();
 }
@@ -491,7 +682,38 @@ function getTier(pts) {
   return {name:'Bronze', class:'tier-bronze', emoji:'🥉'};
 }
 function fmt(n) { return n.toLocaleString(); }
-function fmtDate(iso) { const d=new Date(iso); return d.toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'})+' '+d.toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'}); }
+
+// Handles: Google Sheet serial (e.g. 46127), JS Date objects, ISO strings, text dates
+function fmtSheetDate(val) {
+  if (!val && val !== 0) return '—';
+  // Google Sheets serial number (number between 1 and 99999)
+  if (typeof val === 'number' && val > 1000 && val < 100000) {
+    // Sheets epoch is Dec 30, 1899
+    const d = new Date((val - 25569) * 86400 * 1000);
+    return d.toLocaleDateString('en-PH', { month: 'long', day: 'numeric', year: 'numeric' });
+  }
+  // Already a JS Date
+  if (val instanceof Date) {
+    return val.toLocaleDateString('en-PH', { month: 'long', day: 'numeric', year: 'numeric' });
+  }
+  // String — try parsing
+  const s = String(val).trim();
+  if (!s || s === '—') return '—';
+  const d = new Date(s);
+  if (!isNaN(d.getTime())) {
+    return d.toLocaleDateString('en-PH', { month: 'long', day: 'numeric', year: 'numeric' });
+  }
+  // Return as-is if unparseable
+  return s;
+}
+
+// For activity log timestamps (ISO strings with time)
+function fmtDate(iso) {
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' }) +
+    ' · ' + d.toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit' });
+}
 function toast(msg, dur=3000) {
   const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'), dur);
@@ -510,10 +732,11 @@ function renderDashboard() {
   const totalSessions = acts.filter(a=>a.type==='session').length;
 
   document.getElementById('dash-stats').innerHTML = `
-    <div class="stat"><div class="stat-label">Total Clients</div><div class="stat-val">${clients.length}</div><div class="stat-sub">enrolled members</div></div>
+    <div class="stat"><div class="stat-label">Total Clients</div><div class="stat-val">${clients.length}</div><div class="stat-sub">${DB.clients.filter(c=>c.source==='sheet').length} from POS · ${DB.clients.filter(c=>c.source!=='sheet').length} manual</div></div>
     <div class="stat"><div class="stat-label">Total Points Issued</div><div class="stat-val">${fmt(totalPts)}</div><div class="stat-sub">across all clients</div></div>
-    <div class="stat"><div class="stat-label">Sessions Logged</div><div class="stat-val">${totalSessions}</div><div class="stat-sub">all time</div></div>
+    <div class="stat"><div class="stat-label">Sessions Logged</div><div class="stat-val">${totalSessions}</div><div class="stat-sub">from Transactions sheet</div></div>
     <div class="stat"><div class="stat-label">VIP Members</div><div class="stat-val">${tiers.VIP}</div><div class="stat-sub">${clients.length?Math.round(tiers.VIP/clients.length*100):0}% of members</div></div>
+    <div class="stat" style="cursor:pointer;" onclick="syncFromSheet()"><div class="stat-label">Last Sync</div><div class="stat-val" style="font-size:1rem;margin-top:.2rem;">${DB.lastSync ? new Date(DB.lastSync).toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'}) : '—'}</div><div class="stat-sub" style="color:var(--green);">Click to sync now ↻</div></div>
   `;
 
   document.getElementById('dash-tiers').innerHTML = Object.entries(tiers).map(([name,count])=>`
@@ -543,21 +766,28 @@ function renderDashboard() {
 function renderClients() {
   const q = (document.getElementById('client-search')?.value||'').toLowerCase();
   const clients = DB.clients.filter(c =>
-    c.name.toLowerCase().includes(q) || c.phone.includes(q) || (c.email||'').toLowerCase().includes(q)
+    c.name.toLowerCase().includes(q) ||
+    (c.phone||'').includes(q) ||
+    (c.email||'').toLowerCase().includes(q)
   );
   document.getElementById('clients-table').innerHTML = clients.map(c => {
     const t = getTier(c.points);
+    const redemCount = DB.activity.filter(a => a.clientId === c.id && a.type === 'redemption').length;
     return `<tr>
-      <td style="font-weight:500;color:var(--text);">${c.name}</td>
-      <td style="font-size:.8rem;">${c.phone}${c.email?'<br><span style="color:var(--text-light);">'+c.email+'</span>':''}</td>
+      <td style="font-weight:500;color:var(--text);">${c.name}${c.source==='sheet'?'<span style="font-size:.65rem;background:var(--blue-lt);color:var(--blue);border-radius:4px;padding:.1rem .4rem;margin-left:.4rem;font-family:DM Mono,monospace;">POS</span>':''}</td>
+      <td style="font-size:.78rem;"><span style="font-family:'DM Mono',monospace;font-size:.68rem;background:var(--cream-dk);padding:.15rem .5rem;border-radius:4px;">${(c.type||'walkin').toUpperCase()}</span></td>
+      <td style="font-size:.8rem;color:var(--text-mid);">${c.email||'<span style="color:var(--text-light);">—</span>'}</td>
       <td style="font-family:'DM Mono',monospace;color:var(--green);font-weight:600;">${fmt(c.points)}</td>
       <td><span class="tier tier-${t.name.toLowerCase()}">${t.emoji} ${t.name}</span></td>
       <td>${c.sessions||0}</td>
-      <td>${c.referralsMade||0}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:.82rem;">₱${fmt(c.totalSpend||0)}</td>
       <td style="font-size:.78rem;color:var(--text-light);">${new Date(c.joinedAt).toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'})}</td>
-      <td><button class="btn btn-outline btn-sm" onclick="openEditClient('${c.id}')">Edit</button></td>
+      <td style="display:flex;gap:.4rem;flex-wrap:wrap;">
+        <button class="btn btn-outline btn-sm" onclick="openClientHistory('${c.id}')">📋 History${redemCount>0?` <span style='background:var(--green);color:#fff;border-radius:100px;font-size:.6rem;padding:.1rem .4rem;'>${redemCount}</span>`:''}</button>
+        <button class="btn btn-outline btn-sm" onclick="openEditClient('${c.id}')">Edit</button>
+      </td>
     </tr>`;
-  }).join('') || '<tr><td colspan="8" style="text-align:center;color:var(--text-light);padding:2rem;">No clients found.</td></tr>';
+  }).join('') || '<tr><td colspan="9" style="text-align:center;color:var(--text-light);padding:2rem;">No clients found. Click ↻ Sync Sheet to load from Google Sheets.</td></tr>';
 }
 
 function openAddClient() {
@@ -807,6 +1037,214 @@ function exportCSV() {
 // ══════════════════════════════════
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
+
+// ══════════════════════════════════
+// CLIENT HISTORY
+// ══════════════════════════════════
+function openClientHistory(id) {
+  const c = DB.clients.find(x => x.id === id); if (!c) return;
+  const t = getTier(c.points);
+  document.getElementById('history-title').textContent = c.name + ' — History';
+
+  // Summary strip
+  const redemCount = DB.activity.filter(a => a.clientId === id && a.type === 'redemption').length;
+  const bonusPts = DB.activity.filter(a => a.clientId === id && a.type === 'bonus').reduce((s,a)=>s+(a.points||0),0);
+  const txPts = Math.floor((c.totalSpend||0) / 100);
+  const ogPts = Math.floor((c.ogSpend||0) / 100);
+  document.getElementById('history-summary').innerHTML = `
+    <div class="stat"><div class="stat-label">Total Points</div><div class="stat-val" style="font-size:1.4rem;color:var(--green);">${fmt(c.points)}</div>
+      <div class="stat-sub">${txPts} tx · ${ogPts} og · ${bonusPts} bonus</div></div>
+    <div class="stat"><div class="stat-label">Tier</div><div class="stat-val" style="font-size:1.1rem;">${t.emoji} ${t.name}</div></div>
+    <div class="stat"><div class="stat-label">Sessions</div><div class="stat-val" style="font-size:1.4rem;">${c.sessions||0}</div>
+      <div class="stat-sub">₱${fmt(c.totalSpend||0)} total spend</div></div>
+    <div class="stat"><div class="stat-label">Perks Used</div><div class="stat-val" style="font-size:1.4rem;">${redemCount}</div>
+      ${c.ogSpend?`<div class="stat-sub">+₱${fmt(c.ogSpend)} from 2023</div>`:'<div class="stat-sub">click OG Sales tab</div>'}</div>`;
+
+  // Sessions tab — from SHEET_TRANSACTIONS
+  const cNameLower = c.name.toLowerCase().trim();
+  const cFirst = cNameLower.split(' ')[0];
+  const txRows = SHEET_TRANSACTIONS.filter(tx => {
+    const txClient = (tx['Client Name']||tx['Client']||'').toLowerCase().trim();
+    if (!txClient) return false;
+    const txFirst = txClient.split(' ')[0];
+    return txClient === cNameLower || txClient.includes(cNameLower) || cNameLower.includes(txClient) ||
+      (cFirst.length>2 && txFirst===cFirst && txClient.split(' ').some(w=>w.length>2&&cNameLower.includes(w)));
+  });
+  document.getElementById('history-sessions').innerHTML = txRows.length ? `
+    <table style="width:100%;font-size:.82rem;border-collapse:collapse;">
+      <thead><tr><th style="text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Date</th>
+        <th style="text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Invoice #</th>
+        <th style="text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Services</th>
+        <th style="text-align:right;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Total</th>
+        <th style="text-align:right;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Pts Earned</th>
+      </tr></thead>
+      <tbody>${txRows.map(tx=>`<tr>
+        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);color:var(--text-light);">${fmtSheetDate(tx['Date'])}</td>
+        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);font-family:'DM Mono',monospace;font-size:.78rem;">${tx['Invoice #']||'—'}</td>
+        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);color:var(--text-mid);">${tx['Services']||tx['Items (JSON)']||'—'}</td>
+        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);text-align:right;font-family:'DM Mono',monospace;color:var(--green);">₱${fmt(parseFloat(tx['Total']||0))}</td>
+        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);text-align:right;font-family:'DM Mono',monospace;color:var(--amber);">+${Math.floor(parseFloat(tx['Total']||0)/100)}</td>
+      </tr>`).join('')}</tbody>
+    </table>` : '<div style="padding:1.5rem;text-align:center;color:var(--text-light);font-size:.85rem;">No session records found in Transactions sheet.</div>';
+
+  // Redemptions tab
+  const redems = DB.activity.filter(a => a.clientId === id && a.type === 'redemption').reverse();
+  document.getElementById('history-redemptions').innerHTML = redems.length ? `
+    <table style="width:100%;font-size:.82rem;border-collapse:collapse;">
+      <thead><tr>
+        <th style="text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Date & Time</th>
+        <th style="text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Perk Redeemed</th>
+        <th style="text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Notes</th>
+        <th style="text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Staff</th>
+      </tr></thead>
+      <tbody>${redems.map(r=>`<tr>
+        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);color:var(--text-light);font-size:.78rem;font-family:'DM Mono',monospace;">${fmtDate(r.ts)}</td>
+        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);font-weight:500;">${r.detail.replace('Perk redeemed: ','')}</td>
+        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);color:var(--text-mid);">${r.proof||'—'}</td>
+        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);color:var(--text-light);">${r.staff||'—'}</td>
+      </tr>`).join('')}</tbody>
+    </table>` : '<div style="padding:1.5rem;text-align:center;color:var(--text-light);font-size:.85rem;">No perks redeemed yet.</div>';
+
+  // Bonus points tab
+  const bonuses = DB.activity.filter(a => a.clientId === id && a.type === 'bonus').reverse();
+  document.getElementById('history-bonus').innerHTML = bonuses.length ? `
+    <table style="width:100%;font-size:.82rem;border-collapse:collapse;">
+      <thead><tr>
+        <th style="text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Date & Time</th>
+        <th style="text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Type</th>
+        <th style="text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Proof</th>
+        <th style="text-align:right;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Pts</th>
+      </tr></thead>
+      <tbody>${bonuses.map(b=>`<tr>
+        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);color:var(--text-light);font-size:.78rem;font-family:'DM Mono',monospace;">${fmtDate(b.ts)}</td>
+        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);font-weight:500;">${b.detail}</td>
+        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);color:var(--text-mid);">${b.proof||'—'}</td>
+        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);text-align:right;font-family:'DM Mono',monospace;color:var(--amber);">+${b.points}</td>
+      </tr>`).join('')}</tbody>
+    </table>` : '<div style="padding:1.5rem;text-align:center;color:var(--text-light);font-size:.85rem;">No bonus points logged yet.</div>';
+
+  // OG Sales tab — from SHEET_OG_SALES
+  const ogRows = SHEET_OG_SALES.filter(row => {
+    const rowName = (row['Name']||'').toLowerCase().trim();
+    if (!rowName) return false;
+    return rowName === cNameLower || rowName.includes(cFirst) || cNameLower.includes(rowName);
+  });
+  document.getElementById('history-og-sales').innerHTML = ogRows.length ? `
+    <table style="width:100%;font-size:.82rem;border-collapse:collapse;">
+      <thead><tr>
+        <th style="text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Date</th>
+        <th style="text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Package</th>
+        <th style="text-align:right;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Total</th>
+        <th style="text-align:right;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Pts Earned</th>
+      </tr></thead>
+      <tbody>${ogRows.map(r=>`<tr>
+        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);color:var(--text-light);">${fmtSheetDate(r['Date'])}</td>
+        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);color:var(--text-mid);">${r['Package']||'—'}</td>
+        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);text-align:right;font-family:'DM Mono',monospace;color:var(--green);">₱${fmt(parseFloat(r['Total']||0))}</td>
+        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);text-align:right;font-family:'DM Mono',monospace;color:var(--amber);">+${Math.floor(parseFloat(r['Total']||0)/100)}</td>
+      </tr>`).join('')}</tbody>
+    </table>` : '<div style="padding:1.5rem;text-align:center;color:var(--text-light);font-size:.85rem;">No SALES 2023 records found for this client.</div>';
+
+  openModal('modal-history');
+  switchHistoryTab('sessions', document.querySelector('.htab'));
+}
+
+function switchHistoryTab(tab, btn) {
+  ['sessions','redemptions','bonus','og-sales'].forEach(t => {
+    document.getElementById('history-'+t).style.display = t===tab ? 'block' : 'none';
+  });
+  document.querySelectorAll('.htab').forEach(b => {
+    b.style.color = 'var(--text-light)'; b.style.borderBottomColor = 'transparent';
+  });
+  if (btn) { btn.style.color = 'var(--green)'; btn.style.borderBottomColor = 'var(--green)'; }
+}
+
+// ══════════════════════════════════
+// REDEMPTIONS TAB
+// ══════════════════════════════════
+function renderRedemptions() {
+  const q = (document.getElementById('red-search')?.value||'').toLowerCase();
+  const f = document.getElementById('red-filter')?.value||'';
+  const redems = [...DB.activity]
+    .filter(a => a.type === 'redemption')
+    .filter(a => {
+      const matchQ = a.clientName.toLowerCase().includes(q) || a.detail.toLowerCase().includes(q);
+      const matchF = !f || a.detail.includes(f);
+      return matchQ && matchF;
+    })
+    .reverse();
+  document.getElementById('redemptions-table').innerHTML = redems.map(r => {
+    const c = DB.clients.find(x => x.id === r.clientId);
+    const tier = c ? getTier(c.points) : {emoji:'',name:'—',class:'tier-bronze'};
+    return `<tr>
+      <td style="font-size:.78rem;color:var(--text-light);font-family:'DM Mono',monospace;">${fmtDate(r.ts)}</td>
+      <td style="font-weight:500;">${r.clientName}</td>
+      <td><span class="tier tier-${tier.name.toLowerCase()}">${tier.emoji} ${tier.name}</span></td>
+      <td>${r.detail.replace('Perk redeemed: ','')}</td>
+      <td style="font-size:.82rem;color:var(--text-mid);">${r.proof||'—'}</td>
+      <td style="font-size:.78rem;color:var(--text-light);">${r.staff||'—'}</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--text-light);padding:2rem;">No redemptions recorded yet.</td></tr>';
+}
+
+function exportRedemptionsCSV() {
+  const rows = [['Date','Client','Perk','Notes','Staff']];
+  DB.activity.filter(a=>a.type==='redemption').reverse()
+    .forEach(r=>rows.push([fmtDate(r.ts),r.clientName,r.detail.replace('Perk redeemed: ',''),r.proof||'',r.staff||'']));
+  const csv = rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'cls-redemptions-'+new Date().toISOString().slice(0,10)+'.csv';
+  a.click();
+}
+
+// ══════════════════════════════════
+// OG SALES SHEET SYNC
+// ══════════════════════════════════
+let SHEET_OG_SALES = [];
+
+async function syncOGSales() {
+  const resultEl = document.getElementById('og-sync-result');
+  if (resultEl) resultEl.textContent = '↻ Syncing OG Sales Sheet…';
+  try {
+    const data = await callScript({ action: 'getOGSales' });
+    SHEET_OG_SALES = (data.sales || data.data || []).filter(r => r['Name'] || r['Date']);
+
+    // Recalculate OG spend and update points for all clients
+    let updated = 0;
+    DB.clients.forEach(c => {
+      const cNameLower = c.name.toLowerCase().trim();
+      const cFirst = cNameLower.split(' ')[0];
+      let ogSpend = 0;
+      SHEET_OG_SALES.forEach(row => {
+        const rowName = (row['Name']||'').toLowerCase().trim();
+        if (!rowName) return;
+        const rowFirst = rowName.split(' ')[0];
+        const isMatch = rowName === cNameLower || rowName.includes(cNameLower) ||
+          cNameLower.includes(rowName) ||
+          (cFirst.length > 2 && rowFirst === cFirst);
+        if (isMatch) ogSpend += parseFloat(row['Total']||0);
+      });
+      if (ogSpend > 0) {
+        const ogPts = Math.floor(ogSpend / 100);
+        const spendPts = Math.floor((c.totalSpend||0) / 100);
+        const bonusPts = DB.activity
+          .filter(a => a.clientId === c.id && a.type === 'bonus')
+          .reduce((s, a) => s + (a.points||0), 0);
+        c.ogSpend = ogSpend;
+        c.points = spendPts + ogPts + bonusPts;
+        updated++;
+      }
+    });
+
+    saveDB(DB);
+    if (resultEl) resultEl.innerHTML = `<span style="color:var(--green);">✓ Synced ${SHEET_OG_SALES.length} OG Sales rows · ${updated} client records enriched</span>`;
+    toast(`✓ OG Sales Sheet synced — ${SHEET_OG_SALES.length} records`);
+  } catch(err) {
+    if (resultEl) resultEl.innerHTML = `<span style="color:var(--red);">⚠ Sync failed — make sure getOGSales is added to your Apps Script</span>`;
+    toast('⚠ OG Sales sync failed', 4000);
+  }
+}
 
 // ══════════════════════════════════
 // INIT
