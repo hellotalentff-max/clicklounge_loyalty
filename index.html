@@ -571,25 +571,18 @@ async function syncFromSheet() {
 
     // Calculate points for every client from transactions
     DB.clients.forEach(c => {
-      const cNameLower = c.name.toLowerCase().trim();
-      const cFirst = cNameLower.split(' ')[0];
       let totalSpend = 0;
       let sessions = 0;
       SHEET_TRANSACTIONS.forEach(tx => {
-        const txClient = (tx['Client Name'] || tx['Client'] || '').toLowerCase().trim();
+        const txClient = (tx['Client Name'] || tx['Client'] || '').trim();
         if (!txClient) return;
-        const txFirst = txClient.split(' ')[0];
-        const isMatch =
-          txClient === cNameLower ||
-          txClient.includes(cNameLower) ||
-          cNameLower.includes(txClient) ||
-          (cFirst.length > 2 && txFirst === cFirst &&
-           txClient.split(' ').some(w => w.length > 2 && cNameLower.includes(w)));
-        if (isMatch) {
+        if (!tx['Invoice #'] && !tx['ID']) return;
+        if (nameMatch(c.name, txClient)) {
           const amt = parseFloat(tx['Total'] || 0);
           if (amt > 0) { totalSpend += amt; sessions++; }
         }
       });
+
       // Points from spend (Transactions) + OG Sales + any manual bonus points stored locally
       const spendPts = Math.floor(totalSpend / 100);
 
@@ -597,14 +590,9 @@ async function syncFromSheet() {
       let ogSpend = 0;
       if (SHEET_OG_SALES.length > 0) {
         SHEET_OG_SALES.forEach(row => {
-          const rowName = (row['Name']||'').toLowerCase().trim();
+          const rowName = (row['Name'] || '').trim();
           if (!rowName) return;
-          const rowFirst = rowName.split(' ')[0];
-          const cFirst2 = cNameLower.split(' ')[0];
-          const isOGMatch = rowName === cNameLower || rowName.includes(cNameLower) ||
-            cNameLower.includes(rowName) ||
-            (cFirst2.length > 2 && rowFirst === cFirst2);
-          if (isOGMatch) ogSpend += parseFloat(row['Total']||0);
+          if (nameMatch(c.name, rowName)) ogSpend += parseFloat(row['Total'] || 0);
         });
       }
       const ogPts = Math.floor(ogSpend / 100);
@@ -698,6 +686,19 @@ function getTier(pts) {
   if(pts >= c.silver+1) return {name:'Gold', class:'tier-gold', emoji:'🥇'};
   if(pts >= c.bronze+1) return {name:'Silver', class:'tier-silver', emoji:'🥈'};
   return {name:'Bronze', class:'tier-bronze', emoji:'🥉'};
+}
+
+// Safe name matching: exact match OR shares at least 2 words.
+// Prevents single-name false merges (e.g. "Maria" ≠ "Maria Santos" unless both words match).
+function nameMatch(a, b) {
+  a = (a || '').toLowerCase().trim();
+  b = (b || '').toLowerCase().trim();
+  if (!a || !b) return false;
+  if (a === b) return true;
+  const wa = a.split(/\s+/).filter(w => w.length > 1);
+  const wb = b.split(/\s+/).filter(w => w.length > 1);
+  const shared = wa.filter(w => wb.includes(w));
+  return shared.length >= 2;
 }
 function fmt(n) { return n.toLocaleString(); }
 
@@ -1146,14 +1147,10 @@ function openClientHistory(id) {
       ${c.ogSpend?`<div class="stat-sub">+₱${fmt(c.ogSpend)} from 2023</div>`:'<div class="stat-sub">click OG Sales tab</div>'}</div>`;
 
   // Sessions tab — from SHEET_TRANSACTIONS
-  const cNameLower = c.name.toLowerCase().trim();
-  const cFirst = cNameLower.split(' ')[0];
   const txRows = SHEET_TRANSACTIONS.filter(tx => {
-    const txClient = (tx['Client Name']||tx['Client']||'').toLowerCase().trim();
+    const txClient = (tx['Client Name'] || tx['Client'] || '').trim();
     if (!txClient) return false;
-    const txFirst = txClient.split(' ')[0];
-    return txClient === cNameLower || txClient.includes(cNameLower) || cNameLower.includes(txClient) ||
-      (cFirst.length>2 && txFirst===cFirst && txClient.split(' ').some(w=>w.length>2&&cNameLower.includes(w)));
+    return nameMatch(c.name, txClient);
   });
   document.getElementById('history-sessions').innerHTML = txRows.length ? `
     <table style="width:100%;font-size:.82rem;border-collapse:collapse;">
@@ -1216,9 +1213,9 @@ function openClientHistory(id) {
 
   // OG Sales tab — from SHEET_OG_SALES
   const ogRows = SHEET_OG_SALES.filter(row => {
-    const rowName = (row['Name']||'').toLowerCase().trim();
+    const rowName = (row['Name'] || '').trim();
     if (!rowName) return false;
-    return rowName === cNameLower || rowName.includes(cFirst) || cNameLower.includes(rowName);
+    return nameMatch(c.name, rowName);
   });
   document.getElementById('history-og-sales').innerHTML = ogRows.length ? `
     <table style="width:100%;font-size:.82rem;border-collapse:collapse;">
@@ -1312,17 +1309,11 @@ async function syncOGSales() {
     // Recalculate OG spend and update points for all clients
     let updated = 0;
     DB.clients.forEach(c => {
-      const cNameLower = c.name.toLowerCase().trim();
-      const cFirst = cNameLower.split(' ')[0];
       let ogSpend = 0;
       SHEET_OG_SALES.forEach(row => {
-        const rowName = (row['Name']||'').toLowerCase().trim();
+        const rowName = (row['Name'] || '').trim();
         if (!rowName) return;
-        const rowFirst = rowName.split(' ')[0];
-        const isMatch = rowName === cNameLower || rowName.includes(cNameLower) ||
-          cNameLower.includes(rowName) ||
-          (cFirst.length > 2 && rowFirst === cFirst);
-        if (isMatch) ogSpend += parseFloat(row['Total']||0);
+        if (nameMatch(c.name, rowName)) ogSpend += parseFloat(row['Total'] || 0);
       });
       if (ogSpend > 0) {
         const ogPts = Math.floor(ogSpend / 100);
