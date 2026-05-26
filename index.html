@@ -536,7 +536,10 @@ let syncStatus = 'idle';
 
 // ── SHEET API ──
 async function callScript(params) {
-  const url = SCRIPT_URL + '?' + new URLSearchParams(params).toString();
+  // Your Apps Script uses base64-encoded ?d= parameter, not plain ?action=
+  const payload = { action: params.action, payload: params.payload || {} };
+  const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+  const url = SCRIPT_URL + '?d=' + encodeURIComponent(b64);
   const res = await fetch(url);
   if (!res.ok) throw new Error('HTTP ' + res.status);
   return res.json();
