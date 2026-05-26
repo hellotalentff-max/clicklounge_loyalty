@@ -451,7 +451,16 @@ select.form-input{cursor:pointer;}
         <div style="background:var(--cream);border-radius:8px;padding:.8rem 1rem;font-size:.82rem;color:var(--text-mid);margin-bottom:1rem;font-family:'DM Mono',monospace;">
           Sheet: <strong>SALES 2023</strong> · Columns: Date, Name, Package, Total
         </div>
-        <button class="btn btn-green" onclick="syncOGSales()" style="width:100%;">↻ Sync OG Sales Sheet →</button>
+        <div style="display:flex;flex-direction:column;gap:.7rem;">
+          <div>
+            <button class="btn btn-green" onclick="syncOGSales()" style="width:100%;">↻ Sync OG Sales Points →</button>
+            <div style="font-size:.75rem;color:var(--text-light);margin-top:.3rem;">Reads SALES 2023 and recalculates points for existing clients.</div>
+          </div>
+          <div>
+            <button class="btn btn-amber" onclick="syncSales2023ToClients()" style="width:100%;">👥 Import New Clients from SALES 2023 →</button>
+            <div style="font-size:.75rem;color:var(--text-light);margin-top:.3rem;">Finds names in SALES 2023 not yet in the Clients sheet and adds them automatically.</div>
+          </div>
+        </div>
         <div id="og-sync-result" style="margin-top:.8rem;font-size:.82rem;color:var(--text-mid);"></div>
       </div>
       <div class="card">
@@ -1298,6 +1307,26 @@ function exportRedemptionsCSV() {
 // OG SALES SHEET SYNC
 // ══════════════════════════════════
 let SHEET_OG_SALES = [];
+
+async function syncSales2023ToClients() {
+  const resultEl = document.getElementById('og-sync-result');
+  if (resultEl) resultEl.innerHTML = '<span style="color:var(--text-light);">↻ Importing names from SALES 2023…</span>';
+  try {
+    const data = await callScript({ action: 'syncSales2023' });
+    if (data.ok) {
+      if (resultEl) resultEl.innerHTML = `<span style="color:var(--green);">✓ ${data.message}</span>`;
+      toast(`✓ ${data.message}`, 4000);
+      // Re-sync to load the new clients into admin
+      setTimeout(syncFromSheet, 800);
+    } else {
+      if (resultEl) resultEl.innerHTML = `<span style="color:var(--red);">⚠ ${data.error}</span>`;
+      toast('⚠ Import failed: ' + data.error, 4000);
+    }
+  } catch(err) {
+    if (resultEl) resultEl.innerHTML = `<span style="color:var(--red);">⚠ Connection failed — make sure syncSales2023 is added to your Apps Script and redeployed.</span>`;
+    toast('⚠ Connection failed', 4000);
+  }
+}
 
 async function syncOGSales() {
   const resultEl = document.getElementById('og-sync-result');
