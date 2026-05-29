@@ -425,17 +425,13 @@ tr:hover td{background:var(--cream);}
       <!-- OG Sales Sync -->
       <div class="card">
         <div class="card-title">SALES 2023 Sync</div>
-        <p style="font-size:.82rem;color:var(--text-light);margin-bottom:.8rem;">Import unique client names from SALES 2023 tab into the Clients sheet in Google Sheets.</p>
-        <div style="display:flex;flex-direction:column;gap:.6rem;">
-          <div>
-            <button class="btn btn-amber" style="width:100%;" onclick="importSales2023()">👥 Import New Clients from SALES 2023 →</button>
-            <div style="font-size:.73rem;color:var(--text-light);margin-top:.3rem;">Writes new names to your Clients sheet in Google Sheets.</div>
-          </div>
-          <div>
-            <button class="btn btn-outline" style="width:100%;" onclick="doSync()">↻ Full Sync Now →</button>
-            <div style="font-size:.73rem;color:var(--text-light);margin-top:.3rem;">Fetches all 3 sheets and recalculates every client's points.</div>
-          </div>
+        <p style="font-size:.82rem;color:var(--text-light);margin-bottom:.8rem;">
+          Client names and spend are pulled <strong>directly from the SALES 2023 tab</strong> in Google Sheets every time you sync. No import needed — just sync and all clients appear automatically.
+        </p>
+        <div style="background:var(--green-lt);border-radius:8px;padding:.8rem 1rem;font-size:.82rem;color:var(--green-dk);margin-bottom:.8rem;">
+          ✓ Source: <strong>SALES 2023</strong> tab · Columns used: <strong>Name, Total</strong>
         </div>
+        <button class="btn btn-green" style="width:100%;" onclick="doSync()">↻ Sync Now →</button>
         <div id="sales-sync-result" style="margin-top:.7rem;font-size:.82rem;"></div>
       </div>
 
@@ -446,7 +442,6 @@ tr:hover td{background:var(--cream);}
         <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
           <button class="btn btn-outline btn-sm" onclick="debugSheet('getOGSales','sales')">🔍 Check OG Sales Response</button>
           <button class="btn btn-outline btn-sm" onclick="debugSheet('getTransactions','data')">🔍 Check Transactions Response</button>
-          <button class="btn btn-outline btn-sm" onclick="debugSheet('getClients','data')">🔍 Check Clients Response</button>
         </div>
         <div id="debug-result" style="margin-top:.8rem;font-size:.75rem;font-family:'DM Mono',monospace;background:var(--cream-dk);border-radius:8px;padding:.8rem;color:var(--text-mid);max-height:200px;overflow-y:auto;white-space:pre-wrap;display:none;"></div>
       </div>
@@ -545,9 +540,8 @@ let DB = loadDB();
 let currentStaff = '';
 
 // Sheet data (in-memory, refreshed on sync)
-let TX   = [];  // Transactions sheet rows
-let OG   = [];  // SALES 2023 rows
-let CLTS = [];  // Clients sheet rows (for phone/email/birthday)
+let TX = [];  // Transactions sheet rows
+let OG = [];  // SALES 2023 rows
 
 // ══════════════════════════════════════════════════════════
 // APPS SCRIPT API
@@ -562,7 +556,7 @@ async function callScript(action, payload={}) {
 }
 
 // ══════════════════════════════════════════════════════════
-// SYNC — pulls all 3 sheets and rebuilds client list
+// SYNC — pulls TX + SALES 2023, builds client list
 // ══════════════════════════════════════════════════════════
 let syncing = false;
 
@@ -571,28 +565,29 @@ async function doSync() {
   syncing = true;
   setSyncBadge('⏳ Syncing…', 'rgba(255,255,255,.15)');
   try {
-    // Fetch all 3 sheets in parallel
-    const [cRes, tRes, ogRes] = await Promise.all([
-      callScript('getClients'),
+    // Fetch both sheets in parallel
+    const [tRes, ogRes] = await Promise.all([
       callScript('getTransactions'),
       callScript('getOGSales')
     ]);
 
-    CLTS = (cRes.data  || cRes.clients     || []);
-    TX   = (tRes.data  || tRes.transactions || []).filter(r => r['invoiceNum'] || r['Invoice #'] || r['id']);
-    OG   = (ogRes.data || ogRes.sales || []).filter(r => {
-      // Handle both exact header 'Name' and any casing variant
-      const name = r['Name'] || r['name'] || r['NAME'] || '';
-      return name.trim().length > 0;
+    // Transactions — internal keys from Apps Script HEADERS.transactions
+    // keys: id, invoiceNum, date, time, staff, clientName, items, itemsSummary,
+    //       subtotal, discount, downpayment, total, balance, balanceMOP, voucher
+    TX = (tRes.data || tRes.transactions || [])
+      .filter(r => r['invoiceNum'] || r['Invoice #'] || r['id']);
+
+    // SALES 2023 — exact sheet headers: Date, Name, Package, Total
+    const ogRaw = ogRes.sales || ogRes.data || [];
+    OG = ogRaw.filter(r => {
+      const n = String(r['Name'] || r['name'] || '').trim();
+      return n.length > 0;
     });
 
-    // Debug: log first OG row to console so we can see exact field names
-    if (OG.length > 0) {
-      console.log('OG Sales first row keys:', Object.keys(OG[0]));
-      console.log('OG Sales first row:', OG[0]);
-    }
+    console.log(`TX rows: ${TX.length}, OG rows: ${OG.length}`);
+    if (TX.length > 0) console.log('TX keys:', Object.keys(TX[0]));
+    if (OG.length > 0) console.log('OG keys:', Object.keys(OG[0]), '| sample:', OG[0]);
 
-    // Build client list from TX + OG (source of truth)
     syncClients();
 
     DB.lastSync = new Date().toISOString();
@@ -600,12 +595,13 @@ async function doSync() {
     syncing = false;
     const t = new Date(DB.lastSync).toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'});
     setSyncBadge(`✓ Synced ${t}`, 'rgba(74,160,130,.4)');
-    toast(`✓ Synced — ${DB.clients.length} clients · ${TX.length} transactions · ${OG.length} OG records`);
+    toast(`✓ Synced — ${DB.clients.length} clients · ${TX.length} TX · ${OG.length} OG Sales rows`);
     renderAll();
   } catch(err) {
     syncing = false;
     setSyncBadge('⚠ Sync failed', 'rgba(192,57,43,.4)');
     toast('⚠ Sync failed: ' + err.message, 4000);
+    console.error('Sync error:', err);
   }
 }
 
@@ -614,81 +610,77 @@ function setSyncBadge(text, bg) {
   if (el) { el.textContent = text; el.style.background = bg; }
 }
 
-function syncClients() {
-  // Step 1: Collect all unique client names from TX
-  const txNames = {};
-  TX.forEach(tx => {
-    const name = (tx['clientName'] || tx['Client Name'] || '').trim();
-    if (!name) return;
-    if (!txNames[name.toLowerCase()]) txNames[name.toLowerCase()] = { name, txSpend:0, txSessions:0 };
-    const amt = parseFloat(tx['total'] || tx['Total'] || 0);
-    if (amt > 0) { txNames[name.toLowerCase()].txSpend += amt; txNames[name.toLowerCase()].txSessions++; }
-  });
+// ── Parse amount safely (handles commas, peso sign, Google Sheets numbers)
+function parseAmt(val) {
+  if (val === null || val === undefined || val === '') return 0;
+  if (typeof val === 'number') return val;
+  return parseFloat(String(val).replace(/[,₱\s]/g, '')) || 0;
+}
 
-  // Step 2: Collect all unique names from OG
-  const ogNames = {};
-  OG.forEach(row => {
-    // Handle exact headers: Date, Name, Package, Total
-    const name = (row['Name'] || row['name'] || row['NAME'] || '').trim();
+function syncClients() {
+  // ── Step 1: Aggregate TX by client name
+  const txMap = {}; // lowerName → { name, txSpend, txSessions }
+  TX.forEach(tx => {
+    // Apps Script returns 'clientName' (internal key)
+    const raw = tx['clientName'] || tx['Client Name'] || tx['client_name'] || '';
+    const name = String(raw).trim();
     if (!name) return;
     const key = name.toLowerCase();
-    if (!ogNames[key]) ogNames[key] = { name, ogSpend:0, ogSessions:0 };
-    const amt = parseFloat(String(row['Total'] || row['total'] || row['TOTAL'] || row['Amount'] || '0').replace(/[,₱\s]/g, ''));
-    if (amt > 0) { ogNames[key].ogSpend += amt; ogNames[key].ogSessions++; }
+    if (!txMap[key]) txMap[key] = { name, txSpend:0, txSessions:0 };
+    // Apps Script returns 'total' (internal key)
+    const amt = parseAmt(tx['total'] || tx['Total'] || tx['subtotal']);
+    if (amt > 0) { txMap[key].txSpend += amt; txMap[key].txSessions++; }
   });
 
-  // Step 3: Merge TX + OG names using 2-word rule
-  const merged = {}; // key -> { name, txSpend, txSessions, ogSpend, ogSessions, sources }
-
-  // Add all TX names
-  Object.values(txNames).forEach(tx => {
-    merged[tx.name.toLowerCase()] = { name:tx.name, txSpend:tx.txSpend, txSessions:tx.txSessions, ogSpend:0, ogSessions:0, sources:['pos'] };
+  // ── Step 2: Aggregate SALES 2023 by client name (exact headers: Name, Total)
+  const ogMap = {}; // lowerName → { name, ogSpend, ogSessions }
+  OG.forEach(row => {
+    const raw  = row['Name'] || row['name'] || '';
+    const name = String(raw).trim();
+    if (!name) return;
+    const key  = name.toLowerCase();
+    if (!ogMap[key]) ogMap[key] = { name, ogSpend:0, ogSessions:0 };
+    const amt = parseAmt(row['Total'] || row['total'] || row['TOTAL']);
+    if (amt > 0) { ogMap[key].ogSpend += amt; ogMap[key].ogSessions++; }
   });
 
-  // Merge OG names in
-  Object.values(ogNames).forEach(og => {
+  // ── Step 3: Merge — same person across both sheets (2-word rule)
+  const merged = {}; // canonical key → merged record
+
+  // Seed with TX clients
+  Object.values(txMap).forEach(tx => {
+    const key = tx.name.toLowerCase();
+    merged[key] = { name:tx.name, txSpend:tx.txSpend, txSessions:tx.txSessions, ogSpend:0, ogSessions:0, sources:['pos'] };
+  });
+
+  // Fold in OG clients
+  Object.values(ogMap).forEach(og => {
     const ogKey = og.name.toLowerCase();
-    // Try to find existing merged client that matches
-    const existKey = Object.keys(merged).find(k => nameMatch(og.name, merged[k].name));
-    if (existKey) {
-      merged[existKey].ogSpend   += og.ogSpend;
-      merged[existKey].ogSessions += og.ogSessions;
-      if (!merged[existKey].sources.includes('sales2023')) merged[existKey].sources.push('sales2023');
+    // Find existing TX entry that matches by 2-word rule
+    const matchKey = Object.keys(merged).find(k => nameMatch(og.name, merged[k].name));
+    if (matchKey) {
+      merged[matchKey].ogSpend    += og.ogSpend;
+      merged[matchKey].ogSessions += og.ogSessions;
+      if (!merged[matchKey].sources.includes('sales2023')) merged[matchKey].sources.push('sales2023');
     } else {
+      // OG-only client
       merged[ogKey] = { name:og.name, txSpend:0, txSessions:0, ogSpend:og.ogSpend, ogSessions:og.ogSessions, sources:['sales2023'] };
     }
   });
 
-  // Step 4: Enrich from Clients sheet (phone, email, birthday, type)
-  const getClientExtra = (name) => {
-    const c = CLTS.find(r => {
-      const n = (r['fbName'] || r['FB Name'] || '').trim();
-      return nameMatch(name, n);
-    });
-    if (!c) return {};
-    return {
-      email:    c['email']    || c['Email']    || '',
-      phone:    c['phone']    || c['Phone']    || '',
-      birthday: c['birthday'] || c['Birthday'] || '',
-      type:     c['type']     || c['Type']     || '',
-      added:    c['added']    || c['Date Added'] || '',
-    };
-  };
-
-  // Step 5: Upsert into DB.clients
-  let newCount = 0;
+  // ── Step 4: Upsert into DB.clients
   Object.values(merged).forEach(m => {
-    const extra = getClientExtra(m.name);
     const existing = DB.clients.find(c => nameMatch(c.name, m.name));
 
     const txPts   = Math.floor(m.txSpend / DB.config.rate);
     const ogPts   = Math.floor(m.ogSpend / DB.config.rate);
-    const bonusPts = DB.activity.filter(a => existing && a.clientId===existing.id && a.type==='bonus').reduce((s,a)=>s+(a.points||0),0);
-    const redPts   = DB.activity.filter(a => existing && a.clientId===existing.id && a.type==='redemption' && a.points<0).reduce((s,a)=>s+Math.abs(a.points||0),0);
+    const bonusPts = DB.activity.filter(a => existing && a.clientId===existing.id && a.type==='bonus')
+                        .reduce((s,a) => s+(a.points||0), 0);
+    const redPts   = DB.activity.filter(a => existing && a.clientId===existing.id && a.type==='redemption' && a.points<0)
+                        .reduce((s,a) => s+Math.abs(a.points||0), 0);
     const totalPts = txPts + ogPts + bonusPts - redPts;
 
     if (existing) {
-      // Update computed fields
       existing.txSpend    = m.txSpend;
       existing.txSessions = m.txSessions;
       existing.ogSpend    = m.ogSpend;
@@ -699,27 +691,20 @@ function syncClients() {
       existing.points     = totalPts;
       existing.sessions   = m.txSessions + m.ogSessions;
       existing.sources    = m.sources;
-      if (!existing.email    && extra.email)    existing.email    = extra.email;
-      if (!existing.phone    && extra.phone)    existing.phone    = extra.phone;
-      if (!existing.birthday && extra.birthday) existing.birthday = extra.birthday;
     } else {
-      const nc = {
-        id:uid(), name:m.name,
-        email:extra.email||'', phone:extra.phone||'',
-        birthday:extra.birthday||'', type:extra.type||'',
-        joinedAt: extra.added || new Date().toISOString(),
-        txSpend:m.txSpend, txSessions:m.txSessions,
-        ogSpend:m.ogSpend, ogSessions:m.ogSessions,
-        txPts, ogPts, bonusPts:0, points:txPts+ogPts,
-        sessions:m.txSessions+m.ogSessions,
-        sources:m.sources
-      };
-      DB.clients.push(nc);
-      newCount++;
+      DB.clients.push({
+        id: uid(),
+        name: m.name,
+        email: '', phone: '', birthday: '', type: '',
+        joinedAt: new Date().toISOString(),
+        txSpend: m.txSpend, txSessions: m.txSessions,
+        ogSpend: m.ogSpend, ogSessions: m.ogSessions,
+        txPts, ogPts, bonusPts: 0, points: totalPts,
+        sessions: m.txSessions + m.ogSessions,
+        sources: m.sources
+      });
     }
   });
-
-  return newCount;
 }
 
 // ══════════════════════════════════════════════════════════
@@ -1259,6 +1244,8 @@ async function debugSheet(action, key) {
     box.textContent =
       `Action: ${action}\n` +
       `Response keys: ${Object.keys(res).join(', ')}\n` +
+      `ok: ${res.ok}\n` +
+      `error: ${res.error || 'none'}\n` +
       `Row count: ${rows.length}\n\n` +
       `First row keys: ${first3[0] ? Object.keys(first3[0]).join(', ') : 'none'}\n\n` +
       `First 3 rows:\n${JSON.stringify(first3, null, 2)}`;
