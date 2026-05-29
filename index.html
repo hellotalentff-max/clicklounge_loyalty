@@ -3,128 +3,128 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CLS Control Hub — ClickCard Admin</title>
+<title>CLS ClickCard Admin</title>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --green:#2d6e5f; --green-dk:#1e4d42; --green-lt:#e8f4f0;
-  --amber:#c49a1a; --amber-lt:#fff8e0;
-  --rust:#b05a2a; --rust-lt:#fdf0e8;
-  --cream:#f7f3ed; --cream-dk:#ede5d8;
-  --white:#ffffff;
-  --text:#1a2824; --text-mid:#4a6058; --text-light:#8fa89e;
+:root{
+  --green:#2d6e5f;--green-dk:#1e4d42;--green-lt:#e8f4f0;
+  --amber:#c49a1a;--amber-lt:#fff8e0;
+  --rust:#b05a2a;--rust-lt:#fdf0e8;
+  --cream:#f7f3ed;--cream-dk:#ede5d8;
+  --white:#fff;
+  --text:#1a2824;--text-mid:#4a6058;--text-light:#8fa89e;
   --border:rgba(45,110,95,.14);
-  --red:#c0392b; --red-lt:#fdf0ef;
-  --blue:#2470a0; --blue-lt:#eef4fb;
-  --shadow:0 2px 12px rgba(30,77,66,.08);
+  --red:#c0392b;--red-lt:#fdf0ef;
+  --blue:#2470a0;--blue-lt:#eef4fb;
   --radius:12px;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;}
 
-/* ── AUTH ── */
-#auth-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(160deg,var(--green-dk) 0%,#1a3d35 100%);}
-.auth-box{background:#fff;border-radius:20px;padding:2.5rem;width:min(90vw,380px);box-shadow:0 20px 60px rgba(0,0,0,.25);}
-.auth-logo{font-family:'Instrument Serif',serif;font-size:1.6rem;color:var(--green-dk);text-align:center;margin-bottom:.3rem;}
-.auth-sub{font-size:.78rem;color:var(--text-light);text-align:center;letter-spacing:.12em;text-transform:uppercase;font-family:'DM Mono',monospace;margin-bottom:2rem;}
-.auth-input{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:.75rem 1rem;font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--text);outline:none;transition:border-color .2s;background:var(--cream);}
+/* AUTH */
+#auth-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(160deg,var(--green-dk),#1a3d35);}
+.auth-box{background:#fff;border-radius:20px;padding:2.5rem;width:min(90vw,380px);box-shadow:0 20px 60px rgba(0,0,0,.3);}
+.auth-logo{font-family:'Instrument Serif',serif;font-size:1.6rem;color:var(--green-dk);text-align:center;margin-bottom:.2rem;}
+.auth-sub{font-size:.72rem;color:var(--text-light);text-align:center;letter-spacing:.14em;text-transform:uppercase;font-family:'DM Mono',monospace;margin-bottom:2rem;}
+.auth-input{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:.75rem 1rem;font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--text);outline:none;transition:border-color .2s;background:var(--cream);margin-bottom:.8rem;}
 .auth-input:focus{border-color:var(--green);}
-.auth-btn{width:100%;margin-top:1rem;background:var(--green);color:#fff;font-family:'DM Mono',monospace;font-size:.82rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;padding:.85rem;border-radius:10px;border:none;cursor:pointer;transition:background .2s;}
-.auth-btn:hover{background:var(--green-dk);}
+.auth-btn{width:100%;background:var(--green);color:#fff;font-family:'DM Mono',monospace;font-size:.82rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;padding:.85rem;border-radius:10px;border:none;cursor:pointer;}
 .auth-err{color:var(--red);font-size:.82rem;text-align:center;margin-top:.6rem;display:none;}
 
-/* ── LAYOUT ── */
+/* APP */
 #app{display:none;min-height:100vh;}
-.top-bar{background:var(--green-dk);color:#fff;padding:.9rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.top-bar{background:var(--green-dk);color:#fff;padding:.9rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;gap:1rem;}
 .top-brand{font-family:'Instrument Serif',serif;font-size:1.2rem;}
-.top-brand span{font-size:.7rem;font-family:'DM Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.55);display:block;}
-.top-right{display:flex;align-items:center;gap:.8rem;}
-.staff-badge{font-size:.72rem;font-family:'DM Mono',monospace;background:rgba(255,255,255,.12);padding:.3rem .8rem;border-radius:100px;letter-spacing:.08em;}
-.logout-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:.75rem;font-family:'DM Mono',monospace;padding:.3rem .85rem;border-radius:100px;cursor:pointer;transition:background .2s;}
-.logout-btn:hover{background:rgba(255,255,255,.2);}
+.top-brand span{font-size:.65rem;font-family:'DM Mono',monospace;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5);display:block;}
+.top-right{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;}
+#sync-badge{font-size:.7rem;font-family:'DM Mono',monospace;background:rgba(255,255,255,.1);padding:.3rem .8rem;border-radius:100px;cursor:pointer;letter-spacing:.06em;}
+.staff-badge{font-size:.7rem;font-family:'DM Mono',monospace;background:rgba(255,255,255,.12);padding:.3rem .8rem;border-radius:100px;}
+.logout-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:.72rem;font-family:'DM Mono',monospace;padding:.3rem .8rem;border-radius:100px;cursor:pointer;}
 
-.tabs{display:flex;background:var(--white);border-bottom:1px solid var(--border);padding:0 1.5rem;overflow-x:auto;scrollbar-width:none;}
+/* TABS */
+.tabs{display:flex;background:#fff;border-bottom:1px solid var(--border);padding:0 1.5rem;overflow-x:auto;scrollbar-width:none;}
 .tabs::-webkit-scrollbar{display:none;}
-.tab{font-size:.8rem;font-weight:600;color:var(--text-light);padding:.9rem 1.2rem;cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap;transition:color .2s,border-color .2s;}
+.tab{font-size:.8rem;font-weight:600;color:var(--text-light);padding:.85rem 1.1rem;cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap;transition:all .2s;}
 .tab.active{color:var(--green);border-bottom-color:var(--green);}
-
 .pane{display:none;padding:1.5rem;}
 .pane.active{display:block;}
 
-/* ── STAT CARDS ── */
-.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1rem;margin-bottom:1.5rem;}
-.stat{background:var(--white);border-radius:var(--radius);padding:1.1rem 1.3rem;border:1px solid var(--border);}
-.stat-label{font-size:.72rem;color:var(--text-light);font-family:'DM Mono',monospace;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.4rem;}
-.stat-val{font-size:1.8rem;font-weight:600;color:var(--text);font-family:'DM Mono',monospace;line-height:1;}
-.stat-sub{font-size:.75rem;color:var(--text-light);margin-top:.3rem;}
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:.8rem;margin-bottom:1.2rem;}
+.stat{background:#fff;border-radius:var(--radius);padding:1rem 1.2rem;border:1px solid var(--border);}
+.stat-label{font-size:.68rem;color:var(--text-light);font-family:'DM Mono',monospace;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.3rem;}
+.stat-val{font-size:1.7rem;font-weight:600;color:var(--text);font-family:'DM Mono',monospace;line-height:1;}
+.stat-sub{font-size:.72rem;color:var(--text-light);margin-top:.25rem;}
 
-/* ── CARDS & TABLES ── */
-.card{background:var(--white);border-radius:var(--radius);border:1px solid var(--border);padding:1.3rem;margin-bottom:1rem;}
-.card-title{font-size:.78rem;font-family:'DM Mono',monospace;color:var(--text-light);letter-spacing:.1em;text-transform:uppercase;margin-bottom:1rem;}
-.search-bar{display:flex;gap:.6rem;margin-bottom:1rem;}
-.search-in{flex:1;border:1.5px solid var(--border);border-radius:8px;padding:.6rem .9rem;font-family:'DM Sans',sans-serif;font-size:.87rem;color:var(--text);outline:none;background:var(--cream);}
+/* CARD */
+.card{background:#fff;border-radius:var(--radius);border:1px solid var(--border);padding:1.2rem;margin-bottom:.8rem;}
+.card-title{font-size:.72rem;font-family:'DM Mono',monospace;color:var(--text-light);letter-spacing:.1em;text-transform:uppercase;margin-bottom:.8rem;}
+
+/* FORM */
+.search-bar{display:flex;gap:.5rem;margin-bottom:.8rem;flex-wrap:wrap;}
+.search-in{flex:1;min-width:160px;border:1.5px solid var(--border);border-radius:8px;padding:.58rem .9rem;font-family:'DM Sans',sans-serif;font-size:.86rem;color:var(--text);outline:none;background:var(--cream);}
 .search-in:focus{border-color:var(--green);}
-.btn{font-family:'DM Mono',monospace;font-size:.78rem;font-weight:500;letter-spacing:.06em;padding:.55rem 1.1rem;border-radius:8px;border:none;cursor:pointer;transition:all .15s;}
+.form-row{margin-bottom:.9rem;}
+.form-label{font-size:.7rem;font-weight:600;color:var(--text-mid);display:block;margin-bottom:.3rem;font-family:'DM Mono',monospace;letter-spacing:.06em;text-transform:uppercase;}
+.form-input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:.62rem .9rem;font-family:'DM Sans',sans-serif;font-size:.87rem;color:var(--text);outline:none;background:var(--cream);}
+.form-input:focus{border-color:var(--green);}
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;}
+
+/* BUTTONS */
+.btn{font-family:'DM Mono',monospace;font-size:.76rem;font-weight:500;letter-spacing:.06em;padding:.52rem 1rem;border-radius:8px;border:none;cursor:pointer;transition:all .15s;white-space:nowrap;}
 .btn-green{background:var(--green);color:#fff;}
 .btn-green:hover{background:var(--green-dk);}
 .btn-amber{background:var(--amber);color:#fff;}
-.btn-amber:hover{background:#a07a10;}
 .btn-red{background:var(--red-lt);color:var(--red);border:1px solid rgba(192,57,43,.2);}
-.btn-red:hover{background:#fce8e6;}
 .btn-outline{background:transparent;color:var(--green);border:1.5px solid var(--green);}
 .btn-outline:hover{background:var(--green-lt);}
-.btn-sm{padding:.38rem .75rem;font-size:.72rem;}
+.btn-sm{padding:.35rem .7rem;font-size:.7rem;}
 
-table{width:100%;border-collapse:collapse;font-size:.84rem;}
-th{text-align:left;font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-light);padding:.6rem .8rem;border-bottom:1px solid var(--border);}
-td{padding:.7rem .8rem;border-bottom:1px solid rgba(45,110,95,.06);color:var(--text-mid);}
+/* TABLE */
+table{width:100%;border-collapse:collapse;font-size:.83rem;}
+th{text-align:left;font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-light);padding:.6rem .8rem;border-bottom:1px solid var(--border);white-space:nowrap;}
+td{padding:.65rem .8rem;border-bottom:1px solid rgba(45,110,95,.06);color:var(--text-mid);vertical-align:middle;}
 tr:last-child td{border-bottom:none;}
 tr:hover td{background:var(--cream);}
 
-/* ── TIER BADGES ── */
-.tier{display:inline-block;font-family:'DM Mono',monospace;font-size:.68rem;font-weight:500;letter-spacing:.08em;padding:.2rem .65rem;border-radius:100px;text-transform:uppercase;}
+/* TIER BADGES */
+.tier{display:inline-block;font-family:'DM Mono',monospace;font-size:.65rem;font-weight:500;letter-spacing:.07em;padding:.18rem .6rem;border-radius:100px;text-transform:uppercase;}
 .tier-bronze{background:#f5e6cc;color:#8a5a2a;}
 .tier-silver{background:#dde0e8;color:#4a5068;}
 .tier-gold{background:#fff0b0;color:#7a5a08;}
 .tier-vip{background:#d0f0e8;color:#1a5040;}
 
-/* ── MODAL ── */
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center;padding:1rem;}
+/* SOURCE BADGE */
+.src-badge{font-size:.62rem;font-family:'DM Mono',monospace;padding:.12rem .45rem;border-radius:4px;display:inline-block;}
+.src-pos{background:var(--blue-lt);color:var(--blue);}
+.src-og{background:#fde8cc;color:#8a4010;}
+.src-both{background:#e8f4e0;color:#2a6010;}
+.src-manual{background:var(--cream-dk);color:var(--text-mid);}
+
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center;padding:1rem;}
 .modal-bg.open{display:flex;}
-.modal{background:#fff;border-radius:18px;width:min(94vw,520px);max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.2);}
-.modal-head{padding:1.3rem 1.5rem .8rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
-.modal-head h3{font-family:'Instrument Serif',serif;font-size:1.25rem;color:var(--green-dk);}
-.modal-close{background:var(--cream-dk);border:none;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:1rem;color:var(--text-mid);}
-.modal-body{padding:1.2rem 1.5rem 1.5rem;}
-.form-row{margin-bottom:1rem;}
-.form-label{font-size:.75rem;font-weight:600;color:var(--text-mid);display:block;margin-bottom:.35rem;font-family:'DM Mono',monospace;letter-spacing:.06em;text-transform:uppercase;}
-.form-input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:.65rem .9rem;font-family:'DM Sans',sans-serif;font-size:.88rem;color:var(--text);outline:none;transition:border-color .2s;background:var(--cream);}
-.form-input:focus{border-color:var(--green);}
-select.form-input{cursor:pointer;}
-.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;}
+.modal{background:#fff;border-radius:18px;width:min(96vw,640px);max-height:90vh;overflow-y:auto;box-shadow:0 24px 80px rgba(0,0,0,.2);}
+.modal-head{padding:1.2rem 1.4rem .7rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;z-index:1;}
+.modal-head h3{font-family:'Instrument Serif',serif;font-size:1.2rem;color:var(--green-dk);}
+.modal-close{background:var(--cream-dk);border:none;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:.9rem;}
+.modal-body{padding:1rem 1.4rem 1.4rem;}
 
-/* ── ACTIVITY LOG ── */
-.log-item{display:flex;gap:.8rem;padding:.65rem 0;border-bottom:1px solid rgba(45,110,95,.06);align-items:flex-start;}
-.log-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:.35rem;}
-.log-dot.green{background:var(--green);}
-.log-dot.amber{background:var(--amber);}
-.log-dot.red{background:var(--red);}
-.log-dot.blue{background:var(--blue);}
-.log-text{font-size:.83rem;color:var(--text-mid);line-height:1.5;}
-.log-time{font-size:.72rem;color:var(--text-light);font-family:'DM Mono',monospace;margin-top:.1rem;}
+/* HISTORY TABS */
+.htabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:.8rem;gap:0;overflow-x:auto;}
+.htab{font-size:.76rem;font-weight:600;color:var(--text-light);padding:.5rem 1rem;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;}
+.htab.active{color:var(--green);border-bottom-color:var(--green);}
 
-/* ── VERIFICATION ── */
-.verify-box{background:var(--cream);border-radius:var(--radius);padding:1.2rem;border:1.5px dashed var(--border);text-align:center;}
-.verify-icon{font-size:2rem;margin-bottom:.5rem;}
-
-/* ── TOAST ── */
-#toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--green-dk);color:#fff;font-size:.82rem;font-family:'DM Mono',monospace;padding:.7rem 1.2rem;border-radius:10px;z-index:999;opacity:0;transform:translateY(8px);transition:all .3s;pointer-events:none;}
+/* TOAST */
+#toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--green-dk);color:#fff;font-size:.8rem;font-family:'DM Mono',monospace;padding:.65rem 1.1rem;border-radius:10px;z-index:999;opacity:0;transform:translateY(6px);transition:all .25s;pointer-events:none;}
 #toast.show{opacity:1;transform:translateY(0);}
 
-/* ── RESPONSIVE ── */
+/* REDEEM PREVIEW */
+.redeem-preview{border-radius:10px;padding:.8rem 1rem;margin-bottom:.8rem;font-size:.83rem;display:none;}
+
 @media(max-width:600px){
   .form-row-2{grid-template-columns:1fr;}
-  .pane{padding:1rem;}
+  .pane{padding:.9rem;}
   .stats-row{grid-template-columns:1fr 1fr;}
 }
 </style>
@@ -135,13 +135,13 @@ select.form-input{cursor:pointer;}
 <div id="auth-screen">
   <div class="auth-box">
     <div class="auth-logo">Click Lounge Studio</div>
-    <div class="auth-sub">Control Hub · ClickCard Admin</div>
+    <div class="auth-sub">ClickCard Loyalty Admin</div>
     <div class="form-row">
       <label class="form-label">Staff Name</label>
       <input class="auth-input" id="auth-name" placeholder="Your name">
     </div>
     <div class="form-row">
-      <label class="form-label">Admin PIN</label>
+      <label class="form-label">PIN</label>
       <input class="auth-input" id="auth-pin" type="password" placeholder="••••" onkeydown="if(event.key==='Enter')login()">
     </div>
     <button class="auth-btn" onclick="login()">Sign In →</button>
@@ -152,16 +152,16 @@ select.form-input{cursor:pointer;}
 <!-- APP -->
 <div id="app">
   <div class="top-bar">
-    <div class="top-brand">CLS Control Hub <span>ClickCard Loyalty Admin</span></div>
+    <div class="top-brand">CLS ClickCard Admin<span>Loyalty Control Hub</span></div>
     <div class="top-right">
-      <div id="sync-badge" onclick="syncFromSheet()" title="Click to sync" style="font-size:.72rem;font-family:'DM Mono',monospace;background:rgba(255,255,255,.1);padding:.3rem .8rem;border-radius:100px;letter-spacing:.08em;cursor:pointer;transition:background .2s;">↻ Not synced</div>
-      <div class="staff-badge" id="staff-name-badge">Staff</div>
+      <div id="sync-badge" onclick="doSync()" title="Click to sync now">↻ Not synced</div>
+      <div class="staff-badge" id="staff-badge">Staff</div>
       <button class="logout-btn" onclick="logout()">Sign Out</button>
     </div>
   </div>
 
   <div class="tabs">
-    <div class="tab active" onclick="switchTab('dashboard',this)">Dashboard</div>
+    <div class="tab active"  onclick="switchTab('dashboard',this)">Dashboard</div>
     <div class="tab" onclick="switchTab('clients',this)">Clients</div>
     <div class="tab" onclick="switchTab('log-points',this)">Log Points</div>
     <div class="tab" onclick="switchTab('verify',this)">Verify & Redeem</div>
@@ -173,84 +173,81 @@ select.form-input{cursor:pointer;}
   <!-- DASHBOARD -->
   <div id="pane-dashboard" class="pane active">
     <div class="stats-row" id="dash-stats"></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem;">
       <div class="card">
         <div class="card-title">Tier Breakdown</div>
         <div id="dash-tiers"></div>
       </div>
       <div class="card">
         <div class="card-title">Recent Activity</div>
-        <div id="dash-activity" style="max-height:260px;overflow-y:auto;"></div>
+        <div id="dash-recent" style="max-height:240px;overflow-y:auto;"></div>
       </div>
     </div>
-    <div class="card" style="margin-top:1rem;">
+    <div class="card" style="margin-top:.8rem;">
       <div class="card-title">Top Clients by Points</div>
-      <table><thead><tr><th>Client</th><th>Points</th><th>Tier</th><th>Sessions</th><th>Referrals Made</th></tr></thead>
-      <tbody id="dash-top"></tbody></table>
+      <div style="overflow-x:auto;">
+        <table><thead><tr><th>Client</th><th>Points</th><th>Tier</th><th>Sessions</th><th>TX Spend</th><th>OG Spend</th><th>Source</th></tr></thead>
+        <tbody id="dash-top"></tbody></table>
+      </div>
     </div>
   </div>
 
   <!-- CLIENTS -->
   <div id="pane-clients" class="pane">
     <div class="search-bar">
-      <input class="search-in" id="client-search" placeholder="Search by name, phone or email..." oninput="renderClients()">
-      <button class="btn btn-outline" onclick="syncFromSheet()">↻ Sync Sheet</button>
-      <button class="btn btn-green" onclick="openAddClient()">+ Add Client</button>
+      <input class="search-in" id="client-search" placeholder="Search name, phone, email…" oninput="renderClients()">
+      <select class="search-in" style="max-width:140px;" id="client-source-filter" onchange="renderClients()">
+        <option value="">All sources</option>
+        <option value="pos">POS only</option>
+        <option value="sales2023">OG Sales only</option>
+        <option value="both">Both</option>
+      </select>
+      <select class="search-in" style="max-width:130px;" id="client-tier-filter" onchange="renderClients()">
+        <option value="">All tiers</option>
+        <option value="Bronze">Bronze</option>
+        <option value="Silver">Silver</option>
+        <option value="Gold">Gold</option>
+        <option value="VIP">VIP</option>
+      </select>
+      <button class="btn btn-outline btn-sm" onclick="doSync()">↻ Sync</button>
+      <button class="btn btn-green btn-sm" onclick="openAddClient()">+ Add</button>
     </div>
-    <div class="card" style="padding:0;">
-      <table><thead><tr><th>Name</th><th>Type</th><th>Email</th><th>Points</th><th>Tier</th><th>Sessions</th><th>Total Spent</th><th>Joined</th><th>Actions</th></tr></thead>
+    <div id="clients-count" style="font-size:.78rem;color:var(--text-light);margin-bottom:.6rem;font-family:'DM Mono',monospace;"></div>
+    <div style="overflow-x:auto;">
+      <table><thead><tr>
+        <th>Name</th><th>Source</th><th>Contact</th>
+        <th>TX Pts</th><th>OG Pts</th><th>Bonus</th><th>Total Pts</th>
+        <th>Tier</th><th>Sessions</th><th>TX Spend</th><th>OG Spend</th><th>Joined</th><th></th>
+      </tr></thead>
       <tbody id="clients-table"></tbody></table>
-    </div>
-  </div>
-
-  <!-- CLIENT HISTORY MODAL -->
-  <div class="modal-bg" id="modal-history">
-    <div class="modal" style="width:min(96vw,700px);">
-      <div class="modal-head">
-        <h3 id="history-title">Client History</h3>
-        <button class="modal-close" onclick="closeModal('modal-history')">✕</button>
-      </div>
-      <div class="modal-body" style="padding:.5rem 1.2rem 1.5rem;">
-        <!-- Summary strip -->
-        <div id="history-summary" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem;margin-bottom:1.2rem;"></div>
-        <!-- Tabs inside modal -->
-        <div style="display:flex;border-bottom:1px solid var(--border);margin-bottom:.8rem;">
-          <button onclick="switchHistoryTab('sessions',this)" class="htab htab-active" style="font-size:.78rem;font-weight:600;color:var(--green);padding:.55rem 1rem;border:none;background:none;cursor:pointer;border-bottom:2px solid var(--green);">Sessions</button>
-          <button onclick="switchHistoryTab('redemptions',this)" class="htab" style="font-size:.78rem;font-weight:600;color:var(--text-light);padding:.55rem 1rem;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;">Redemptions</button>
-          <button onclick="switchHistoryTab('bonus',this)" class="htab" style="font-size:.78rem;font-weight:600;color:var(--text-light);padding:.55rem 1rem;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;">Bonus Points</button>
-          <button onclick="switchHistoryTab('og-sales',this)" class="htab" style="font-size:.78rem;font-weight:600;color:var(--text-light);padding:.55rem 1rem;border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;">OG Sales</button>
-        </div>
-        <div id="history-sessions"></div>
-        <div id="history-redemptions" style="display:none;"></div>
-        <div id="history-bonus" style="display:none;"></div>
-        <div id="history-og-sales" style="display:none;"></div>
-      </div>
     </div>
   </div>
 
   <!-- LOG POINTS -->
   <div id="pane-log-points" class="pane">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;max-width:800px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;max-width:820px;">
+      <!-- Session Points -->
       <div class="card">
         <div class="card-title">Log Session Points</div>
         <div class="form-row">
           <label class="form-label">Client</label>
-          <select class="form-input" id="lp-client"></select>
+          <select class="form-input" id="lp-client" onchange="calcLpPoints()"></select>
         </div>
         <div class="form-row">
           <label class="form-label">Amount Paid (₱)</label>
           <input class="form-input" id="lp-amount" type="number" min="0" placeholder="e.g. 1500" oninput="calcLpPoints()">
         </div>
         <div class="form-row">
-          <label class="form-label">Package / Session Type</label>
-          <input class="form-input" id="lp-package" placeholder="e.g. Fam Bam, Styleshots...">
+          <label class="form-label">Package / Session</label>
+          <input class="form-input" id="lp-package" placeholder="e.g. Styleshots, Fam Bam…">
         </div>
-        <div style="background:var(--green-lt);border-radius:8px;padding:.8rem 1rem;margin-bottom:1rem;font-size:.85rem;color:var(--green-dk);font-family:'DM Mono',monospace;">
-          Points to award: <strong id="lp-pts-preview">—</strong>
+        <div style="background:var(--green-lt);border-radius:8px;padding:.7rem 1rem;margin-bottom:.8rem;font-size:.84rem;color:var(--green-dk);font-family:'DM Mono',monospace;">
+          Points to award: <strong id="lp-preview">—</strong>
         </div>
         <button class="btn btn-green" style="width:100%;" onclick="logSession()">Log Session →</button>
       </div>
 
+      <!-- Bonus Points -->
       <div class="card">
         <div class="card-title">Log Bonus Points</div>
         <div class="form-row">
@@ -260,31 +257,31 @@ select.form-input{cursor:pointer;}
         <div class="form-row">
           <label class="form-label">Bonus Type</label>
           <select class="form-input" id="bp-type" onchange="updateBonusDesc()">
-            <option value="sm-consent" data-pts="5">📸 SM Consent (+5 pts)</option>
-            <option value="feedback" data-pts="10">⭐ Feedback / Review (+10 pts)</option>
-            <option value="referral" data-pts="15">🤝 Refer a Friend (+15 pts)</option>
-            <option value="early-bird" data-pts="15">🐦 Early Bird Booking (+15 pts)</option>
-            <option value="birthday" data-pts="5">🎂 Birthday Month (+5 pts)</option>
-            <option value="google-review" data-pts="10">⭐ Google Review (+10 pts)</option>
+            <option value="sm-consent"      data-pts="5">📸 SM Consent (+5 pts)</option>
+            <option value="feedback"        data-pts="10">⭐ Feedback / Review (+10 pts)</option>
+            <option value="referral"        data-pts="15">🤝 Refer a Friend (+15 pts)</option>
+            <option value="early-bird"      data-pts="15">🐦 Early Bird Booking (+15 pts)</option>
+            <option value="birthday"        data-pts="5">🎂 Birthday Month (+5 pts)</option>
+            <option value="google-review"   data-pts="10">⭐ Google Review (+10 pts)</option>
             <option value="facebook-review" data-pts="10">⭐ Facebook Review (+10 pts)</option>
-            <option value="ig-tag" data-pts="5">📱 Tagged on IG/FB (+5 pts)</option>
-            <option value="manual" data-pts="0">Manual Adjustment</option>
+            <option value="ig-tag"          data-pts="5">📱 Tagged on IG/FB (+5 pts)</option>
+            <option value="manual"          data-pts="0">✏️ Manual Adjustment</option>
           </select>
         </div>
         <div class="form-row" id="bp-ref-row" style="display:none;">
           <label class="form-label">Referred by (new client name)</label>
-          <input class="form-input" id="bp-ref-name" placeholder="Name of new client">
-        </div>
-        <div class="form-row" id="bp-proof-row">
-          <label class="form-label">Proof / Note (optional)</label>
-          <input class="form-input" id="bp-proof" placeholder="e.g. showed IG post, screenshot confirmed">
+          <input class="form-input" id="bp-ref-name" placeholder="Name of new client who booked">
         </div>
         <div class="form-row" id="bp-manual-row" style="display:none;">
           <label class="form-label">Points Amount</label>
-          <input class="form-input" id="bp-manual-pts" type="number" placeholder="e.g. 3">
+          <input class="form-input" id="bp-manual-pts" type="number" placeholder="e.g. 5">
         </div>
-        <div style="background:var(--amber-lt);border-radius:8px;padding:.8rem 1rem;margin-bottom:1rem;font-size:.85rem;color:#7a5a08;font-family:'DM Mono',monospace;" id="bp-desc">
-          +5 pts will be added after verification
+        <div class="form-row">
+          <label class="form-label">Proof / Note</label>
+          <input class="form-input" id="bp-proof" placeholder="e.g. showed IG post, screenshot confirmed">
+        </div>
+        <div id="bp-desc" style="background:var(--amber-lt);border-radius:8px;padding:.7rem 1rem;margin-bottom:.8rem;font-size:.84rem;color:#7a5a08;font-family:'DM Mono',monospace;">
+          +5 pts after verification
         </div>
         <button class="btn btn-amber" style="width:100%;" onclick="logBonus()">Log Bonus Points →</button>
       </div>
@@ -293,26 +290,18 @@ select.form-input{cursor:pointer;}
 
   <!-- VERIFY & REDEEM -->
   <div id="pane-verify" class="pane">
-    <div style="max-width:600px;">
+    <div style="max-width:580px;">
+      <!-- Client Lookup -->
       <div class="card">
-        <div class="card-title">Verify Client & Apply Perks</div>
+        <div class="card-title">Verify Client</div>
         <div class="search-bar">
-          <input class="search-in" id="verify-search" placeholder="Search client name or phone...">
+          <input class="search-in" id="verify-q" placeholder="Search name or phone…" onkeydown="if(event.key==='Enter')verifyClient()">
           <button class="btn btn-green" onclick="verifyClient()">Lookup →</button>
         </div>
         <div id="verify-result"></div>
       </div>
 
-      <div class="card">
-        <div class="card-title">Verify Gift Code</div>
-        <p style="font-size:.82rem;color:var(--text-light);margin-bottom:.8rem;">For birthday gift spinner codes shown to walk-in clients.</p>
-        <div class="search-bar">
-          <input class="search-in" id="code-input" placeholder="Enter CLS-XXXXXXXX code...">
-          <button class="btn btn-outline" onclick="verifyCode()">Verify →</button>
-        </div>
-        <div id="code-result"></div>
-      </div>
-
+      <!-- Log Redemption -->
       <div class="card">
         <div class="card-title">Log Perk Redemption</div>
         <div class="form-row">
@@ -320,19 +309,19 @@ select.form-input{cursor:pointer;}
           <select class="form-input" id="redeem-client" onchange="updateRedeemPreview()"></select>
         </div>
         <div class="form-row">
-          <label class="form-label">Perk Redeemed</label>
+          <label class="form-label">Perk</label>
           <select class="form-input" id="redeem-perk" onchange="updateRedeemPreview()">
-            <optgroup label="— Free Tier Privileges (0 pts) —">
-              <option value="Free backdrop change|0">Free backdrop change — Bronze+ · FREE</option>
-              <option value="Priority booking|0">Priority booking — Bronze+ · FREE</option>
-              <option value="Early access to new set designs|0">Early access to new set designs — Silver+ · FREE</option>
-              <option value="Featured on CLS social media|0">Featured on social media — Gold+ · FREE</option>
-              <option value="Dedicated booking slot|0">Dedicated booking slot — Gold+ · FREE</option>
-              <option value="Behind-the-scenes tour|0">Behind-the-scenes tour — VIP · FREE</option>
-              <option value="Birthday month surprise gift|0">Birthday month surprise gift · FREE</option>
-              <option value="Gift spinner prize|0">Gift spinner prize · FREE</option>
+            <optgroup label="Free Tier Privileges (0 pts)">
+              <option value="Free backdrop change|0">Free backdrop change — Bronze+</option>
+              <option value="Priority booking|0">Priority booking — Bronze+</option>
+              <option value="Early access to new set designs|0">Early access to new sets — Silver+</option>
+              <option value="Featured on CLS social media|0">Featured on social media — Gold+</option>
+              <option value="Dedicated booking slot|0">Dedicated booking slot — Gold+</option>
+              <option value="Behind-the-scenes tour|0">BTS studio tour — VIP</option>
+              <option value="Birthday month surprise gift|0">Birthday surprise gift</option>
+              <option value="Gift spinner prize|0">Gift spinner prize</option>
             </optgroup>
-            <optgroup label="— Points Rewards (deducted) —">
+            <optgroup label="Points Rewards (deducted)">
               <option value="Free Outfit Change|30">👗 Free Outfit Change · 30 pts</option>
               <option value="Free 5-min extension|50">⏱️ Free 5-min extension · 50 pts</option>
               <option value="Free digital copy upgrade|50">🖼️ Free digital copy upgrade · 50 pts</option>
@@ -342,73 +331,66 @@ select.form-input{cursor:pointer;}
               <option value="BTS video clip|100">🎬 BTS video clip · 100 pts</option>
               <option value="Free A4 framed print|300">🖼️ Free A4 framed print · 300 pts</option>
               <option value="Social media feature|300">📲 Social media feature · 300 pts</option>
-              <option value="Mini birthday session (10 mins)|300">🎉 Mini birthday session · 300 pts</option>
+              <option value="Mini birthday session|300">🎉 Mini birthday session · 300 pts</option>
               <option value="Free Basic HMU|500">💄 Free Basic HMU — Gold+ · 500 pts</option>
               <option value="Free 30-min self shoot|500">🕐 Free 30-min self shoot — Gold+ · 500 pts</option>
               <option value="Bring 1 friend FREE|500">👥 Bring 1 friend FREE — Gold+ · 500 pts</option>
-              <option value="Free photographer session (20 mins)|1000">📷 Free photographer session — VIP · 1,000 pts</option>
+              <option value="Free photographer session|1000">📷 Free photographer session — VIP · 1,000 pts</option>
               <option value="Free full set design|1000">🎨 Free full set design — VIP · 1,000 pts</option>
             </optgroup>
           </select>
         </div>
-        <!-- Live preview -->
-        <div id="redeem-preview" style="border-radius:10px;padding:.85rem 1rem;margin-bottom:.8rem;font-size:.84rem;display:none;"></div>
+        <div class="redeem-preview" id="redeem-preview"></div>
         <div class="form-row">
           <label class="form-label">Notes</label>
           <input class="form-input" id="redeem-note" placeholder="e.g. applied at start of session">
         </div>
-        <button class="btn btn-green" style="width:100%;margin-top:.3rem;" onclick="logRedemption()">Record Redemption →</button>
+        <button class="btn btn-green" style="width:100%;" onclick="logRedemption()">Record Redemption →</button>
+      </div>
+
+      <!-- Gift Code Verify -->
+      <div class="card">
+        <div class="card-title">Verify Gift Spinner Code</div>
+        <div class="search-bar">
+          <input class="search-in" id="code-input" placeholder="CLS-XXXXXXXX" style="text-transform:uppercase;">
+          <button class="btn btn-outline" onclick="verifyCode()">Verify →</button>
+        </div>
+        <div id="code-result"></div>
       </div>
     </div>
   </div>
 
   <!-- REDEMPTIONS -->
   <div id="pane-redemptions" class="pane">
-    <div style="display:flex;gap:.6rem;align-items:center;margin-bottom:1rem;flex-wrap:wrap;">
-      <input class="search-in" style="max-width:260px;" id="red-search" placeholder="Filter by client or perk..." oninput="renderRedemptions()">
-      <select class="search-in" style="max-width:220px;" id="red-filter" onchange="renderRedemptions()">
-        <option value="">All perks</option>
-        <optgroup label="Free Privileges">
-          <option>Free backdrop change</option>
-          <option>Priority booking</option>
-          <option>Early access to new set designs</option>
-          <option>Featured on CLS social media</option>
-          <option>Dedicated booking slot</option>
-          <option>Behind-the-scenes tour</option>
-          <option>Birthday month surprise gift</option>
-          <option>Gift spinner prize</option>
-        </optgroup>
-        <optgroup label="Points Rewards">
-          <option>Free 5-min extension</option>
-          <option>Free digital copy upgrade</option>
-          <option>Free 4R print</option>
-          <option>Free outfit change</option>
-          <option>Free Basic HMU</option>
-          <option>Free annual mini session (20 mins)</option>
-        </optgroup>
+    <div class="search-bar">
+      <input class="search-in" id="red-q" placeholder="Filter by client or perk…" oninput="renderRedemptions()">
+      <select class="search-in" style="max-width:160px;" id="red-type" onchange="renderRedemptions()">
+        <option value="">All types</option>
+        <option value="free">Free privileges</option>
+        <option value="paid">Points rewards</option>
       </select>
-      <button class="btn btn-outline btn-sm" onclick="exportRedemptionsCSV()">Export CSV</button>
+      <button class="btn btn-outline btn-sm" onclick="exportCSV('redemptions')">Export CSV</button>
     </div>
-    <div class="card" style="padding:0;">
-      <table><thead><tr><th>Date & Time</th><th>Client</th><th>Tier at Redemption</th><th>Perk Redeemed</th><th>Pts Cost</th><th>Notes</th><th>Staff</th></tr></thead>
+    <div style="overflow-x:auto;">
+      <table><thead><tr><th>Date & Time</th><th>Client</th><th>Tier</th><th>Perk</th><th>Pts Cost</th><th>Notes</th><th>Staff</th></tr></thead>
       <tbody id="redemptions-table"></tbody></table>
     </div>
   </div>
 
   <!-- ACTIVITY LOG -->
   <div id="pane-activity" class="pane">
-    <div style="display:flex;gap:.6rem;align-items:center;margin-bottom:1rem;flex-wrap:wrap;">
-      <input class="search-in" style="max-width:280px;" id="act-search" placeholder="Filter by client or type..." oninput="renderActivity()">
-      <select class="search-in" style="max-width:180px;" id="act-filter" onchange="renderActivity()">
+    <div class="search-bar">
+      <input class="search-in" id="act-q" placeholder="Filter by client or detail…" oninput="renderActivity()">
+      <select class="search-in" style="max-width:150px;" id="act-type" onchange="renderActivity()">
         <option value="">All types</option>
         <option value="session">Session</option>
         <option value="bonus">Bonus</option>
         <option value="redemption">Redemption</option>
-        <option value="client">Client Added</option>
+        <option value="client">Enrollment</option>
       </select>
-      <button class="btn btn-outline btn-sm" onclick="exportCSV()">Export CSV</button>
+      <button class="btn btn-outline btn-sm" onclick="exportCSV('activity')">Export CSV</button>
     </div>
-    <div class="card" style="padding:0;">
+    <div style="overflow-x:auto;">
       <table><thead><tr><th>Date & Time</th><th>Client</th><th>Type</th><th>Detail</th><th>Points</th><th>Staff</th></tr></thead>
       <tbody id="activity-table"></tbody></table>
     </div>
@@ -416,75 +398,57 @@ select.form-input{cursor:pointer;}
 
   <!-- SETTINGS -->
   <div id="pane-settings" class="pane">
-    <div style="max-width:560px;">
+    <div style="max-width:540px;display:flex;flex-direction:column;gap:.8rem;">
+      <!-- Staff PINs -->
       <div class="card">
         <div class="card-title">Staff PINs</div>
-        <p style="font-size:.82rem;color:var(--text-light);margin-bottom:1rem;">Add or remove staff members. Each staff member needs a unique 4-digit PIN.</p>
         <div id="staff-list"></div>
-        <div style="display:flex;gap:.6rem;margin-top:1rem;flex-wrap:wrap;">
-          <input class="form-input" style="flex:1;min-width:140px;" id="new-staff-name" placeholder="Staff name">
-          <input class="form-input" style="width:100px;" id="new-staff-pin" type="password" maxlength="6" placeholder="PIN">
+        <div style="display:flex;gap:.5rem;margin-top:.8rem;flex-wrap:wrap;">
+          <input class="form-input" style="flex:1;min-width:130px;" id="new-staff-name" placeholder="Staff name">
+          <input class="form-input" style="width:90px;" id="new-staff-pin" type="password" maxlength="6" placeholder="PIN">
           <button class="btn btn-green" onclick="addStaff()">Add</button>
         </div>
       </div>
+
+      <!-- Points Config -->
       <div class="card">
         <div class="card-title">Points Configuration</div>
         <div class="form-row-2">
-          <div class="form-row">
-            <label class="form-label">₱ per 1 point</label>
-            <input class="form-input" id="cfg-rate" type="number" value="100">
-          </div>
-          <div class="form-row">
-            <label class="form-label">Bronze max pts</label>
-            <input class="form-input" id="cfg-bronze" type="number" value="49">
-          </div>
-          <div class="form-row">
-            <label class="form-label">Silver max pts</label>
-            <input class="form-input" id="cfg-silver" type="number" value="149">
-          </div>
-          <div class="form-row">
-            <label class="form-label">Gold max pts</label>
-            <input class="form-input" id="cfg-gold" type="number" value="299">
-          </div>
-          <div class="form-row">
-            <label class="form-label">Referral pts (standard)</label>
-            <input class="form-input" id="cfg-ref" type="number" value="5">
-          </div>
-          <div class="form-row">
-            <label class="form-label">Referral pts (VIP)</label>
-            <input class="form-input" id="cfg-ref-vip" type="number" value="10">
-          </div>
+          <div class="form-row"><label class="form-label">₱ per 1 pt</label><input class="form-input" id="cfg-rate" type="number" value="100"></div>
+          <div class="form-row"><label class="form-label">Bronze max</label><input class="form-input" id="cfg-bronze" type="number" value="49"></div>
+          <div class="form-row"><label class="form-label">Silver max</label><input class="form-input" id="cfg-silver" type="number" value="149"></div>
+          <div class="form-row"><label class="form-label">Gold max</label><input class="form-input" id="cfg-gold" type="number" value="299"></div>
         </div>
-        <button class="btn btn-green" onclick="saveConfig()">Save Configuration →</button>
+        <button class="btn btn-green" onclick="saveConfig()">Save Config →</button>
       </div>
+
+      <!-- OG Sales Sync -->
       <div class="card">
-        <div class="card-title">OG Sales Sheet Sync</div>
-        <p style="font-size:.82rem;color:var(--text-light);margin-bottom:1rem;">Pull client records from the OG SALES SHEET tab. Matches by client name and sums the TOTAL column for points.</p>
-        <div style="background:var(--cream);border-radius:8px;padding:.8rem 1rem;font-size:.82rem;color:var(--text-mid);margin-bottom:1rem;font-family:'DM Mono',monospace;">
-          Sheet: <strong>SALES 2023</strong> · Columns: Date, Name, Package, Total
-        </div>
-        <div style="display:flex;flex-direction:column;gap:.7rem;">
+        <div class="card-title">SALES 2023 Sync</div>
+        <p style="font-size:.82rem;color:var(--text-light);margin-bottom:.8rem;">Import unique client names from SALES 2023 tab into the Clients sheet in Google Sheets.</p>
+        <div style="display:flex;flex-direction:column;gap:.6rem;">
           <div>
-            <button class="btn btn-green" onclick="syncOGSales()" style="width:100%;">↻ Sync OG Sales Points →</button>
-            <div style="font-size:.75rem;color:var(--text-light);margin-top:.3rem;">Reads SALES 2023 and recalculates points for existing clients.</div>
+            <button class="btn btn-amber" style="width:100%;" onclick="importSales2023()">👥 Import New Clients from SALES 2023 →</button>
+            <div style="font-size:.73rem;color:var(--text-light);margin-top:.3rem;">Writes new names to your Clients sheet in Google Sheets.</div>
           </div>
           <div>
-            <button class="btn btn-amber" onclick="syncSales2023ToClients()" style="width:100%;">👥 Import New Clients from SALES 2023 →</button>
-            <div style="font-size:.75rem;color:var(--text-light);margin-top:.3rem;">Finds names in SALES 2023 not yet in the Clients sheet and adds them automatically.</div>
+            <button class="btn btn-outline" style="width:100%;" onclick="doSync()">↻ Full Sync Now →</button>
+            <div style="font-size:.73rem;color:var(--text-light);margin-top:.3rem;">Fetches all 3 sheets and recalculates every client's points.</div>
           </div>
         </div>
-        <div id="og-sync-result" style="margin-top:.8rem;font-size:.82rem;color:var(--text-mid);"></div>
+        <div id="sales-sync-result" style="margin-top:.7rem;font-size:.82rem;"></div>
       </div>
+
+      <!-- Danger -->
       <div class="card">
         <div class="card-title" style="color:var(--red);">Danger Zone</div>
-        <p style="font-size:.82rem;color:var(--text-light);margin-bottom:1rem;">These actions are irreversible. Use with extreme caution.</p>
-        <button class="btn btn-red" onclick="clearAllData()">Clear ALL Client Data</button>
+        <button class="btn btn-red" onclick="clearData()">Clear ALL Local Data</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- MODALS -->
+<!-- CLIENT MODAL -->
 <div class="modal-bg" id="modal-client">
   <div class="modal">
     <div class="modal-head">
@@ -494,34 +458,39 @@ select.form-input{cursor:pointer;}
     <div class="modal-body">
       <input type="hidden" id="edit-client-id">
       <div class="form-row-2">
-        <div class="form-row">
-          <label class="form-label">Full Name *</label>
-          <input class="form-input" id="c-name" placeholder="e.g. Maria Santos">
-        </div>
-        <div class="form-row">
-          <label class="form-label">Phone *</label>
-          <input class="form-input" id="c-phone" placeholder="09XXXXXXXXX">
-        </div>
+        <div class="form-row"><label class="form-label">Full Name *</label><input class="form-input" id="c-name" placeholder="e.g. Maria Santos"></div>
+        <div class="form-row"><label class="form-label">Phone</label><input class="form-input" id="c-phone" placeholder="09XXXXXXXXX"></div>
       </div>
-      <div class="form-row">
-        <label class="form-label">Email</label>
-        <input class="form-input" id="c-email" placeholder="email@example.com">
-      </div>
+      <div class="form-row"><label class="form-label">Email</label><input class="form-input" id="c-email" placeholder="email@example.com"></div>
       <div class="form-row-2">
-        <div class="form-row">
-          <label class="form-label">Birthday (Month/Day)</label>
-          <input class="form-input" id="c-bday" placeholder="e.g. 03/15">
-        </div>
-        <div class="form-row">
-          <label class="form-label">Referred by</label>
-          <input class="form-input" id="c-referred" placeholder="Name of referrer">
-        </div>
+        <div class="form-row"><label class="form-label">Birthday (MM/DD)</label><input class="form-input" id="c-bday" placeholder="03/15"></div>
+        <div class="form-row"><label class="form-label">Referred by</label><input class="form-input" id="c-referred" placeholder="Name of referrer"></div>
       </div>
-      <div class="form-row">
-        <label class="form-label">Notes</label>
-        <input class="form-input" id="c-notes" placeholder="Any notes about this client">
+      <div class="form-row"><label class="form-label">Notes</label><input class="form-input" id="c-notes" placeholder="Any notes"></div>
+      <button class="btn btn-green" style="width:100%;margin-top:.3rem;" onclick="saveClient()">Save Client →</button>
+    </div>
+  </div>
+</div>
+
+<!-- HISTORY MODAL -->
+<div class="modal-bg" id="modal-history">
+  <div class="modal" style="width:min(96vw,700px);">
+    <div class="modal-head">
+      <h3 id="history-name">Client History</h3>
+      <button class="modal-close" onclick="closeModal('modal-history')">✕</button>
+    </div>
+    <div class="modal-body" style="padding:.5rem 1.2rem 1.4rem;">
+      <div id="history-summary" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-bottom:1rem;"></div>
+      <div class="htabs">
+        <button class="htab active" onclick="switchHTab('h-sessions',this)">Sessions (POS)</button>
+        <button class="htab" onclick="switchHTab('h-og',this)">OG Sales 2023</button>
+        <button class="htab" onclick="switchHTab('h-bonus',this)">Bonus Points</button>
+        <button class="htab" onclick="switchHTab('h-redeem',this)">Redemptions</button>
       </div>
-      <button class="btn btn-green" style="width:100%;margin-top:.5rem;" onclick="saveClient()">Save Client →</button>
+      <div id="h-sessions" style="overflow-x:auto;"></div>
+      <div id="h-og" style="display:none;overflow-x:auto;"></div>
+      <div id="h-bonus" style="display:none;overflow-x:auto;"></div>
+      <div id="h-redeem" style="display:none;overflow-x:auto;"></div>
     </div>
   </div>
 </div>
@@ -529,345 +498,485 @@ select.form-input{cursor:pointer;}
 <div id="toast"></div>
 
 <script>
-// ══════════════════════════════════
-// STORAGE HELPERS
-// ══════════════════════════════════
-const DB_KEY = 'cls_admin_db';
+// ══════════════════════════════════════════════════════════
+// CONSTANTS & CONFIG
+// ══════════════════════════════════════════════════════════
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx_Y5nH34Rq16JJ2AxBDr30ttmDFuic61OqoC0u3Wq0zogHEhfoV6qE7uiNagI43flVgw/exec';
+const DB_KEY     = 'cls_clickcard_v3';
 
-const loadDB = () => { try { return JSON.parse(localStorage.getItem(DB_KEY)) || initDB(); } catch(e) { return initDB(); } };
-const saveDB = db => localStorage.setItem(DB_KEY, JSON.stringify(db));
+const PERK_COSTS = {
+  'Free Outfit Change':30,'Free 5-min extension':50,'Free digital copy upgrade':50,
+  'Free 4R print':80,'Extra edited photo':100,'Free 8x10 framed print':100,'BTS video clip':100,
+  'Free A4 framed print':300,'Social media feature':300,'Mini birthday session':300,
+  'Free Basic HMU':500,'Free 30-min self shoot':500,'Bring 1 friend FREE':500,
+  'Free photographer session':1000,'Free full set design':1000
+};
+
+const TIER_PERKS = {
+  Bronze:['ClickCard membership','Birthday surprise gift','Priority booking via DM','1 free backdrop change','Member-only promos'],
+  Silver:['All Bronze perks','Free Outfit Change (30 pts)','Free 5-min extension (50 pts)','Digital copy upgrade (50 pts)','Early access to new sets','CLS Wall of Fans'],
+  Gold:['All Silver perks','Free 4R print (80 pts)','Extra edited photo (100 pts)','8x10 framed print (100 pts)','A4 framed print (300 pts)','Social media feature (300 pts)','Free Basic HMU (500 pts)','Dedicated booking slot'],
+  VIP:['All Gold perks','30-min self shoot (500 pts)','Bring 1 friend FREE (500 pts)','Photographer session (1000 pts)','Full set design (1000 pts)','VIP-only sets','BTS tour','+15 pts per referral']
+};
+
+// ══════════════════════════════════════════════════════════
+// DATABASE (localStorage for bonus/activity/staff/config)
+// ══════════════════════════════════════════════════════════
+function loadDB() {
+  try { return JSON.parse(localStorage.getItem(DB_KEY)) || initDB(); } catch(e) { return initDB(); }
+}
+function saveDB() { localStorage.setItem(DB_KEY, JSON.stringify(DB)); }
 function initDB() {
-  return { clients:[], activity:[], staff:[{name:'Admin',pin:'1234'}], config:{ rate:100, bronze:49, silver:149, gold:299, ref:5, refVip:10 }, lastSync:null };
+  return { clients:[], activity:[], staff:[{name:'Admin',pin:'1234'}], config:{rate:100,bronze:49,silver:149,gold:299}, lastSync:null };
 }
 let DB = loadDB();
 let currentStaff = '';
-let SHEET_CLIENTS = [];     // live from Google Sheet
-let SHEET_TRANSACTIONS = []; // live from Google Sheet
-let syncStatus = 'idle';
 
-// ── SHEET API ──
-async function callScript(params) {
-  // Your Apps Script uses base64-encoded ?d= parameter, not plain ?action=
-  const payload = { action: params.action, payload: params.payload || {} };
-  const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
-  const url = SCRIPT_URL + '?d=' + encodeURIComponent(b64);
-  const res = await fetch(url);
+// Sheet data (in-memory, refreshed on sync)
+let TX   = [];  // Transactions sheet rows
+let OG   = [];  // SALES 2023 rows
+let CLTS = [];  // Clients sheet rows (for phone/email/birthday)
+
+// ══════════════════════════════════════════════════════════
+// APPS SCRIPT API
+// ══════════════════════════════════════════════════════════
+async function callScript(action, payload={}) {
+  const obj = { action, payload };
+  const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(obj))));
+  const url  = SCRIPT_URL + '?d=' + encodeURIComponent(b64);
+  const res  = await fetch(url);
   if (!res.ok) throw new Error('HTTP ' + res.status);
   return res.json();
 }
 
-async function syncFromSheet() {
-  if (syncStatus === 'syncing') return;
-  syncStatus = 'syncing';
-  updateSyncBadge('syncing');
+// ══════════════════════════════════════════════════════════
+// SYNC — pulls all 3 sheets and rebuilds client list
+// ══════════════════════════════════════════════════════════
+let syncing = false;
+
+async function doSync() {
+  if (syncing) return;
+  syncing = true;
+  setSyncBadge('⏳ Syncing…', 'rgba(255,255,255,.15)');
   try {
-    // 1. Fetch clients
-    const cData = await callScript({ action: 'getClients' });
-    SHEET_CLIENTS = (cData.data || cData.clients || []).filter(r => r['FB Name'] || r['fbName']);
+    // Fetch all 3 sheets in parallel
+    const [cRes, tRes, ogRes] = await Promise.all([
+      callScript('getClients'),
+      callScript('getTransactions'),
+      callScript('getOGSales')
+    ]);
 
-    // 2. Fetch transactions
-    const tData = await callScript({ action: 'getTransactions' });
-    SHEET_TRANSACTIONS = (tData.data || tData.transactions || []).filter(r => r['Invoice #'] || r['invoiceNum'] || r['id'] || r['ID']);
+    CLTS = (cRes.data  || cRes.clients     || []);
+    TX   = (tRes.data  || tRes.transactions || []).filter(r => r['invoiceNum'] || r['Invoice #'] || r['id']);
+    OG   = (ogRes.data || ogRes.sales       || []).filter(r => (r['Name']||'').trim());
 
-    // 3. Fetch OG Sales 2023 — always fetch during sync
-    try {
-      const ogData = await callScript({ action: 'getOGSales' });
-      SHEET_OG_SALES = (ogData.data || ogData.sales || []).filter(r => (r['Name'] || '').trim());
-    } catch(e) { SHEET_OG_SALES = []; }
-
-    // 4. Auto-enroll from Clients sheet
-    let newCount = 0;
-    SHEET_CLIENTS.forEach(sc => {
-      const name = (sc['FB Name'] || sc['fbName'] || sc['Client Name'] || '').trim();
-      const email = (sc['Email'] || sc['email'] || '').trim();
-      const phone = (sc['Phone'] || sc['phone'] || '').trim();
-      const type  = (sc['Type'] || sc['type'] || '').trim();
-      const dateAdded = sc['Date Added'] || sc['added'] || new Date().toISOString();
-      if (!name) return;
-      const existing = DB.clients.find(c =>
-        nameMatch(c.name, name) ||
-        (email && c.email && c.email.toLowerCase() === email.toLowerCase())
-      );
-      if (!existing) {
-        const nc = { id:uid(), name, email, phone, birthday:sc['Birthday']||sc['birthday']||'', type, joinedAt:dateAdded, points:0, sessions:0, referralsMade:0, notes:'Auto-enrolled from POS', source:'sheet' };
-        DB.clients.push(nc);
-        addActivity('client', nc, `Auto-enrolled from POS — ${type||'client'}`, '', 0);
-        newCount++;
-      } else {
-        if (!existing.email && email) existing.email = email;
-        if (!existing.phone && phone) existing.phone = phone;
-      }
-    });
-
-    // 5. Auto-enroll unique names from SALES 2023 not yet in DB
-    const seenNames = DB.clients.map(c => c.name.toLowerCase().trim());
-    SHEET_OG_SALES.forEach(row => {
-      const name = (row['Name'] || '').trim();
-      if (!name) return;
-      const alreadyIn = seenNames.some(s => nameMatch(name, s));
-      if (!alreadyIn) {
-        const nc = { id:uid(), name, email:'', phone:'', birthday:'', type:'sales2023', joinedAt: row['Date'] ? String(row['Date']) : new Date().toISOString(), points:0, sessions:0, referralsMade:0, notes:'Auto-enrolled from SALES 2023', source:'sales2023' };
-        DB.clients.push(nc);
-        addActivity('client', nc, `Auto-enrolled from SALES 2023`, '', 0);
-        seenNames.push(name.toLowerCase().trim());
-        newCount++;
-      }
-    });
-
-    // 6. Recalculate points for ALL clients using both sheets
-    DB.clients.forEach(c => {
-      let txSpend = 0, txSessions = 0;
-      SHEET_TRANSACTIONS.forEach(tx => {
-        const txClient = (tx['Client Name'] || tx['clientName'] || tx['Client'] || '').trim();
-        if (!txClient) return;
-        if (!tx['Invoice #'] && !tx['invoiceNum'] && !tx['ID'] && !tx['id']) return;
-        if (nameMatch(c.name, txClient)) {
-          const amt = parseFloat(tx['Total'] || tx['total'] || 0);
-          if (amt > 0) { txSpend += amt; txSessions++; }
-        }
-      });
-
-      let ogSpend = 0, ogSessions = 0;
-      SHEET_OG_SALES.forEach(row => {
-        const rowName = (row['Name'] || '').trim();
-        if (!rowName) return;
-        if (nameMatch(c.name, rowName)) {
-          const amt = parseFloat(row['Total'] || 0);
-          if (amt > 0) { ogSpend += amt; ogSessions++; }
-        }
-      });
-
-      const spendPts = Math.floor(txSpend / 100);
-      const ogPts    = Math.floor(ogSpend / 100);
-      const bonusPts = DB.activity
-        .filter(a => a.clientId === c.id && a.type === 'bonus')
-        .reduce((s, a) => s + (a.points || 0), 0);
-      const redeemedPts = DB.activity
-        .filter(a => a.clientId === c.id && a.type === 'redemption' && a.points < 0)
-        .reduce((s, a) => s + Math.abs(a.points || 0), 0);
-
-      c.points     = spendPts + ogPts + bonusPts - redeemedPts;
-      c.sessions   = txSessions + ogSessions;
-      c.totalSpend = txSpend;
-      c.ogSpend    = ogSpend;
-    });
+    // Build client list from TX + OG (source of truth)
+    syncClients();
 
     DB.lastSync = new Date().toISOString();
-    saveDB(DB);
-    syncStatus = 'done';
-    updateSyncBadge('done', newCount);
-    if (newCount > 0) toast(`✓ Synced — ${newCount} new client${newCount>1?'s':''} enrolled!`, 4000);
-    else toast(`✓ Synced — ${DB.clients.length} clients · ${SHEET_OG_SALES.length} OG Sales rows`);
+    saveDB();
+    syncing = false;
+    const t = new Date(DB.lastSync).toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'});
+    setSyncBadge(`✓ Synced ${t}`, 'rgba(74,160,130,.4)');
+    toast(`✓ Synced — ${DB.clients.length} clients · ${TX.length} transactions · ${OG.length} OG records`);
     renderAll();
   } catch(err) {
-    console.error('Sync error:', err);
-    syncStatus = 'error';
-    updateSyncBadge('error');
+    syncing = false;
+    setSyncBadge('⚠ Sync failed', 'rgba(192,57,43,.4)');
     toast('⚠ Sync failed: ' + err.message, 4000);
   }
 }
 
-function updateSyncBadge(status, newCount) {
+function setSyncBadge(text, bg) {
   const el = document.getElementById('sync-badge');
-  if (!el) return;
-  const map = {
-    syncing: ['🔄 Syncing…', 'rgba(255,255,255,.15)'],
-    done:    [`✓ Synced${DB.lastSync ? ' · ' + new Date(DB.lastSync).toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'}) : ''}`, 'rgba(74,160,130,.4)'],
-    error:   ['⚠ Sync failed', 'rgba(192,57,43,.4)'],
-    idle:    ['↻ Not synced', 'rgba(255,255,255,.1)'],
-  };
-  const [label, bg] = map[status] || map.idle;
-  el.textContent = label;
-  el.style.background = bg;
+  if (el) { el.textContent = text; el.style.background = bg; }
 }
 
-// ══════════════════════════════════
+function syncClients() {
+  // Step 1: Collect all unique client names from TX
+  const txNames = {};
+  TX.forEach(tx => {
+    const name = (tx['clientName'] || tx['Client Name'] || '').trim();
+    if (!name) return;
+    if (!txNames[name.toLowerCase()]) txNames[name.toLowerCase()] = { name, txSpend:0, txSessions:0 };
+    const amt = parseFloat(tx['total'] || tx['Total'] || 0);
+    if (amt > 0) { txNames[name.toLowerCase()].txSpend += amt; txNames[name.toLowerCase()].txSessions++; }
+  });
+
+  // Step 2: Collect all unique names from OG
+  const ogNames = {};
+  OG.forEach(row => {
+    const name = (row['Name'] || '').trim();
+    if (!name) return;
+    const key = name.toLowerCase();
+    if (!ogNames[key]) ogNames[key] = { name, ogSpend:0, ogSessions:0 };
+    const amt = parseFloat(row['Total'] || 0);
+    if (amt > 0) { ogNames[key].ogSpend += amt; ogNames[key].ogSessions++; }
+  });
+
+  // Step 3: Merge TX + OG names using 2-word rule
+  const merged = {}; // key -> { name, txSpend, txSessions, ogSpend, ogSessions, sources }
+
+  // Add all TX names
+  Object.values(txNames).forEach(tx => {
+    merged[tx.name.toLowerCase()] = { name:tx.name, txSpend:tx.txSpend, txSessions:tx.txSessions, ogSpend:0, ogSessions:0, sources:['pos'] };
+  });
+
+  // Merge OG names in
+  Object.values(ogNames).forEach(og => {
+    const ogKey = og.name.toLowerCase();
+    // Try to find existing merged client that matches
+    const existKey = Object.keys(merged).find(k => nameMatch(og.name, merged[k].name));
+    if (existKey) {
+      merged[existKey].ogSpend   += og.ogSpend;
+      merged[existKey].ogSessions += og.ogSessions;
+      if (!merged[existKey].sources.includes('sales2023')) merged[existKey].sources.push('sales2023');
+    } else {
+      merged[ogKey] = { name:og.name, txSpend:0, txSessions:0, ogSpend:og.ogSpend, ogSessions:og.ogSessions, sources:['sales2023'] };
+    }
+  });
+
+  // Step 4: Enrich from Clients sheet (phone, email, birthday, type)
+  const getClientExtra = (name) => {
+    const c = CLTS.find(r => {
+      const n = (r['fbName'] || r['FB Name'] || '').trim();
+      return nameMatch(name, n);
+    });
+    if (!c) return {};
+    return {
+      email:    c['email']    || c['Email']    || '',
+      phone:    c['phone']    || c['Phone']    || '',
+      birthday: c['birthday'] || c['Birthday'] || '',
+      type:     c['type']     || c['Type']     || '',
+      added:    c['added']    || c['Date Added'] || '',
+    };
+  };
+
+  // Step 5: Upsert into DB.clients
+  let newCount = 0;
+  Object.values(merged).forEach(m => {
+    const extra = getClientExtra(m.name);
+    const existing = DB.clients.find(c => nameMatch(c.name, m.name));
+
+    const txPts   = Math.floor(m.txSpend / DB.config.rate);
+    const ogPts   = Math.floor(m.ogSpend / DB.config.rate);
+    const bonusPts = DB.activity.filter(a => existing && a.clientId===existing.id && a.type==='bonus').reduce((s,a)=>s+(a.points||0),0);
+    const redPts   = DB.activity.filter(a => existing && a.clientId===existing.id && a.type==='redemption' && a.points<0).reduce((s,a)=>s+Math.abs(a.points||0),0);
+    const totalPts = txPts + ogPts + bonusPts - redPts;
+
+    if (existing) {
+      // Update computed fields
+      existing.txSpend    = m.txSpend;
+      existing.txSessions = m.txSessions;
+      existing.ogSpend    = m.ogSpend;
+      existing.ogSessions = m.ogSessions;
+      existing.txPts      = txPts;
+      existing.ogPts      = ogPts;
+      existing.bonusPts   = bonusPts;
+      existing.points     = totalPts;
+      existing.sessions   = m.txSessions + m.ogSessions;
+      existing.sources    = m.sources;
+      if (!existing.email    && extra.email)    existing.email    = extra.email;
+      if (!existing.phone    && extra.phone)    existing.phone    = extra.phone;
+      if (!existing.birthday && extra.birthday) existing.birthday = extra.birthday;
+    } else {
+      const nc = {
+        id:uid(), name:m.name,
+        email:extra.email||'', phone:extra.phone||'',
+        birthday:extra.birthday||'', type:extra.type||'',
+        joinedAt: extra.added || new Date().toISOString(),
+        txSpend:m.txSpend, txSessions:m.txSessions,
+        ogSpend:m.ogSpend, ogSessions:m.ogSessions,
+        txPts, ogPts, bonusPts:0, points:txPts+ogPts,
+        sessions:m.txSessions+m.ogSessions,
+        sources:m.sources
+      };
+      DB.clients.push(nc);
+      newCount++;
+    }
+  });
+
+  return newCount;
+}
+
+// ══════════════════════════════════════════════════════════
+// HELPERS
+// ══════════════════════════════════════════════════════════
+function nameMatch(a, b) {
+  a = (a||'').toLowerCase().trim();
+  b = (b||'').toLowerCase().trim();
+  if (!a || !b) return false;
+  if (a === b) return true;
+  const wa = a.split(/\s+/).filter(w=>w.length>1);
+  const wb = b.split(/\s+/).filter(w=>w.length>1);
+  return wa.filter(w=>wb.includes(w)).length >= 2;
+}
+
+function getTier(pts) {
+  const c = DB.config;
+  if (pts >= c.gold+1)   return {name:'VIP',    emoji:'💎', cls:'tier-vip'};
+  if (pts >= c.silver+1) return {name:'Gold',   emoji:'🥇', cls:'tier-gold'};
+  if (pts >= c.bronze+1) return {name:'Silver', emoji:'🥈', cls:'tier-silver'};
+  return {name:'Bronze', emoji:'🥉', cls:'tier-bronze'};
+}
+
+function fmt(n)  { return (n||0).toLocaleString(); }
+function fmtDate(val) {
+  if (!val) return '—';
+  if (typeof val==='number' && val>1000 && val<100000) {
+    const d = new Date((val-25569)*86400*1000);
+    return d.toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'});
+  }
+  const d = new Date(val);
+  if (!isNaN(d)) return d.toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'});
+  return String(val).slice(0,10);
+}
+function fmtDateTime(iso) {
+  const d = new Date(iso);
+  if (isNaN(d)) return iso;
+  return d.toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'}) +
+    ' ' + d.toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'});
+}
+function uid() { return Date.now().toString(36)+Math.random().toString(36).slice(2,6).toUpperCase(); }
+function toast(msg, dur=3000) {
+  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),dur);
+}
+
+function srcBadge(sources=[]) {
+  if (!sources||!sources.length) return '';
+  const hasPos = sources.includes('pos');
+  const hasOG  = sources.includes('sales2023');
+  if (hasPos && hasOG) return '<span class="src-badge src-both">TX+OG</span>';
+  if (hasPos) return '<span class="src-badge src-pos">POS</span>';
+  return '<span class="src-badge src-og">OG 2023</span>';
+}
+
+// ══════════════════════════════════════════════════════════
 // AUTH
-// ══════════════════════════════════
+// ══════════════════════════════════════════════════════════
 function login() {
   const name = document.getElementById('auth-name').value.trim();
   const pin  = document.getElementById('auth-pin').value.trim();
   const err  = document.getElementById('auth-err');
-  const staff = DB.staff.find(s => s.pin === pin);
-  if (!name || !staff) { err.style.display='block'; return; }
+  if (!name || !DB.staff.find(s=>s.pin===pin)) { err.style.display='block'; return; }
   currentStaff = name;
   err.style.display='none';
   document.getElementById('auth-screen').style.display='none';
   document.getElementById('app').style.display='block';
-  document.getElementById('staff-name-badge').textContent = name;
+  document.getElementById('staff-badge').textContent = name;
   renderAll();
-  // Auto-sync from sheet on login
-  setTimeout(syncFromSheet, 400);
+  setTimeout(doSync, 500);
 }
 function logout() {
-  currentStaff = '';
+  currentStaff='';
   document.getElementById('auth-screen').style.display='flex';
   document.getElementById('app').style.display='none';
   document.getElementById('auth-pin').value='';
-  document.getElementById('auth-name').value='';
 }
 
-// ══════════════════════════════════
+// ══════════════════════════════════════════════════════════
 // TABS
-// ══════════════════════════════════
+// ══════════════════════════════════════════════════════════
 function switchTab(id, el) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
   el.classList.add('active');
   document.getElementById('pane-'+id).classList.add('active');
-  if(id==='clients') renderClients();
-  if(id==='dashboard') renderDashboard();
-  if(id==='log-points') { populateClientDropdowns(); calcLpPoints(); updateBonusDesc(); }
-  if(id==='verify') populateClientDropdowns();
-  if(id==='redemptions') renderRedemptions();
-  if(id==='activity') renderActivity();
-  if(id==='settings') renderSettings();
+  const fns = { dashboard:renderDashboard, clients:renderClients, 'log-points':()=>{populateDDs();calcLpPoints();updateBonusDesc();}, verify:populateDDs, redemptions:renderRedemptions, activity:renderActivity, settings:renderSettings };
+  if (fns[id]) fns[id]();
 }
 
-// ══════════════════════════════════
-// HELPERS
-// ══════════════════════════════════
-function getTier(pts) {
-  const c = DB.config;
-  if(pts >= c.gold+1) return {name:'VIP', class:'tier-vip', emoji:'💎'};
-  if(pts >= c.silver+1) return {name:'Gold', class:'tier-gold', emoji:'🥇'};
-  if(pts >= c.bronze+1) return {name:'Silver', class:'tier-silver', emoji:'🥈'};
-  return {name:'Bronze', class:'tier-bronze', emoji:'🥉'};
-}
-
-// Safe name matching: exact match OR shares at least 2 words.
-// Prevents single-name false merges (e.g. "Maria" ≠ "Maria Santos" unless both words match).
-function nameMatch(a, b) {
-  a = (a || '').toLowerCase().trim();
-  b = (b || '').toLowerCase().trim();
-  if (!a || !b) return false;
-  if (a === b) return true;
-  const wa = a.split(/\s+/).filter(w => w.length > 1);
-  const wb = b.split(/\s+/).filter(w => w.length > 1);
-  const shared = wa.filter(w => wb.includes(w));
-  return shared.length >= 2;
-}
-function fmt(n) { return n.toLocaleString(); }
-
-// Handles: Google Sheet serial (e.g. 46127), JS Date objects, ISO strings, text dates
-function fmtSheetDate(val) {
-  if (!val && val !== 0) return '—';
-  // Google Sheets serial number (number between 1 and 99999)
-  if (typeof val === 'number' && val > 1000 && val < 100000) {
-    // Sheets epoch is Dec 30, 1899
-    const d = new Date((val - 25569) * 86400 * 1000);
-    return d.toLocaleDateString('en-PH', { month: 'long', day: 'numeric', year: 'numeric' });
-  }
-  // Already a JS Date
-  if (val instanceof Date) {
-    return val.toLocaleDateString('en-PH', { month: 'long', day: 'numeric', year: 'numeric' });
-  }
-  // String — try parsing
-  const s = String(val).trim();
-  if (!s || s === '—') return '—';
-  const d = new Date(s);
-  if (!isNaN(d.getTime())) {
-    return d.toLocaleDateString('en-PH', { month: 'long', day: 'numeric', year: 'numeric' });
-  }
-  // Return as-is if unparseable
-  return s;
-}
-
-// For activity log timestamps (ISO strings with time)
-function fmtDate(iso) {
-  const d = new Date(iso);
-  if (isNaN(d.getTime())) return iso;
-  return d.toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' }) +
-    ' · ' + d.toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit' });
-}
-function toast(msg, dur=3000) {
-  const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'), dur);
-}
-function uid() { return Date.now().toString(36)+Math.random().toString(36).slice(2,6).toUpperCase(); }
-
-// ══════════════════════════════════
+// ══════════════════════════════════════════════════════════
 // DASHBOARD
-// ══════════════════════════════════
+// ══════════════════════════════════════════════════════════
 function renderDashboard() {
-  const clients = DB.clients;
-  const acts = DB.activity;
-  const totalPts = clients.reduce((s,c)=>s+c.points,0);
+  const cl = DB.clients;
+  const totalPts = cl.reduce((s,c)=>s+(c.points||0),0);
   const tiers = {Bronze:0,Silver:0,Gold:0,VIP:0};
-  clients.forEach(c => tiers[getTier(c.points).name]++);
-  const totalSessions = acts.filter(a=>a.type==='session').length;
+  cl.forEach(c=>tiers[getTier(c.points||0).name]++);
+  const txSessions = cl.reduce((s,c)=>s+(c.txSessions||0),0);
+  const ogSessions = cl.reduce((s,c)=>s+(c.ogSessions||0),0);
 
   document.getElementById('dash-stats').innerHTML = `
-    <div class="stat"><div class="stat-label">Total Clients</div><div class="stat-val">${clients.length}</div><div class="stat-sub">${DB.clients.filter(c=>c.source==='sheet').length} from POS · ${DB.clients.filter(c=>c.source!=='sheet').length} manual</div></div>
-    <div class="stat"><div class="stat-label">Total Points Issued</div><div class="stat-val">${fmt(totalPts)}</div><div class="stat-sub">across all clients</div></div>
-    <div class="stat"><div class="stat-label">Sessions Logged</div><div class="stat-val">${totalSessions}</div><div class="stat-sub">from Transactions sheet</div></div>
-    <div class="stat"><div class="stat-label">VIP Members</div><div class="stat-val">${tiers.VIP}</div><div class="stat-sub">${clients.length?Math.round(tiers.VIP/clients.length*100):0}% of members</div></div>
-    <div class="stat" style="cursor:pointer;" onclick="syncFromSheet()"><div class="stat-label">Last Sync</div><div class="stat-val" style="font-size:1rem;margin-top:.2rem;">${DB.lastSync ? new Date(DB.lastSync).toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'}) : '—'}</div><div class="stat-sub" style="color:var(--green);">Click to sync now ↻</div></div>
-  `;
+    <div class="stat"><div class="stat-label">Total Clients</div><div class="stat-val">${cl.length}</div><div class="stat-sub">${cl.filter(c=>c.sources&&c.sources.includes('pos')).length} POS · ${cl.filter(c=>c.sources&&c.sources.includes('sales2023')).length} OG</div></div>
+    <div class="stat"><div class="stat-label">Points Issued</div><div class="stat-val">${fmt(totalPts)}</div><div class="stat-sub">across all clients</div></div>
+    <div class="stat"><div class="stat-label">TX Sessions</div><div class="stat-val">${txSessions}</div><div class="stat-sub">from Transactions sheet</div></div>
+    <div class="stat"><div class="stat-label">OG Sessions</div><div class="stat-val">${ogSessions}</div><div class="stat-sub">from SALES 2023</div></div>
+    <div class="stat" style="cursor:pointer;" onclick="doSync()"><div class="stat-label">Last Sync</div><div class="stat-val" style="font-size:1rem;margin-top:.3rem;">${DB.lastSync?new Date(DB.lastSync).toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'}):'—'}</div><div class="stat-sub" style="color:var(--green);">tap to sync ↻</div></div>`;
 
-  document.getElementById('dash-tiers').innerHTML = Object.entries(tiers).map(([name,count])=>`
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid rgba(45,110,95,.07);">
-      <span class="tier tier-${name.toLowerCase()}">${name}</span>
-      <span style="font-family:'DM Mono',monospace;font-size:.9rem;color:var(--text);">${count} <span style="font-size:.72rem;color:var(--text-light);">clients</span></span>
+  document.getElementById('dash-tiers').innerHTML = Object.entries(tiers).map(([n,c])=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:.45rem 0;border-bottom:1px solid rgba(45,110,95,.07);">
+      <span class="tier tier-${n.toLowerCase()}">${{Bronze:'🥉',Silver:'🥈',Gold:'🥇',VIP:'💎'}[n]} ${n}</span>
+      <span style="font-family:'DM Mono',monospace;font-size:.88rem;">${c} <span style="font-size:.7rem;color:var(--text-light);">clients</span></span>
     </div>`).join('');
 
-  const recent = [...acts].reverse().slice(0,6);
-  document.getElementById('dash-activity').innerHTML = recent.map(a => `
-    <div class="log-item">
-      <div class="log-dot ${a.type==='session'?'green':a.type==='bonus'?'amber':a.type==='redemption'?'blue':'green'}"></div>
-      <div><div class="log-text">${a.clientName} — ${a.detail}</div><div class="log-time">${fmtDate(a.ts)}</div></div>
+  const recent = [...DB.activity].reverse().slice(0,8);
+  document.getElementById('dash-recent').innerHTML = recent.map(a=>`
+    <div style="display:flex;gap:.6rem;padding:.5rem 0;border-bottom:1px solid rgba(45,110,95,.06);">
+      <div style="width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:.35rem;background:${a.type==='session'?'var(--green)':a.type==='bonus'?'var(--amber)':a.type==='redemption'?'var(--blue)':'var(--green)'}"></div>
+      <div>
+        <div style="font-size:.8rem;color:var(--text);">${a.clientName} — ${a.detail}</div>
+        <div style="font-size:.7rem;color:var(--text-light);font-family:'DM Mono',monospace;">${fmtDateTime(a.ts)}</div>
+      </div>
     </div>`).join('') || '<div style="font-size:.82rem;color:var(--text-light);padding:.5rem 0;">No activity yet.</div>';
 
-  const top = [...clients].sort((a,b)=>b.points-a.points).slice(0,8);
-  document.getElementById('dash-top').innerHTML = top.map(c=>`
-    <tr><td style="font-weight:500;color:var(--text);">${c.name}</td>
-    <td style="font-family:'DM Mono',monospace;color:var(--green);font-weight:600;">${fmt(c.points)}</td>
-    <td><span class="tier tier-${getTier(c.points).name.toLowerCase()}">${getTier(c.points).emoji} ${getTier(c.points).name}</span></td>
-    <td>${c.sessions||0}</td><td>${c.referralsMade||0}</td></tr>`).join('') || '<tr><td colspan="5" style="text-align:center;color:var(--text-light);padding:1.5rem;">No clients yet. Add your first client!</td></tr>';
+  const top = [...cl].sort((a,b)=>(b.points||0)-(a.points||0)).slice(0,10);
+  document.getElementById('dash-top').innerHTML = top.map(c=>{
+    const t=getTier(c.points||0);
+    return `<tr>
+      <td style="font-weight:500;color:var(--text);">${c.name}</td>
+      <td style="font-family:'DM Mono',monospace;color:var(--green);font-weight:600;">${fmt(c.points)}</td>
+      <td><span class="tier ${t.cls}">${t.emoji} ${t.name}</span></td>
+      <td>${c.txSessions||0}</td>
+      <td style="font-family:'DM Mono',monospace;">₱${fmt(c.txSpend||0)}</td>
+      <td style="font-family:'DM Mono',monospace;">₱${fmt(c.ogSpend||0)}</td>
+      <td>${srcBadge(c.sources)}</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--text-light);padding:1.5rem;">No data — click Sync ↻</td></tr>';
 }
 
-// ══════════════════════════════════
+// ══════════════════════════════════════════════════════════
 // CLIENTS
-// ══════════════════════════════════
+// ══════════════════════════════════════════════════════════
 function renderClients() {
-  const q = (document.getElementById('client-search')?.value||'').toLowerCase();
-  const clients = DB.clients.filter(c =>
-    c.name.toLowerCase().includes(q) ||
-    (c.phone||'').includes(q) ||
-    (c.email||'').toLowerCase().includes(q)
-  );
-  document.getElementById('clients-table').innerHTML = clients.map(c => {
-    const t = getTier(c.points);
-    const redemCount = DB.activity.filter(a => a.clientId === c.id && a.type === 'redemption').length;
+  const q    = (document.getElementById('client-search')?.value||'').toLowerCase();
+  const srcF = document.getElementById('client-source-filter')?.value||'';
+  const tierF= document.getElementById('client-tier-filter')?.value||'';
+
+  let cl = DB.clients.filter(c=>{
+    const matchQ = !q || c.name.toLowerCase().includes(q) || (c.phone||'').includes(q) || (c.email||'').toLowerCase().includes(q);
+    const matchSrc = !srcF ||
+      (srcF==='pos'       && c.sources?.includes('pos')) ||
+      (srcF==='sales2023' && c.sources?.includes('sales2023')) ||
+      (srcF==='both'      && c.sources?.includes('pos') && c.sources?.includes('sales2023'));
+    const matchTier = !tierF || getTier(c.points||0).name===tierF;
+    return matchQ && matchSrc && matchTier;
+  });
+
+  document.getElementById('clients-count').textContent = `Showing ${cl.length} of ${DB.clients.length} clients`;
+
+  document.getElementById('clients-table').innerHTML = cl.map(c=>{
+    const t = getTier(c.points||0);
+    const redCt = DB.activity.filter(a=>a.clientId===c.id&&a.type==='redemption').length;
     return `<tr>
-      <td style="font-weight:500;color:var(--text);">${c.name}${c.source==='sheet'?'<span style="font-size:.65rem;background:var(--blue-lt);color:var(--blue);border-radius:4px;padding:.1rem .4rem;margin-left:.4rem;font-family:DM Mono,monospace;">POS</span>':''}</td>
-      <td style="font-size:.78rem;"><span style="font-family:'DM Mono',monospace;font-size:.68rem;background:var(--cream-dk);padding:.15rem .5rem;border-radius:4px;">${(c.type||'walkin').toUpperCase()}</span></td>
-      <td style="font-size:.8rem;color:var(--text-mid);">${c.email||'<span style="color:var(--text-light);">—</span>'}</td>
-      <td style="font-family:'DM Mono',monospace;color:var(--green);font-weight:600;">${fmt(c.points)}</td>
-      <td><span class="tier tier-${t.name.toLowerCase()}">${t.emoji} ${t.name}</span></td>
-      <td>${c.sessions||0}</td>
-      <td style="font-family:'DM Mono',monospace;font-size:.82rem;">₱${fmt(c.totalSpend||0)}</td>
-      <td style="font-size:.78rem;color:var(--text-light);">${new Date(c.joinedAt).toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'})}</td>
-      <td style="display:flex;gap:.4rem;flex-wrap:wrap;">
-        <button class="btn btn-outline btn-sm" onclick="openClientHistory('${c.id}')">📋 History${redemCount>0?` <span style='background:var(--green);color:#fff;border-radius:100px;font-size:.6rem;padding:.1rem .4rem;'>${redemCount}</span>`:''}</button>
-        <button class="btn btn-outline btn-sm" onclick="openEditClient('${c.id}')">Edit</button>
+      <td style="font-weight:500;color:var(--text);min-width:130px;">${c.name}</td>
+      <td>${srcBadge(c.sources)}</td>
+      <td style="font-size:.78rem;">${c.phone||'<span style="color:var(--text-light);">—</span>'}<br><span style="color:var(--text-light);">${c.email||''}</span></td>
+      <td style="font-family:'DM Mono',monospace;color:var(--green);">+${fmt(c.txPts||0)}</td>
+      <td style="font-family:'DM Mono',monospace;color:var(--rust);">+${fmt(c.ogPts||0)}</td>
+      <td style="font-family:'DM Mono',monospace;color:var(--amber);">+${fmt(c.bonusPts||0)}</td>
+      <td style="font-family:'DM Mono',monospace;font-weight:600;color:var(--text);">${fmt(c.points||0)}</td>
+      <td><span class="tier ${t.cls}">${t.emoji} ${t.name}</span></td>
+      <td>${(c.txSessions||0)+(c.ogSessions||0)} <span style="font-size:.72rem;color:var(--text-light);">(${c.txSessions||0}tx+${c.ogSessions||0}og)</span></td>
+      <td style="font-family:'DM Mono',monospace;font-size:.8rem;">₱${fmt(c.txSpend||0)}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:.8rem;">₱${fmt(c.ogSpend||0)}</td>
+      <td style="font-size:.75rem;color:var(--text-light);">${fmtDate(c.joinedAt)}</td>
+      <td>
+        <button class="btn btn-outline btn-sm" onclick="openHistory('${c.id}')">📋${redCt?` <b style="color:var(--green);">${redCt}</b>`:''}</button>
+        <button class="btn btn-outline btn-sm" onclick="openEditClient('${c.id}')" style="margin-top:.2rem;">Edit</button>
       </td>
     </tr>`;
-  }).join('') || '<tr><td colspan="9" style="text-align:center;color:var(--text-light);padding:2rem;">No clients found. Click ↻ Sync Sheet to load from Google Sheets.</td></tr>';
+  }).join('') || '<tr><td colspan="13" style="text-align:center;color:var(--text-light);padding:2rem;">No clients. Click ↻ Sync to load from Google Sheets.</td></tr>';
 }
 
+// ══════════════════════════════════════════════════════════
+// CLIENT HISTORY MODAL
+// ══════════════════════════════════════════════════════════
+function openHistory(id) {
+  const c = DB.clients.find(x=>x.id===id); if(!c) return;
+  const t = getTier(c.points||0);
+  document.getElementById('history-name').textContent = c.name;
+
+  const bonusPts = DB.activity.filter(a=>a.clientId===id&&a.type==='bonus').reduce((s,a)=>s+(a.points||0),0);
+  const redCt    = DB.activity.filter(a=>a.clientId===id&&a.type==='redemption').length;
+  document.getElementById('history-summary').innerHTML = `
+    <div class="stat"><div class="stat-label">TX Points</div><div class="stat-val" style="font-size:1.3rem;color:var(--green);">+${fmt(c.txPts||0)}</div><div class="stat-sub">₱${fmt(c.txSpend||0)} spent</div></div>
+    <div class="stat"><div class="stat-label">OG Points</div><div class="stat-val" style="font-size:1.3rem;color:var(--rust);">+${fmt(c.ogPts||0)}</div><div class="stat-sub">₱${fmt(c.ogSpend||0)} spent</div></div>
+    <div class="stat"><div class="stat-label">Total Points</div><div class="stat-val" style="font-size:1.3rem;">${fmt(c.points||0)}</div><div class="stat-sub"><span class="tier ${t.cls}">${t.emoji} ${t.name}</span></div></div>
+    <div class="stat"><div class="stat-label">Redemptions</div><div class="stat-val" style="font-size:1.3rem;">${redCt}</div><div class="stat-sub">perks claimed</div></div>`;
+
+  // Sessions from TX sheet
+  const txRows = TX.filter(tx=>{
+    const n=(tx['clientName']||tx['Client Name']||'').trim();
+    return n && nameMatch(c.name,n);
+  });
+  document.getElementById('h-sessions').innerHTML = txRows.length ? `
+    <table><thead><tr><th>Date</th><th>Invoice #</th><th>Services</th><th>Total</th><th>Pts</th></tr></thead>
+    <tbody>${txRows.map(tx=>`<tr>
+      <td style="font-size:.78rem;">${fmtDate(tx['date']||tx['Date'])}</td>
+      <td style="font-family:'DM Mono',monospace;font-size:.78rem;">${tx['invoiceNum']||tx['Invoice #']||'—'}</td>
+      <td style="font-size:.8rem;max-width:180px;">${tx['itemsSummary']||tx['Services']||tx['services']||'—'}</td>
+      <td style="font-family:'DM Mono',monospace;color:var(--green);">₱${fmt(parseFloat(tx['total']||tx['Total']||0))}</td>
+      <td style="font-family:'DM Mono',monospace;color:var(--amber);">+${Math.floor(parseFloat(tx['total']||tx['Total']||0)/DB.config.rate)}</td>
+    </tr>`).join('')}</tbody></table>` :
+    '<div style="padding:1.2rem;text-align:center;color:var(--text-light);font-size:.84rem;">No Transactions records found.</div>';
+
+  // OG Sales
+  const ogRows = OG.filter(row=>nameMatch(c.name,(row['Name']||'').trim()));
+  document.getElementById('h-og').innerHTML = ogRows.length ? `
+    <table><thead><tr><th>Date</th><th>Package</th><th>Total</th><th>Pts</th></tr></thead>
+    <tbody>${ogRows.map(r=>`<tr>
+      <td style="font-size:.78rem;">${fmtDate(r['Date'])}</td>
+      <td style="font-size:.8rem;">${r['Package']||'—'}</td>
+      <td style="font-family:'DM Mono',monospace;color:var(--rust);">₱${fmt(parseFloat(r['Total']||0))}</td>
+      <td style="font-family:'DM Mono',monospace;color:var(--amber);">+${Math.floor(parseFloat(r['Total']||0)/DB.config.rate)}</td>
+    </tr>`).join('')}</tbody></table>` :
+    '<div style="padding:1.2rem;text-align:center;color:var(--text-light);font-size:.84rem;">No SALES 2023 records found.</div>';
+
+  // Bonus points
+  const bonuses = DB.activity.filter(a=>a.clientId===id&&a.type==='bonus').reverse();
+  document.getElementById('h-bonus').innerHTML = bonuses.length ? `
+    <table><thead><tr><th>Date</th><th>Type</th><th>Proof</th><th>Pts</th><th>Staff</th></tr></thead>
+    <tbody>${bonuses.map(b=>`<tr>
+      <td style="font-size:.75rem;font-family:'DM Mono',monospace;">${fmtDateTime(b.ts)}</td>
+      <td style="font-size:.8rem;">${b.detail}</td>
+      <td style="font-size:.75rem;color:var(--text-light);">${b.proof||'—'}</td>
+      <td style="font-family:'DM Mono',monospace;color:var(--amber);">+${b.points}</td>
+      <td style="font-size:.75rem;color:var(--text-light);">${b.staff||'—'}</td>
+    </tr>`).join('')}</tbody></table>` :
+    '<div style="padding:1.2rem;text-align:center;color:var(--text-light);font-size:.84rem;">No bonus points logged yet.</div>';
+
+  // Redemptions
+  const redems = DB.activity.filter(a=>a.clientId===id&&a.type==='redemption').reverse();
+  document.getElementById('h-redeem').innerHTML = redems.length ? `
+    <table><thead><tr><th>Date</th><th>Perk</th><th>Pts Cost</th><th>Notes</th><th>Staff</th></tr></thead>
+    <tbody>${redems.map(r=>`<tr>
+      <td style="font-size:.75rem;font-family:'DM Mono',monospace;">${fmtDateTime(r.ts)}</td>
+      <td style="font-size:.8rem;">${r.detail.replace('Perk redeemed: ','')}</td>
+      <td style="text-align:center;">${r.points===0?'<span style="background:var(--green-lt);color:var(--green);border-radius:100px;padding:.12rem .55rem;font-size:.7rem;font-weight:700;font-family:DM Mono,monospace;">FREE</span>':`<span style="background:var(--red-lt);color:var(--red);border-radius:100px;padding:.12rem .55rem;font-size:.7rem;font-weight:700;font-family:DM Mono,monospace;">${r.points} pts</span>`}</td>
+      <td style="font-size:.75rem;color:var(--text-light);">${r.proof||'—'}</td>
+      <td style="font-size:.75rem;color:var(--text-light);">${r.staff||'—'}</td>
+    </tr>`).join('')}</tbody></table>` :
+    '<div style="padding:1.2rem;text-align:center;color:var(--text-light);font-size:.84rem;">No redemptions yet.</div>';
+
+  // Reset to first tab
+  switchHTab('h-sessions', document.querySelector('.htab'));
+  openModal('modal-history');
+}
+
+function switchHTab(id, btn) {
+  ['h-sessions','h-og','h-bonus','h-redeem'].forEach(t=>{
+    document.getElementById(t).style.display = t===id?'block':'none';
+  });
+  document.querySelectorAll('.htab').forEach(b=>{ b.classList.remove('active'); });
+  if(btn) btn.classList.add('active');
+}
+
+// ══════════════════════════════════════════════════════════
+// CLIENT ADD / EDIT
+// ══════════════════════════════════════════════════════════
 function openAddClient() {
-  ['c-name','c-phone','c-email','c-bday','c-referred','c-notes'].forEach(id => document.getElementById(id).value='');
+  ['c-name','c-phone','c-email','c-bday','c-referred','c-notes'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('edit-client-id').value='';
-  document.getElementById('modal-client-title').textContent='Add New Client';
+  document.getElementById('modal-client-title').textContent='Add Client';
   openModal('modal-client');
 }
 function openEditClient(id) {
-  const c = DB.clients.find(x=>x.id===id); if(!c) return;
+  const c=DB.clients.find(x=>x.id===id); if(!c) return;
   document.getElementById('edit-client-id').value=id;
   document.getElementById('c-name').value=c.name;
-  document.getElementById('c-phone').value=c.phone;
+  document.getElementById('c-phone').value=c.phone||'';
   document.getElementById('c-email').value=c.email||'';
   document.getElementById('c-bday').value=c.birthday||'';
   document.getElementById('c-referred').value=c.referredBy||'';
@@ -877,272 +986,223 @@ function openEditClient(id) {
 }
 function saveClient() {
   const name=document.getElementById('c-name').value.trim();
-  const phone=document.getElementById('c-phone').value.trim();
-  if(!name||!phone){toast('Name and phone are required');return;}
+  if(!name){toast('Name is required');return;}
   const id=document.getElementById('edit-client-id').value;
-  const data={name,phone,email:document.getElementById('c-email').value.trim(),birthday:document.getElementById('c-bday').value.trim(),referredBy:document.getElementById('c-referred').value.trim(),notes:document.getElementById('c-notes').value.trim()};
+  const data={name,phone:document.getElementById('c-phone').value.trim(),email:document.getElementById('c-email').value.trim(),birthday:document.getElementById('c-bday').value.trim(),referredBy:document.getElementById('c-referred').value.trim(),notes:document.getElementById('c-notes').value.trim()};
   if(id){
-    const idx=DB.clients.findIndex(c=>c.id===id);
-    if(idx>-1) Object.assign(DB.clients[idx],data);
-    addActivity('client',DB.clients.find(c=>c.id===id),'Client profile updated','',0);
+    const c=DB.clients.find(x=>x.id===id);
+    if(c) Object.assign(c,data);
+    addActivity('client',{id,name},'Client profile updated','',0);
   } else {
-    const nc={id:uid(),points:0,sessions:0,referralsMade:0,joinedAt:new Date().toISOString(),...data};
+    const nc={id:uid(),txSpend:0,txSessions:0,ogSpend:0,ogSessions:0,txPts:0,ogPts:0,bonusPts:0,points:0,sessions:0,joinedAt:new Date().toISOString(),sources:['manual'],...data};
     DB.clients.push(nc);
-    addActivity('client',nc,'New client enrolled','',0);
-    // if referred by someone, give referrer bonus
-    if(data.referredBy) {
-      const ref=DB.clients.find(c=>c.name.toLowerCase()===data.referredBy.toLowerCase());
-      if(ref){
-        const refPts = 15;
-        ref.points += refPts; ref.referralsMade = (ref.referralsMade||0)+1;
-        addActivity('bonus',ref,`🤝 Referral bonus — referred ${name}`,`Verified: new client ${name} enrolled`,refPts);
-        toast(`✓ ${ref.name} earned +${refPts} referral points!`,4000);
-      }
+    addActivity('client',nc,'Client manually added','',0);
+    if(data.referredBy){
+      const ref=DB.clients.find(c=>nameMatch(c.name,data.referredBy));
+      if(ref){ref.points+=15;ref.bonusPts=(ref.bonusPts||0)+15;addActivity('bonus',ref,`🤝 Referral — referred ${name}`,'',15);toast(`✓ +15 pts to ${ref.name}`,3000);}
     }
   }
-  saveDB(); closeModal('modal-client'); renderClients(); toast(id?'Client updated!':'Client enrolled!');
+  saveDB();closeModal('modal-client');renderClients();toast(id?'Client updated!':'Client added!');
 }
 
-// ══════════════════════════════════
+// ══════════════════════════════════════════════════════════
 // LOG POINTS
-// ══════════════════════════════════
-function populateClientDropdowns() {
-  const opts = DB.clients.map(c=>`<option value="${c.id}">${c.name} (${c.phone}) — ${fmt(c.points)} pts</option>`).join('');
-  const empty = '<option value="">— Select client —</option>';
-  ['lp-client','bp-client','redeem-client'].forEach(id=>{
-    const el=document.getElementById(id); if(el) el.innerHTML=empty+opts;
-  });
+// ══════════════════════════════════════════════════════════
+function populateDDs() {
+  const opts = '<option value="">— Select client —</option>' + DB.clients.map(c=>`<option value="${c.id}">${c.name} — ${fmt(c.points||0)} pts</option>`).join('');
+  ['lp-client','bp-client','redeem-client'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=opts;});
 }
 function calcLpPoints() {
   const amt=parseFloat(document.getElementById('lp-amount')?.value)||0;
   const pts=Math.floor(amt/DB.config.rate);
-  document.getElementById('lp-pts-preview').textContent = pts ? `+${pts} pts` : '—';
+  document.getElementById('lp-preview').textContent=pts?`+${pts} pts`:'—';
 }
 function logSession() {
   const cid=document.getElementById('lp-client').value;
   const amt=parseFloat(document.getElementById('lp-amount').value)||0;
   const pkg=document.getElementById('lp-package').value.trim();
   if(!cid){toast('Select a client');return;}
-  if(!amt){toast('Enter the amount paid');return;}
-  const c=DB.clients.find(x=>x.id===cid); if(!c) return;
+  if(!amt){toast('Enter amount paid');return;}
+  const c=DB.clients.find(x=>x.id===cid);if(!c)return;
   const pts=Math.floor(amt/DB.config.rate);
-  const prevTier=getTier(c.points).name;
-  c.points+=pts; c.sessions=(c.sessions||0)+1;
-  addActivity('session',c,`Session logged — ${pkg||'package'}`,`₱${fmt(amt)} paid · ${pkg}`,pts);
+  const prev=getTier(c.points||0).name;
+  c.txSpend=(c.txSpend||0)+amt; c.txSessions=(c.txSessions||0)+1;
+  c.txPts=(c.txPts||0)+pts; c.points=(c.points||0)+pts;
+  addActivity('session',c,`Session — ${pkg||'package'}`,`₱${fmt(amt)} paid`,pts);
   saveDB();
-  const newTier=getTier(c.points).name;
-  if(newTier!==prevTier) toast(`🎉 ${c.name} just reached ${newTier}!`,4000);
-  else toast(`✓ +${pts} pts added to ${c.name}`);
-  document.getElementById('lp-amount').value='';
-  document.getElementById('lp-package').value='';
-  calcLpPoints(); populateClientDropdowns();
+  const next=getTier(c.points).name;
+  if(next!==prev) toast(`🎉 ${c.name} reached ${next}!`,4000); else toast(`✓ +${pts} pts → ${c.name}`);
+  document.getElementById('lp-amount').value='';document.getElementById('lp-package').value='';
+  calcLpPoints();populateDDs();
 }
 function updateBonusDesc() {
   const sel=document.getElementById('bp-type');
   const opt=sel.options[sel.selectedIndex];
   const pts=parseInt(opt.dataset.pts)||0;
-  const isRef=sel.value==='referral'||sel.value==='referral-vip';
+  const isRef=sel.value==='referral';
   const isManual=sel.value==='manual';
   document.getElementById('bp-ref-row').style.display=isRef?'block':'none';
   document.getElementById('bp-manual-row').style.display=isManual?'block':'none';
-  document.getElementById('bp-desc').textContent=isManual?'Enter points manually':pts?`+${pts} pts will be added after verification`:'Custom amount';
+  document.getElementById('bp-desc').textContent=isManual?'Enter points manually':pts?`+${pts} pts will be added`:'-';
 }
 function logBonus() {
-  const cid=document.getElementById('bp-client').value;
-  if(!cid){toast('Select a client');return;}
+  const cid=document.getElementById('bp-client').value;if(!cid){toast('Select a client');return;}
   const sel=document.getElementById('bp-type');
   const opt=sel.options[sel.selectedIndex];
   let pts=parseInt(opt.dataset.pts)||0;
   if(sel.value==='manual') pts=parseInt(document.getElementById('bp-manual-pts').value)||0;
   if(!pts){toast('Enter points amount');return;}
-  const c=DB.clients.find(x=>x.id===cid); if(!c) return;
+  const c=DB.clients.find(x=>x.id===cid);if(!c)return;
   const proof=document.getElementById('bp-proof').value.trim();
   const refName=document.getElementById('bp-ref-name').value.trim();
-  const detail=opt.text+(refName?` — ${refName}`:'')+(proof?` [${proof}]`:'');
-  c.points+=pts;
+  const detail=opt.text.replace(/\s*\([^)]*\)/,'').trim()+(refName?` — ${refName}`:'');
+  c.points=(c.points||0)+pts; c.bonusPts=(c.bonusPts||0)+pts;
   addActivity('bonus',c,detail,proof,pts);
-  saveDB(); toast(`✓ +${pts} pts added to ${c.name}`); populateClientDropdowns();
-  document.getElementById('bp-proof').value=''; document.getElementById('bp-ref-name').value='';
+  saveDB();toast(`✓ +${pts} pts → ${c.name}`);populateDDs();
+  document.getElementById('bp-proof').value='';document.getElementById('bp-ref-name').value='';
 }
 
-// ══════════════════════════════════
-// VERIFY
-// ══════════════════════════════════
+// ══════════════════════════════════════════════════════════
+// VERIFY & REDEEM
+// ══════════════════════════════════════════════════════════
 function verifyClient() {
-  const q=document.getElementById('verify-search').value.trim().toLowerCase();
+  const q=(document.getElementById('verify-q').value||'').toLowerCase().trim();
   const box=document.getElementById('verify-result');
   if(!q){box.innerHTML='';return;}
-  const c=DB.clients.find(x=>x.name.toLowerCase().includes(q)||x.phone.includes(q));
-  if(!c){box.innerHTML=`<div class="verify-box"><div class="verify-icon">🔍</div><p style="font-size:.85rem;color:var(--text-light);">No client found. Check the name or phone number.</p></div>`;return;}
-  const t=getTier(c.points);
-  const perks={
-    Bronze:['Digital ClickCard membership','Birthday month surprise gift','Access to member-only promos','Priority booking via DM','1 free backdrop change'],
-    Silver:['All Bronze perks','Free 5-min extension (50 pts)','Free digital copy upgrade (50 pts)','Free outfit change (30 pts)','Early access to new set designs','Name in CLS Wall of Fans'],
-    Gold:['All Silver perks','Free 4R print (80 pts)','Free Basic HMU (800 pts)','Featured on CLS social media','Dedicated booking slot (no waitlist)'],
-    VIP:['All Gold perks','Free annual mini session (1,500 pts)','Exclusive VIP-only set designs','First access to new packages','Behind-the-scenes studio tour','Personal thank-you from the team','Referral bonus: +15 pts per friend']
-  };
-  const recentActs=[...DB.activity].filter(a=>a.clientId===c.id).reverse().slice(0,3);
-  box.innerHTML=`
-    <div style="background:var(--green-lt);border-radius:12px;padding:1.2rem;margin-top:.8rem;">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;margin-bottom:.8rem;">
-        <div>
-          <div style="font-family:'Instrument Serif',serif;font-size:1.3rem;color:var(--green-dk);">${c.name}</div>
-          <div style="font-size:.78rem;color:var(--text-mid);">${c.phone}${c.email?' · '+c.email:''}</div>
-        </div>
-        <div style="text-align:right;">
-          <span class="tier tier-${t.name.toLowerCase()}">${t.emoji} ${t.name}</span>
-          <div style="font-family:'DM Mono',monospace;font-size:1.4rem;font-weight:600;color:var(--green);margin-top:.3rem;">${fmt(c.points)} pts</div>
-        </div>
-      </div>
-      <div style="font-size:.78rem;font-weight:600;color:var(--green-dk);margin-bottom:.4rem;font-family:'DM Mono',monospace;letter-spacing:.06em;text-transform:uppercase;">Active Perks for This Visit</div>
-      <ul style="list-style:none;font-size:.82rem;color:var(--green-dk);">
-        ${(perks[t.name]||[]).map(p=>`<li style="padding:.25rem 0;">✦ ${p}</li>`).join('')}
-      </ul>
-      ${recentActs.length?`<div style="margin-top:.8rem;font-size:.78rem;font-weight:600;color:var(--text-light);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.3rem;">Last 3 Visits</div>
-      ${recentActs.map(a=>`<div style="font-size:.78rem;color:var(--text-mid);padding:.2rem 0;">${fmtDate(a.ts)} — ${a.detail}</div>`).join('')}`:''}
-    </div>`;
-}
-function verifyCode() {
-  const code=document.getElementById('code-input').value.trim().toUpperCase();
-  const box=document.getElementById('code-result');
-  if(!code.startsWith('CLS-')||code.length<8){box.innerHTML='<div style="font-size:.83rem;color:var(--red);margin-top:.6rem;">Invalid code format. Must start with CLS-</div>';return;}
-  // codes are not stored server-side (generated client-side); just validate format & show guidance
-  box.innerHTML=`<div class="verify-box" style="margin-top:.8rem;background:var(--blue-lt);border-color:var(--blue);">
-    <div class="verify-icon">✅</div>
-    <div style="font-weight:600;color:var(--blue);margin-bottom:.3rem;">Code format valid: ${code}</div>
-    <div style="font-size:.82rem;color:var(--text-mid);">Ask the client to show their phone screen with the full gift result visible. Confirm the code matches, then apply the reward and log it as a redemption above.</div>
+  const c=DB.clients.find(x=>x.name.toLowerCase().includes(q)||(x.phone||'').includes(q));
+  if(!c){box.innerHTML=`<div style="background:var(--red-lt);border-radius:10px;padding:1rem;font-size:.84rem;color:var(--red);margin-top:.6rem;">No client found for "${q}"</div>`;return;}
+  const t=getTier(c.points||0);
+  box.innerHTML=`<div style="background:var(--green-lt);border-radius:12px;padding:1.1rem;margin-top:.6rem;">
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;margin-bottom:.8rem;">
+      <div><div style="font-family:'Instrument Serif',serif;font-size:1.1rem;">${c.name}</div><div style="font-size:.75rem;color:var(--text-light);">${c.phone||''} ${c.email||''}</div></div>
+      <div style="text-align:right;"><span class="tier ${t.cls}">${t.emoji} ${t.name}</span><div style="font-family:'DM Mono',monospace;font-size:1.3rem;font-weight:700;color:var(--green);">${fmt(c.points||0)} pts</div></div>
+    </div>
+    <div style="font-size:.72rem;font-weight:700;color:var(--green-dk);font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.08em;margin-bottom:.4rem;">Active Perks for This Visit</div>
+    <ul style="list-style:none;font-size:.82rem;color:var(--green-dk);">${(TIER_PERKS[t.name]||[]).map(p=>`<li style="padding:.2rem 0;">✦ ${p}</li>`).join('')}</ul>
   </div>`;
 }
-// Perk point costs map
-const PERK_COSTS = {
-  'Free Outfit Change': 30,
-  'Free 5-min extension': 50,
-  'Free digital copy upgrade': 50,
-  'Free 4R print': 80,
-  'Extra edited photo': 100,
-  'Free 8x10 framed print': 100,
-  'BTS video clip': 100,
-  'Free A4 framed print': 300,
-  'Social media feature': 300,
-  'Mini birthday session (10 mins)': 300,
-  'Free Basic HMU': 500,
-  'Free 30-min self shoot': 500,
-  'Bring 1 friend FREE': 500,
-  'Free photographer session (20 mins)': 1000,
-  'Free full set design': 1000,
-};
 
 function getPerkFromSelect() {
-  const sel = document.getElementById('redeem-perk');
-  const val = sel.value; // format: "Perk Name|cost"
-  const [perkName, costStr] = val.split('|');
-  return { perkName: perkName.trim(), cost: parseInt(costStr) || 0 };
+  const val=(document.getElementById('redeem-perk')?.value||'');
+  const [perkName,costStr]=val.split('|');
+  return {perkName:(perkName||'').trim(),cost:parseInt(costStr)||0};
 }
 
 function updateRedeemPreview() {
-  const preview = document.getElementById('redeem-preview');
-  const cid = document.getElementById('redeem-client').value;
-  const { perkName, cost } = getPerkFromSelect();
-  if (!cid || !perkName) { preview.style.display = 'none'; return; }
-  const c = DB.clients.find(x => x.id === cid);
-  if (!c) { preview.style.display = 'none'; return; }
-
-  if (cost === 0) {
-    preview.style.display = 'block';
-    preview.style.background = 'var(--green-lt)';
-    preview.style.border = '1px solid rgba(45,110,95,.2)';
-    preview.innerHTML = `<strong style="color:var(--green);">✓ Free Tier Privilege</strong> — No points deducted.<br>
-      <span style="font-size:.78rem;color:var(--text-mid);">${c.name} has <strong>${fmt(c.points)} pts</strong> · stays at <strong>${fmt(c.points)} pts</strong> after redemption.</span>`;
+  const preview=document.getElementById('redeem-preview');
+  const cid=document.getElementById('redeem-client').value;
+  const {perkName,cost}=getPerkFromSelect();
+  if(!cid||!perkName){preview.style.display='none';return;}
+  const c=DB.clients.find(x=>x.id===cid);
+  if(!c){preview.style.display='none';return;}
+  preview.style.display='block';
+  if(cost===0){
+    preview.style.background='var(--green-lt)';preview.style.border='1px solid rgba(45,110,95,.2)';
+    preview.innerHTML=`<strong style="color:var(--green);">✓ Free Perk</strong> — No points deducted. ${c.name} keeps <strong>${fmt(c.points||0)} pts</strong>.`;
   } else {
-    const after = c.points - cost;
-    const canAfford = after >= 0;
-    preview.style.display = 'block';
-    preview.style.background = canAfford ? 'var(--amber-lt)' : 'var(--red-lt)';
-    preview.style.border = `1px solid ${canAfford ? 'rgba(196,154,26,.3)' : 'rgba(192,57,43,.3)'}`;
-    if (canAfford) {
-      const tierBefore = getTier(c.points).name;
-      const tierAfter = getTier(after).name;
-      preview.innerHTML = `<strong style="color:var(--amber);">−${cost} pts will be deducted</strong><br>
-        <span style="font-size:.78rem;color:var(--text-mid);">${c.name}: <strong>${fmt(c.points)} pts</strong> → <strong>${fmt(after)} pts</strong>
-        ${tierBefore !== tierAfter ? `<span style="color:var(--rust);"> · Tier changes from ${tierBefore} to ${tierAfter}!</span>` : ''}</span>`;
+    const after=(c.points||0)-cost;
+    const ok=after>=0;
+    preview.style.background=ok?'var(--amber-lt)':'var(--red-lt)';
+    preview.style.border=`1px solid ${ok?'rgba(196,154,26,.3)':'rgba(192,57,43,.3)'}`;
+    if(ok){
+      const tb=getTier(c.points||0).name,ta=getTier(after).name;
+      preview.innerHTML=`<strong style="color:var(--amber);">−${cost} pts</strong> · ${c.name}: <strong>${fmt(c.points||0)}</strong> → <strong>${fmt(after)}</strong>${tb!==ta?` <span style="color:var(--red);"> · Tier drops to ${ta}!</span>`:''}`;
     } else {
-      preview.innerHTML = `<strong style="color:var(--red);">⚠ Insufficient points</strong><br>
-        <span style="font-size:.78rem;color:var(--red);">${c.name} only has <strong>${fmt(c.points)} pts</strong> — needs ${fmt(cost)} pts for this reward.</span>`;
+      preview.innerHTML=`<strong style="color:var(--red);">⚠ Not enough points.</strong> ${c.name} has <strong>${fmt(c.points||0)} pts</strong>, needs ${fmt(cost)}.`;
     }
   }
 }
 
 function logRedemption() {
-  const cid = document.getElementById('redeem-client').value;
-  const note = document.getElementById('redeem-note').value.trim();
-  if (!cid) { toast('Select a client'); return; }
-  const c = DB.clients.find(x => x.id === cid); if (!c) return;
-  const { perkName, cost } = getPerkFromSelect();
-
-  // Check sufficient points for paid perks
-  if (cost > 0 && c.points < cost) {
-    toast(`⚠ ${c.name} only has ${c.points} pts — needs ${cost} pts for this perk`, 4000);
-    return;
-  }
-
-  // Confirm deduction
-  if (cost > 0) {
-    if (!confirm(`Deduct ${cost} pts from ${c.name}?\n\nCurrent: ${c.points} pts → After: ${c.points - cost} pts`)) return;
-    c.points -= cost;
-    saveDB();
-  }
-
-  addActivity('redemption', c, `Perk redeemed: ${perkName}`, note, cost > 0 ? -cost : 0);
-  saveDB();
-  toast(`✓ ${perkName} logged${cost > 0 ? ` · −${cost} pts from ${c.name}` : ''}`);
-  document.getElementById('redeem-note').value = '';
-  document.getElementById('redeem-preview').style.display = 'none';
-  populateClientDropdowns();
+  const cid=document.getElementById('redeem-client').value;if(!cid){toast('Select a client');return;}
+  const note=document.getElementById('redeem-note').value.trim();
+  const c=DB.clients.find(x=>x.id===cid);if(!c)return;
+  const {perkName,cost}=getPerkFromSelect();
+  if(cost>0&&(c.points||0)<cost){toast(`⚠ ${c.name} only has ${c.points||0} pts — needs ${cost} pts`,4000);return;}
+  if(cost>0&&!confirm(`Deduct ${cost} pts from ${c.name}?\n${fmt(c.points||0)} → ${fmt((c.points||0)-cost)} pts`))return;
+  if(cost>0){c.points=(c.points||0)-cost;}
+  addActivity('redemption',c,`Perk redeemed: ${perkName}`,note,cost>0?-cost:0);
+  saveDB();toast(`✓ ${perkName} logged${cost>0?` · −${cost} pts`:''}`);
+  document.getElementById('redeem-note').value='';
+  document.getElementById('redeem-preview').style.display='none';
+  populateDDs();
 }
 
-// ══════════════════════════════════
-// ACTIVITY
-// ══════════════════════════════════
+function verifyCode() {
+  const code=(document.getElementById('code-input').value||'').trim().toUpperCase();
+  const box=document.getElementById('code-result');
+  if(!code.startsWith('CLS-')||code.length<8){box.innerHTML='<div style="font-size:.82rem;color:var(--red);margin-top:.5rem;">Invalid code — must start with CLS-</div>';return;}
+  box.innerHTML=`<div style="background:var(--blue-lt);border-radius:10px;padding:.9rem;font-size:.82rem;margin-top:.6rem;color:var(--blue);">
+    <strong>Code valid: ${code}</strong><br>Ask client to show their phone screen. Confirm the code matches, then log it as a Gift Spinner Prize redemption above.</div>`;
+}
+
+// ══════════════════════════════════════════════════════════
+// REDEMPTIONS TAB
+// ══════════════════════════════════════════════════════════
+function renderRedemptions() {
+  const q=(document.getElementById('red-q')?.value||'').toLowerCase();
+  const typeF=document.getElementById('red-type')?.value||'';
+  const acts=[...DB.activity].filter(a=>{
+    if(a.type!=='redemption') return false;
+    const mQ=!q||a.clientName.toLowerCase().includes(q)||a.detail.toLowerCase().includes(q);
+    const mT=!typeF||(typeF==='free'&&a.points===0)||(typeF==='paid'&&a.points<0);
+    return mQ&&mT;
+  }).reverse();
+  document.getElementById('redemptions-table').innerHTML=acts.map(a=>{
+    const c=DB.clients.find(x=>x.id===a.clientId);
+    const t=c?getTier(c.points||0):{name:'—',cls:'tier-bronze',emoji:''};
+    return `<tr>
+      <td style="font-size:.75rem;font-family:'DM Mono',monospace;">${fmtDateTime(a.ts)}</td>
+      <td style="font-weight:500;">${a.clientName}</td>
+      <td><span class="tier ${t.cls}">${t.emoji} ${t.name}</span></td>
+      <td>${a.detail.replace('Perk redeemed: ','')}</td>
+      <td style="text-align:center;">${a.points===0?'<span style="background:var(--green-lt);color:var(--green);border-radius:100px;padding:.12rem .55rem;font-size:.7rem;font-weight:700;">FREE</span>':`<span style="background:var(--red-lt);color:var(--red);border-radius:100px;padding:.12rem .55rem;font-size:.7rem;font-weight:700;">${a.points} pts</span>`}</td>
+      <td style="font-size:.78rem;">${a.proof||'—'}</td>
+      <td style="font-size:.75rem;color:var(--text-light);">${a.staff||'—'}</td>
+    </tr>`;
+  }).join('')||'<tr><td colspan="7" style="text-align:center;color:var(--text-light);padding:1.5rem;">No redemptions yet.</td></tr>';
+}
+
+// ══════════════════════════════════════════════════════════
+// ACTIVITY LOG
+// ══════════════════════════════════════════════════════════
 function addActivity(type,client,detail,proof,points) {
   DB.activity.push({id:uid(),ts:new Date().toISOString(),type,clientId:client.id,clientName:client.name,detail,proof,points,staff:currentStaff});
 }
 function renderActivity() {
-  const q=(document.getElementById('act-search')?.value||'').toLowerCase();
-  const f=document.getElementById('act-filter')?.value||'';
-  const acts=[...DB.activity].reverse().filter(a=>{
-    const matchQ=a.clientName.toLowerCase().includes(q)||a.detail.toLowerCase().includes(q);
-    const matchF=!f||(f==='bonus'&&a.type==='bonus')||(f==='session'&&a.type==='session')||(f==='redemption'&&a.type==='redemption')||(f==='client'&&a.type==='client');
-    return matchQ&&matchF;
-  });
-  const dotMap={session:'green',bonus:'amber',redemption:'blue',client:'green'};
-  const typeLabel={session:'Session',bonus:'Bonus Pts',redemption:'Redemption',client:'Enrollment'};
-  document.getElementById('activity-table').innerHTML=acts.map(a=>`
-    <tr>
-      <td style="font-size:.78rem;color:var(--text-light);font-family:'DM Mono',monospace;">${fmtDate(a.ts)}</td>
-      <td style="font-weight:500;">${a.clientName}</td>
-      <td><span style="font-size:.72rem;font-family:'DM Mono',monospace;background:var(--cream-dk);padding:.2rem .6rem;border-radius:100px;">${typeLabel[a.type]||a.type}</span></td>
-      <td style="font-size:.82rem;color:var(--text-mid);">${a.detail}${a.proof?'<br><span style="font-size:.75rem;color:var(--text-light);">['+a.proof+']</span>':''}</td>
-      <td style="font-family:'DM Mono',monospace;color:${a.points>0?'var(--green)':a.points<0?'var(--red)':'var(--text-light)'};">${a.points>0?'+':a.points<0?'':''}${a.points||'—'}</td>
-      <td style="font-size:.78rem;color:var(--text-light);">${a.staff||'—'}</td>
-    </tr>`).join('')||'<tr><td colspan="6" style="text-align:center;color:var(--text-light);padding:2rem;">No activity logged yet.</td></tr>';
+  const q=(document.getElementById('act-q')?.value||'').toLowerCase();
+  const tf=document.getElementById('act-type')?.value||'';
+  const acts=[...DB.activity].filter(a=>{
+    const mQ=!q||a.clientName.toLowerCase().includes(q)||a.detail.toLowerCase().includes(q);
+    const mT=!tf||a.type===tf;
+    return mQ&&mT;
+  }).reverse();
+  const typeLabel={session:'Session',bonus:'Bonus',redemption:'Redemption',client:'Enrollment'};
+  const dotColor={session:'var(--green)',bonus:'var(--amber)',redemption:'var(--blue)',client:'var(--green)'};
+  document.getElementById('activity-table').innerHTML=acts.map(a=>`<tr>
+    <td style="font-size:.75rem;font-family:'DM Mono',monospace;">${fmtDateTime(a.ts)}</td>
+    <td style="font-weight:500;">${a.clientName}</td>
+    <td><span style="font-size:.7rem;font-family:'DM Mono',monospace;background:var(--cream-dk);padding:.18rem .55rem;border-radius:100px;">${typeLabel[a.type]||a.type}</span></td>
+    <td style="font-size:.81rem;">${a.detail}${a.proof?`<br><span style="font-size:.72rem;color:var(--text-light);">[${a.proof}]</span>`:''}</td>
+    <td style="font-family:'DM Mono',monospace;color:${a.points>0?'var(--green)':a.points<0?'var(--red)':'var(--text-light)'};">${a.points>0?'+':a.points<0?'':''}${a.points||'—'}</td>
+    <td style="font-size:.75rem;color:var(--text-light);">${a.staff||'—'}</td>
+  </tr>`).join('')||'<tr><td colspan="6" style="text-align:center;color:var(--text-light);padding:1.5rem;">No activity yet.</td></tr>';
 }
 
-// ══════════════════════════════════
+// ══════════════════════════════════════════════════════════
 // SETTINGS
-// ══════════════════════════════════
+// ══════════════════════════════════════════════════════════
 function renderSettings() {
   document.getElementById('cfg-rate').value=DB.config.rate;
   document.getElementById('cfg-bronze').value=DB.config.bronze;
   document.getElementById('cfg-silver').value=DB.config.silver;
   document.getElementById('cfg-gold').value=DB.config.gold;
-  document.getElementById('cfg-ref').value=DB.config.ref;
-  document.getElementById('cfg-ref-vip').value=DB.config.refVip;
   document.getElementById('staff-list').innerHTML=DB.staff.map((s,i)=>`
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid var(--border);">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:.45rem 0;border-bottom:1px solid var(--border);">
       <span style="font-size:.87rem;">${s.name}</span>
-      <span style="display:flex;gap:.5rem;align-items:center;">
-        <span style="font-family:'DM Mono',monospace;font-size:.75rem;color:var(--text-light);">PIN: ${'•'.repeat(s.pin.length)}</span>
-        ${i>0?`<button class="btn btn-red btn-sm" onclick="removeStaff(${i})">Remove</button>`:'<span style="font-size:.72rem;color:var(--text-light);">owner</span>'}
+      <span style="display:flex;gap:.4rem;align-items:center;">
+        <span style="font-family:'DM Mono',monospace;font-size:.72rem;color:var(--text-light);">PIN: ${'•'.repeat(s.pin.length)}</span>
+        ${i>0?`<button class="btn btn-red btn-sm" onclick="removeStaff(${i})">Remove</button>`:'<span style="font-size:.7rem;color:var(--text-light);">owner</span>'}
       </span>
     </div>`).join('');
 }
@@ -1151,276 +1211,62 @@ function addStaff() {
   const pin=document.getElementById('new-staff-pin').value.trim();
   if(!name||!pin){toast('Name and PIN required');return;}
   if(DB.staff.some(s=>s.pin===pin)){toast('PIN already in use');return;}
-  DB.staff.push({name,pin}); saveDB(); renderSettings();
-  document.getElementById('new-staff-name').value=''; document.getElementById('new-staff-pin').value='';
-  toast(`${name} added as staff`);
+  DB.staff.push({name,pin});saveDB();renderSettings();
+  document.getElementById('new-staff-name').value='';document.getElementById('new-staff-pin').value='';
+  toast(`${name} added`);
 }
-function removeStaff(i) {
-  if(!confirm('Remove this staff member?')) return;
-  DB.staff.splice(i,1); saveDB(); renderSettings();
+function removeStaff(i){if(!confirm('Remove this staff member?'))return;DB.staff.splice(i,1);saveDB();renderSettings();}
+function saveConfig(){
+  DB.config={rate:parseInt(document.getElementById('cfg-rate').value)||100,bronze:parseInt(document.getElementById('cfg-bronze').value)||49,silver:parseInt(document.getElementById('cfg-silver').value)||149,gold:parseInt(document.getElementById('cfg-gold').value)||299};
+  saveDB();toast('Config saved!');
 }
-function saveConfig() {
-  DB.config={rate:parseInt(document.getElementById('cfg-rate').value)||100,bronze:parseInt(document.getElementById('cfg-bronze').value)||49,silver:parseInt(document.getElementById('cfg-silver').value)||149,gold:parseInt(document.getElementById('cfg-gold').value)||299,ref:parseInt(document.getElementById('cfg-ref').value)||5,refVip:parseInt(document.getElementById('cfg-ref-vip').value)||10};
-  saveDB(); toast('Configuration saved!');
-}
-function clearAllData() {
-  if(!confirm('This will DELETE all client data, points, and activity. Are you absolutely sure?')) return;
-  if(!confirm('Last chance — this cannot be undone!')) return;
-  DB=initDB(); saveDB(); renderAll(); toast('All data cleared.');
+function clearData(){if(!confirm('Delete ALL local data?'))return;if(!confirm('Last chance — cannot undo!'))return;DB=initDB();saveDB();renderAll();toast('Data cleared.');}
+
+async function importSales2023() {
+  const el=document.getElementById('sales-sync-result');
+  if(el)el.innerHTML='<span style="color:var(--text-light);">↻ Importing…</span>';
+  try{
+    const data=await callScript('syncSales2023');
+    if(data.ok){
+      if(el)el.innerHTML=`<span style="color:var(--green);">✓ ${data.message}</span>`;
+      toast(`✓ ${data.message}`,4000);
+      setTimeout(doSync,800);
+    } else {
+      if(el)el.innerHTML=`<span style="color:var(--red);">⚠ ${data.error}</span>`;
+    }
+  }catch(e){if(el)el.innerHTML=`<span style="color:var(--red);">⚠ Connection failed</span>`;}
 }
 
-// ══════════════════════════════════
-// EXPORT
-// ══════════════════════════════════
-function exportCSV() {
-  const rows=[['Date','Client','Type','Detail','Points','Staff']];
-  DB.activity.forEach(a=>rows.push([fmtDate(a.ts),a.clientName,a.type,a.detail,a.points,a.staff||'']));
-  const csv=rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
-  const a=document.createElement('a'); a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
-  a.download='cls-activity-'+new Date().toISOString().slice(0,10)+'.csv'; a.click();
+// ══════════════════════════════════════════════════════════
+// EXPORT CSV
+// ══════════════════════════════════════════════════════════
+function exportCSV(type) {
+  let rows, headers;
+  if(type==='activity'){
+    headers=['Date','Client','Type','Detail','Points','Staff'];
+    rows=DB.activity.map(a=>[fmtDateTime(a.ts),a.clientName,a.type,a.detail,a.points,a.staff||'']);
+  } else {
+    headers=['Date','Client','Tier','Perk','Pts Cost','Notes','Staff'];
+    rows=DB.activity.filter(a=>a.type==='redemption').map(a=>{
+      const c=DB.clients.find(x=>x.id===a.clientId);
+      return [fmtDateTime(a.ts),a.clientName,c?getTier(c.points||0).name:'—',a.detail.replace('Perk redeemed: ',''),a.points,a.proof||'',a.staff||''];
+    });
+  }
+  const csv=[headers,...rows].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download=`cls-${type}-${new Date().toISOString().slice(0,10)}.csv`;a.click();
 }
 
-// ══════════════════════════════════
+// ══════════════════════════════════════════════════════════
 // MODALS
-// ══════════════════════════════════
+// ══════════════════════════════════════════════════════════
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-bg.open').forEach(m=>m.classList.remove('open'));});
 
-// ══════════════════════════════════
-// CLIENT HISTORY
-// ══════════════════════════════════
-function openClientHistory(id) {
-  const c = DB.clients.find(x => x.id === id); if (!c) return;
-  const t = getTier(c.points);
-  document.getElementById('history-title').textContent = c.name + ' — History';
-
-  // Summary strip
-  const redemCount = DB.activity.filter(a => a.clientId === id && a.type === 'redemption').length;
-  const bonusPts = DB.activity.filter(a => a.clientId === id && a.type === 'bonus').reduce((s,a)=>s+(a.points||0),0);
-  const txPts = Math.floor((c.totalSpend||0) / 100);
-  const ogPts = Math.floor((c.ogSpend||0) / 100);
-  document.getElementById('history-summary').innerHTML = `
-    <div class="stat"><div class="stat-label">Total Points</div><div class="stat-val" style="font-size:1.4rem;color:var(--green);">${fmt(c.points)}</div>
-      <div class="stat-sub">${txPts} tx · ${ogPts} og · ${bonusPts} bonus</div></div>
-    <div class="stat"><div class="stat-label">Tier</div><div class="stat-val" style="font-size:1.1rem;">${t.emoji} ${t.name}</div></div>
-    <div class="stat"><div class="stat-label">Sessions</div><div class="stat-val" style="font-size:1.4rem;">${c.sessions||0}</div>
-      <div class="stat-sub">₱${fmt(c.totalSpend||0)} total spend</div></div>
-    <div class="stat"><div class="stat-label">Perks Used</div><div class="stat-val" style="font-size:1.4rem;">${redemCount}</div>
-      ${c.ogSpend?`<div class="stat-sub">+₱${fmt(c.ogSpend)} from 2023</div>`:'<div class="stat-sub">click OG Sales tab</div>'}</div>`;
-
-  // Sessions tab — from SHEET_TRANSACTIONS
-  const txRows = SHEET_TRANSACTIONS.filter(tx => {
-    const txClient = (tx['Client Name'] || tx['Client'] || '').trim();
-    if (!txClient) return false;
-    return nameMatch(c.name, txClient);
-  });
-  document.getElementById('history-sessions').innerHTML = txRows.length ? `
-    <table style="width:100%;font-size:.82rem;border-collapse:collapse;">
-      <thead><tr><th style="text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Date</th>
-        <th style="text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Invoice #</th>
-        <th style="text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Services</th>
-        <th style="text-align:right;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Total</th>
-        <th style="text-align:right;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Pts Earned</th>
-      </tr></thead>
-      <tbody>${txRows.map(tx=>`<tr>
-        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);color:var(--text-light);">${fmtSheetDate(tx['Date'])}</td>
-        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);font-family:'DM Mono',monospace;font-size:.78rem;">${tx['Invoice #']||'—'}</td>
-        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);color:var(--text-mid);">${tx['Services']||tx['Items (JSON)']||'—'}</td>
-        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);text-align:right;font-family:'DM Mono',monospace;color:var(--green);">₱${fmt(parseFloat(tx['Total']||0))}</td>
-        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);text-align:right;font-family:'DM Mono',monospace;color:var(--amber);">+${Math.floor(parseFloat(tx['Total']||0)/100)}</td>
-      </tr>`).join('')}</tbody>
-    </table>` : '<div style="padding:1.5rem;text-align:center;color:var(--text-light);font-size:.85rem;">No session records found in Transactions sheet.</div>';
-
-  // Redemptions tab
-  const redems = DB.activity.filter(a => a.clientId === id && a.type === 'redemption').reverse();
-  document.getElementById('history-redemptions').innerHTML = redems.length ? `
-    <table style="width:100%;font-size:.82rem;border-collapse:collapse;">
-      <thead><tr>
-        <th style="text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Date & Time</th>
-        <th style="text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Perk Redeemed</th>
-        <th style="text-align:center;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Pts Cost</th>
-        <th style="text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Notes</th>
-        <th style="text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Staff</th>
-      </tr></thead>
-      <tbody>${redems.map(r=>`<tr>
-        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);color:var(--text-light);font-size:.78rem;font-family:'DM Mono',monospace;">${fmtDate(r.ts)}</td>
-        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);font-weight:500;">${r.detail.replace('Perk redeemed: ','')}</td>
-        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);text-align:center;">
-          ${r.points===0
-            ? '<span style="background:var(--green-lt);color:var(--green);border-radius:100px;padding:.15rem .6rem;font-size:.7rem;font-weight:700;font-family:DM Mono,monospace;">FREE</span>'
-            : `<span style="background:var(--red-lt);color:var(--red);border-radius:100px;padding:.15rem .6rem;font-size:.7rem;font-weight:700;font-family:DM Mono,monospace;">${r.points} pts</span>`}
-        </td>
-        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);color:var(--text-mid);">${r.proof||'—'}</td>
-        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);color:var(--text-light);">${r.staff||'—'}</td>
-      </tr>`).join('')}</tbody>
-    </table>` : '<div style="padding:1.5rem;text-align:center;color:var(--text-light);font-size:.85rem;">No perks redeemed yet.</div>';
-
-  // Bonus points tab
-  const bonuses = DB.activity.filter(a => a.clientId === id && a.type === 'bonus').reverse();
-  document.getElementById('history-bonus').innerHTML = bonuses.length ? `
-    <table style="width:100%;font-size:.82rem;border-collapse:collapse;">
-      <thead><tr>
-        <th style="text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Date & Time</th>
-        <th style="text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Type</th>
-        <th style="text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Proof</th>
-        <th style="text-align:right;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Pts</th>
-      </tr></thead>
-      <tbody>${bonuses.map(b=>`<tr>
-        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);color:var(--text-light);font-size:.78rem;font-family:'DM Mono',monospace;">${fmtDate(b.ts)}</td>
-        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);font-weight:500;">${b.detail}</td>
-        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);color:var(--text-mid);">${b.proof||'—'}</td>
-        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);text-align:right;font-family:'DM Mono',monospace;color:var(--amber);">+${b.points}</td>
-      </tr>`).join('')}</tbody>
-    </table>` : '<div style="padding:1.5rem;text-align:center;color:var(--text-light);font-size:.85rem;">No bonus points logged yet.</div>';
-
-  // OG Sales tab — from SHEET_OG_SALES
-  const ogRows = SHEET_OG_SALES.filter(row => {
-    const rowName = (row['Name'] || '').trim();
-    if (!rowName) return false;
-    return nameMatch(c.name, rowName);
-  });
-  document.getElementById('history-og-sales').innerHTML = ogRows.length ? `
-    <table style="width:100%;font-size:.82rem;border-collapse:collapse;">
-      <thead><tr>
-        <th style="text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Date</th>
-        <th style="text-align:left;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Package</th>
-        <th style="text-align:right;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Total</th>
-        <th style="text-align:right;padding:.5rem .6rem;border-bottom:1px solid var(--border);color:var(--text-light);font-size:.68rem;font-family:'DM Mono',monospace;text-transform:uppercase;">Pts Earned</th>
-      </tr></thead>
-      <tbody>${ogRows.map(r=>`<tr>
-        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);color:var(--text-light);">${fmtSheetDate(r['Date'])}</td>
-        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);color:var(--text-mid);">${r['Package']||'—'}</td>
-        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);text-align:right;font-family:'DM Mono',monospace;color:var(--green);">₱${fmt(parseFloat(r['Total']||0))}</td>
-        <td style="padding:.5rem .6rem;border-bottom:1px solid rgba(45,110,95,.06);text-align:right;font-family:'DM Mono',monospace;color:var(--amber);">+${Math.floor(parseFloat(r['Total']||0)/100)}</td>
-      </tr>`).join('')}</tbody>
-    </table>` : '<div style="padding:1.5rem;text-align:center;color:var(--text-light);font-size:.85rem;">No SALES 2023 records found for this client.</div>';
-
-  openModal('modal-history');
-  switchHistoryTab('sessions', document.querySelector('.htab'));
-}
-
-function switchHistoryTab(tab, btn) {
-  ['sessions','redemptions','bonus','og-sales'].forEach(t => {
-    document.getElementById('history-'+t).style.display = t===tab ? 'block' : 'none';
-  });
-  document.querySelectorAll('.htab').forEach(b => {
-    b.style.color = 'var(--text-light)'; b.style.borderBottomColor = 'transparent';
-  });
-  if (btn) { btn.style.color = 'var(--green)'; btn.style.borderBottomColor = 'var(--green)'; }
-}
-
-// ══════════════════════════════════
-// REDEMPTIONS TAB
-// ══════════════════════════════════
-function renderRedemptions() {
-  const q = (document.getElementById('red-search')?.value||'').toLowerCase();
-  const f = document.getElementById('red-filter')?.value||'';
-  const redems = [...DB.activity]
-    .filter(a => a.type === 'redemption')
-    .filter(a => {
-      const matchQ = a.clientName.toLowerCase().includes(q) || a.detail.toLowerCase().includes(q);
-      const matchF = !f || a.detail.includes(f);
-      return matchQ && matchF;
-    })
-    .reverse();
-  document.getElementById('redemptions-table').innerHTML = redems.map(r => {
-    const c = DB.clients.find(x => x.id === r.clientId);
-    const tier = c ? getTier(c.points) : {emoji:'',name:'—',class:'tier-bronze'};
-    const ptsCost = r.points; // stored as negative for deductions
-    const isFree = ptsCost === 0;
-    return `<tr>
-      <td style="font-size:.78rem;color:var(--text-light);font-family:'DM Mono',monospace;">${fmtDate(r.ts)}</td>
-      <td style="font-weight:500;">${r.clientName}</td>
-      <td><span class="tier tier-${tier.name.toLowerCase()}">${tier.emoji} ${tier.name}</span></td>
-      <td>${r.detail.replace('Perk redeemed: ','')}</td>
-      <td style="font-family:'DM Mono',monospace;font-size:.82rem;text-align:center;">
-        ${isFree
-          ? '<span style="background:var(--green-lt);color:var(--green);border-radius:100px;padding:.15rem .65rem;font-size:.7rem;font-weight:700;">FREE</span>'
-          : `<span style="background:var(--red-lt);color:var(--red);border-radius:100px;padding:.15rem .65rem;font-size:.7rem;font-weight:700;">${ptsCost} pts</span>`
-        }
-      </td>
-      <td style="font-size:.82rem;color:var(--text-mid);">${r.proof||'—'}</td>
-      <td style="font-size:.78rem;color:var(--text-light);">${r.staff||'—'}</td>
-    </tr>`;
-  }).join('') || '<tr><td colspan="7" style="text-align:center;color:var(--text-light);padding:2rem;">No redemptions recorded yet.</td></tr>';
-}
-
-function exportRedemptionsCSV() {
-  const rows = [['Date','Client','Perk','Notes','Staff']];
-  DB.activity.filter(a=>a.type==='redemption').reverse()
-    .forEach(r=>rows.push([fmtDate(r.ts),r.clientName,r.detail.replace('Perk redeemed: ',''),r.proof||'',r.staff||'']));
-  const csv = rows.map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');
-  const a = document.createElement('a');
-  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-  a.download = 'cls-redemptions-'+new Date().toISOString().slice(0,10)+'.csv';
-  a.click();
-}
-
-// ══════════════════════════════════
-// OG SALES SHEET SYNC
-// ══════════════════════════════════
-let SHEET_OG_SALES = [];
-
-async function syncSales2023ToClients() {
-  const resultEl = document.getElementById('og-sync-result');
-  if (resultEl) resultEl.innerHTML = '<span style="color:var(--text-light);">↻ Importing names from SALES 2023…</span>';
-  try {
-    const data = await callScript({ action: 'syncSales2023' });
-    if (data.ok) {
-      if (resultEl) resultEl.innerHTML = `<span style="color:var(--green);">✓ ${data.message}</span>`;
-      toast(`✓ ${data.message}`, 4000);
-      // Re-sync to load the new clients into admin
-      setTimeout(syncFromSheet, 800);
-    } else {
-      if (resultEl) resultEl.innerHTML = `<span style="color:var(--red);">⚠ ${data.error}</span>`;
-      toast('⚠ Import failed: ' + data.error, 4000);
-    }
-  } catch(err) {
-    if (resultEl) resultEl.innerHTML = `<span style="color:var(--red);">⚠ Connection failed — make sure syncSales2023 is added to your Apps Script and redeployed.</span>`;
-    toast('⚠ Connection failed', 4000);
-  }
-}
-
-async function syncOGSales() {
-  const resultEl = document.getElementById('og-sync-result');
-  if (resultEl) resultEl.textContent = '↻ Syncing OG Sales Sheet…';
-  try {
-    const data = await callScript({ action: 'getOGSales' });
-    SHEET_OG_SALES = (data.data || data.sales || []).filter(r => (r['Name'] || '').trim());
-
-    // Recalculate OG spend and update points for all clients
-    let updated = 0;
-    DB.clients.forEach(c => {
-      let ogSpend = 0;
-      SHEET_OG_SALES.forEach(row => {
-        const rowName = (row['Name'] || '').trim();
-        if (!rowName) return;
-        if (nameMatch(c.name, rowName)) ogSpend += parseFloat(row['Total'] || 0);
-      });
-      if (ogSpend > 0) {
-        const ogPts = Math.floor(ogSpend / 100);
-        const spendPts = Math.floor((c.totalSpend||0) / 100);
-        const bonusPts = DB.activity
-          .filter(a => a.clientId === c.id && a.type === 'bonus')
-          .reduce((s, a) => s + (a.points||0), 0);
-        c.ogSpend = ogSpend;
-        c.points = spendPts + ogPts + bonusPts;
-        updated++;
-      }
-    });
-
-    saveDB(DB);
-    if (resultEl) resultEl.innerHTML = `<span style="color:var(--green);">✓ Synced ${SHEET_OG_SALES.length} OG Sales rows · ${updated} client records enriched</span>`;
-    toast(`✓ OG Sales Sheet synced — ${SHEET_OG_SALES.length} records`);
-  } catch(err) {
-    if (resultEl) resultEl.innerHTML = `<span style="color:var(--red);">⚠ Sync failed — make sure getOGSales is added to your Apps Script</span>`;
-    toast('⚠ OG Sales sync failed', 4000);
-  }
-}
-
-// ══════════════════════════════════
+// ══════════════════════════════════════════════════════════
 // INIT
-// ══════════════════════════════════
+// ══════════════════════════════════════════════════════════
 function renderAll(){renderDashboard();}
 </script>
 </body>
