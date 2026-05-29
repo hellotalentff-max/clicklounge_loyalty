@@ -439,6 +439,18 @@ tr:hover td{background:var(--cream);}
         <div id="sales-sync-result" style="margin-top:.7rem;font-size:.82rem;"></div>
       </div>
 
+      <!-- Debug -->
+      <div class="card">
+        <div class="card-title">Debug — Raw Sheet Data</div>
+        <p style="font-size:.82rem;color:var(--text-light);margin-bottom:.8rem;">Use this to verify what the Apps Script is returning. Check the browser Console (F12) after syncing for field names.</p>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+          <button class="btn btn-outline btn-sm" onclick="debugSheet('getOGSales','sales')">🔍 Check OG Sales Response</button>
+          <button class="btn btn-outline btn-sm" onclick="debugSheet('getTransactions','data')">🔍 Check Transactions Response</button>
+          <button class="btn btn-outline btn-sm" onclick="debugSheet('getClients','data')">🔍 Check Clients Response</button>
+        </div>
+        <div id="debug-result" style="margin-top:.8rem;font-size:.75rem;font-family:'DM Mono',monospace;background:var(--cream-dk);border-radius:8px;padding:.8rem;color:var(--text-mid);max-height:200px;overflow-y:auto;white-space:pre-wrap;display:none;"></div>
+      </div>
+
       <!-- Danger -->
       <div class="card">
         <div class="card-title" style="color:var(--red);">Danger Zone</div>
@@ -568,7 +580,17 @@ async function doSync() {
 
     CLTS = (cRes.data  || cRes.clients     || []);
     TX   = (tRes.data  || tRes.transactions || []).filter(r => r['invoiceNum'] || r['Invoice #'] || r['id']);
-    OG   = (ogRes.data || ogRes.sales       || []).filter(r => (r['Name']||'').trim());
+    OG   = (ogRes.data || ogRes.sales || []).filter(r => {
+      // Handle both exact header 'Name' and any casing variant
+      const name = r['Name'] || r['name'] || r['NAME'] || '';
+      return name.trim().length > 0;
+    });
+
+    // Debug: log first OG row to console so we can see exact field names
+    if (OG.length > 0) {
+      console.log('OG Sales first row keys:', Object.keys(OG[0]));
+      console.log('OG Sales first row:', OG[0]);
+    }
 
     // Build client list from TX + OG (source of truth)
     syncClients();
@@ -606,11 +628,12 @@ function syncClients() {
   // Step 2: Collect all unique names from OG
   const ogNames = {};
   OG.forEach(row => {
-    const name = (row['Name'] || '').trim();
+    // Handle exact headers: Date, Name, Package, Total
+    const name = (row['Name'] || row['name'] || row['NAME'] || '').trim();
     if (!name) return;
     const key = name.toLowerCase();
     if (!ogNames[key]) ogNames[key] = { name, ogSpend:0, ogSessions:0 };
-    const amt = parseFloat(row['Total'] || 0);
+    const amt = parseFloat(String(row['Total'] || row['total'] || row['TOTAL'] || row['Amount'] || '0').replace(/[,₱\s]/g, ''));
     if (amt > 0) { ogNames[key].ogSpend += amt; ogNames[key].ogSessions++; }
   });
 
@@ -913,14 +936,17 @@ function openHistory(id) {
     '<div style="padding:1.2rem;text-align:center;color:var(--text-light);font-size:.84rem;">No Transactions records found.</div>';
 
   // OG Sales
-  const ogRows = OG.filter(row=>nameMatch(c.name,(row['Name']||'').trim()));
+  const ogRows = OG.filter(row => {
+    const n = (row['Name'] || row['name'] || '').trim();
+    return n && nameMatch(c.name, n);
+  });
   document.getElementById('h-og').innerHTML = ogRows.length ? `
     <table><thead><tr><th>Date</th><th>Package</th><th>Total</th><th>Pts</th></tr></thead>
     <tbody>${ogRows.map(r=>`<tr>
-      <td style="font-size:.78rem;">${fmtDate(r['Date'])}</td>
-      <td style="font-size:.8rem;">${r['Package']||'—'}</td>
-      <td style="font-family:'DM Mono',monospace;color:var(--rust);">₱${fmt(parseFloat(r['Total']||0))}</td>
-      <td style="font-family:'DM Mono',monospace;color:var(--amber);">+${Math.floor(parseFloat(r['Total']||0)/DB.config.rate)}</td>
+      <td style="font-size:.78rem;">${fmtDate(r['Date'] || r['date'])}</td>
+      <td style="font-size:.8rem;">${r['Package'] || r['package'] || '—'}</td>
+      <td style="font-family:'DM Mono',monospace;color:var(--rust);">₱${fmt(parseFloat(r['Total'] || r['total'] || r['TOTAL'] || 0))}</td>
+      <td style="font-family:'DM Mono',monospace;color:var(--amber);">+${Math.floor(parseFloat(r['Total'] || r['total'] || r['TOTAL'] || 0)/DB.config.rate)}</td>
     </tr>`).join('')}</tbody></table>` :
     '<div style="padding:1.2rem;text-align:center;color:var(--text-light);font-size:.84rem;">No SALES 2023 records found.</div>';
 
@@ -1221,6 +1247,25 @@ function saveConfig(){
   saveDB();toast('Config saved!');
 }
 function clearData(){if(!confirm('Delete ALL local data?'))return;if(!confirm('Last chance — cannot undo!'))return;DB=initDB();saveDB();renderAll();toast('Data cleared.');}
+
+async function debugSheet(action, key) {
+  const box = document.getElementById('debug-result');
+  box.style.display = 'block';
+  box.textContent = `Calling ${action}…`;
+  try {
+    const res = await callScript(action);
+    const rows = res[key] || res.data || res.sales || res.transactions || res.clients || [];
+    const first3 = rows.slice(0, 3);
+    box.textContent =
+      `Action: ${action}\n` +
+      `Response keys: ${Object.keys(res).join(', ')}\n` +
+      `Row count: ${rows.length}\n\n` +
+      `First row keys: ${first3[0] ? Object.keys(first3[0]).join(', ') : 'none'}\n\n` +
+      `First 3 rows:\n${JSON.stringify(first3, null, 2)}`;
+  } catch(e) {
+    box.textContent = 'Error: ' + e.message;
+  }
+}
 
 async function importSales2023() {
   const el=document.getElementById('sales-sync-result');
