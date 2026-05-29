@@ -562,85 +562,109 @@ async function syncFromSheet() {
   syncStatus = 'syncing';
   updateSyncBadge('syncing');
   try {
-    // Fetch clients
+    // 1. Fetch clients
     const cData = await callScript({ action: 'getClients' });
-    SHEET_CLIENTS = (cData.clients || cData.data || []).filter(r => r['FB Name'] || r['Client Name']);
+    SHEET_CLIENTS = (cData.data || cData.clients || []).filter(r => r['FB Name'] || r['fbName']);
 
-    // Fetch transactions
+    // 2. Fetch transactions
     const tData = await callScript({ action: 'getTransactions' });
-    SHEET_TRANSACTIONS = (tData.transactions || tData.data || []).filter(r => r['Invoice #'] || r['ID']);
+    SHEET_TRANSACTIONS = (tData.data || tData.transactions || []).filter(r => r['Invoice #'] || r['invoiceNum'] || r['id'] || r['ID']);
 
-    // Merge sheet clients into DB.clients — auto-enroll anyone not yet in local DB
+    // 3. Fetch OG Sales 2023 — always fetch during sync
+    try {
+      const ogData = await callScript({ action: 'getOGSales' });
+      SHEET_OG_SALES = (ogData.data || ogData.sales || []).filter(r => (r['Name'] || '').trim());
+    } catch(e) { SHEET_OG_SALES = []; }
+
+    // 4. Auto-enroll from Clients sheet
     let newCount = 0;
     SHEET_CLIENTS.forEach(sc => {
-      const name = (sc['FB Name'] || sc['Client Name'] || '').trim();
-      const email = (sc['Email'] || '').trim();
-      const type = (sc['Type'] || '').trim();
-      const dateAdded = sc['Date Added'] || new Date().toISOString();
+      const name = (sc['FB Name'] || sc['fbName'] || sc['Client Name'] || '').trim();
+      const email = (sc['Email'] || sc['email'] || '').trim();
+      const phone = (sc['Phone'] || sc['phone'] || '').trim();
+      const type  = (sc['Type'] || sc['type'] || '').trim();
+      const dateAdded = sc['Date Added'] || sc['added'] || new Date().toISOString();
       if (!name) return;
       const existing = DB.clients.find(c =>
-        c.name.toLowerCase() === name.toLowerCase() ||
+        nameMatch(c.name, name) ||
         (email && c.email && c.email.toLowerCase() === email.toLowerCase())
       );
       if (!existing) {
-        // Auto-enroll new client
-        const nc = { id: uid(), name, email, phone: sc['Phone'] || sc['Mobile'] || '', birthday: sc['Birthday'] || '', type, joinedAt: dateAdded, points: 0, sessions: 0, referralsMade: 0, notes: 'Auto-enrolled from POS', source: 'sheet' };
+        const nc = { id:uid(), name, email, phone, birthday:sc['Birthday']||sc['birthday']||'', type, joinedAt:dateAdded, points:0, sessions:0, referralsMade:0, notes:'Auto-enrolled from POS', source:'sheet' };
         DB.clients.push(nc);
-        addActivity('client', nc, `Auto-enrolled from POS — ${type || 'client'}`, '', 0);
+        addActivity('client', nc, `Auto-enrolled from POS — ${type||'client'}`, '', 0);
         newCount++;
-      } else if (!existing.email && email) {
-        existing.email = email; // fill in missing email
+      } else {
+        if (!existing.email && email) existing.email = email;
+        if (!existing.phone && phone) existing.phone = phone;
       }
     });
 
-    // Calculate points for every client from transactions
+    // 5. Auto-enroll unique names from SALES 2023 not yet in DB
+    const seenNames = DB.clients.map(c => c.name.toLowerCase().trim());
+    SHEET_OG_SALES.forEach(row => {
+      const name = (row['Name'] || '').trim();
+      if (!name) return;
+      const alreadyIn = seenNames.some(s => nameMatch(name, s));
+      if (!alreadyIn) {
+        const nc = { id:uid(), name, email:'', phone:'', birthday:'', type:'sales2023', joinedAt: row['Date'] ? String(row['Date']) : new Date().toISOString(), points:0, sessions:0, referralsMade:0, notes:'Auto-enrolled from SALES 2023', source:'sales2023' };
+        DB.clients.push(nc);
+        addActivity('client', nc, `Auto-enrolled from SALES 2023`, '', 0);
+        seenNames.push(name.toLowerCase().trim());
+        newCount++;
+      }
+    });
+
+    // 6. Recalculate points for ALL clients using both sheets
     DB.clients.forEach(c => {
-      let totalSpend = 0;
-      let sessions = 0;
+      let txSpend = 0, txSessions = 0;
       SHEET_TRANSACTIONS.forEach(tx => {
-        const txClient = (tx['Client Name'] || tx['Client'] || '').trim();
+        const txClient = (tx['Client Name'] || tx['clientName'] || tx['Client'] || '').trim();
         if (!txClient) return;
-        if (!tx['Invoice #'] && !tx['ID']) return;
+        if (!tx['Invoice #'] && !tx['invoiceNum'] && !tx['ID'] && !tx['id']) return;
         if (nameMatch(c.name, txClient)) {
-          const amt = parseFloat(tx['Total'] || 0);
-          if (amt > 0) { totalSpend += amt; sessions++; }
+          const amt = parseFloat(tx['Total'] || tx['total'] || 0);
+          if (amt > 0) { txSpend += amt; txSessions++; }
         }
       });
 
-      // Points from spend (Transactions) + OG Sales + any manual bonus points stored locally
-      const spendPts = Math.floor(totalSpend / 100);
+      let ogSpend = 0, ogSessions = 0;
+      SHEET_OG_SALES.forEach(row => {
+        const rowName = (row['Name'] || '').trim();
+        if (!rowName) return;
+        if (nameMatch(c.name, rowName)) {
+          const amt = parseFloat(row['Total'] || 0);
+          if (amt > 0) { ogSpend += amt; ogSessions++; }
+        }
+      });
 
-      // Add points from OG SALES 2023 if already loaded
-      let ogSpend = 0;
-      if (SHEET_OG_SALES.length > 0) {
-        SHEET_OG_SALES.forEach(row => {
-          const rowName = (row['Name'] || '').trim();
-          if (!rowName) return;
-          if (nameMatch(c.name, rowName)) ogSpend += parseFloat(row['Total'] || 0);
-        });
-      }
-      const ogPts = Math.floor(ogSpend / 100);
-
+      const spendPts = Math.floor(txSpend / 100);
+      const ogPts    = Math.floor(ogSpend / 100);
       const bonusPts = DB.activity
         .filter(a => a.clientId === c.id && a.type === 'bonus')
         .reduce((s, a) => s + (a.points || 0), 0);
-      c.points = spendPts + ogPts + bonusPts;
-      c.sessions = sessions;
-      c.totalSpend = totalSpend;
-      c.ogSpend = ogSpend;
+      const redeemedPts = DB.activity
+        .filter(a => a.clientId === c.id && a.type === 'redemption' && a.points < 0)
+        .reduce((s, a) => s + Math.abs(a.points || 0), 0);
+
+      c.points     = spendPts + ogPts + bonusPts - redeemedPts;
+      c.sessions   = txSessions + ogSessions;
+      c.totalSpend = txSpend;
+      c.ogSpend    = ogSpend;
     });
 
     DB.lastSync = new Date().toISOString();
     saveDB(DB);
     syncStatus = 'done';
     updateSyncBadge('done', newCount);
-    if (newCount > 0) toast(`✓ Synced — ${newCount} new client${newCount>1?'s':''} auto-enrolled!`, 4000);
-    else toast('✓ Synced with Google Sheet');
+    if (newCount > 0) toast(`✓ Synced — ${newCount} new client${newCount>1?'s':''} enrolled!`, 4000);
+    else toast(`✓ Synced — ${DB.clients.length} clients · ${SHEET_OG_SALES.length} OG Sales rows`);
     renderAll();
   } catch(err) {
+    console.error('Sync error:', err);
     syncStatus = 'error';
     updateSyncBadge('error');
-    toast('⚠ Sync failed — check connection', 4000);
+    toast('⚠ Sync failed: ' + err.message, 4000);
   }
 }
 
@@ -1362,7 +1386,7 @@ async function syncOGSales() {
   if (resultEl) resultEl.textContent = '↻ Syncing OG Sales Sheet…';
   try {
     const data = await callScript({ action: 'getOGSales' });
-    SHEET_OG_SALES = (data.sales || data.data || []).filter(r => r['Name'] || r['Date']);
+    SHEET_OG_SALES = (data.data || data.sales || []).filter(r => (r['Name'] || '').trim());
 
     // Recalculate OG spend and update points for all clients
     let updated = 0;
