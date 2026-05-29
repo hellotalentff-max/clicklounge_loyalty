@@ -260,12 +260,15 @@ select.form-input{cursor:pointer;}
         <div class="form-row">
           <label class="form-label">Bonus Type</label>
           <select class="form-input" id="bp-type" onchange="updateBonusDesc()">
-            <option value="referral" data-pts="5">Referral made (+5 pts)</option>
-            <option value="referral-vip" data-pts="10">Referral made — VIP client (+10 pts)</option>
-            <option value="ig-tag" data-pts="2">Tagged us on IG/FB (+2 pts)</option>
-            <option value="google-review" data-pts="3">Google review (+3 pts)</option>
-            <option value="birthday" data-pts="5">Birthday month bonus (+5 pts)</option>
-            <option value="manual" data-pts="0">Manual adjustment</option>
+            <option value="sm-consent" data-pts="5">📸 SM Consent (+5 pts)</option>
+            <option value="feedback" data-pts="10">⭐ Feedback / Review (+10 pts)</option>
+            <option value="referral" data-pts="15">🤝 Refer a Friend (+15 pts)</option>
+            <option value="early-bird" data-pts="15">🐦 Early Bird Booking (+15 pts)</option>
+            <option value="birthday" data-pts="5">🎂 Birthday Month (+5 pts)</option>
+            <option value="google-review" data-pts="10">⭐ Google Review (+10 pts)</option>
+            <option value="facebook-review" data-pts="10">⭐ Facebook Review (+10 pts)</option>
+            <option value="ig-tag" data-pts="5">📱 Tagged on IG/FB (+5 pts)</option>
+            <option value="manual" data-pts="0">Manual Adjustment</option>
           </select>
         </div>
         <div class="form-row" id="bp-ref-row" style="display:none;">
@@ -330,12 +333,21 @@ select.form-input{cursor:pointer;}
               <option value="Gift spinner prize|0">Gift spinner prize · FREE</option>
             </optgroup>
             <optgroup label="— Points Rewards (deducted) —">
-              <option value="Free 5-min extension|10">Free 5-min extension · 10 pts</option>
-              <option value="Free digital copy upgrade|15">Free digital copy upgrade · 15 pts</option>
-              <option value="Free 4R print|20">Free 4R print · 20 pts</option>
-              <option value="Free outfit change|25">Free outfit change · 25 pts</option>
-              <option value="Free Basic HMU|50">Free Basic HMU — Gold+ · 50 pts</option>
-              <option value="Free annual mini session (20 mins)|100">Free annual mini session — VIP · 100 pts</option>
+              <option value="Free Outfit Change|30">👗 Free Outfit Change · 30 pts</option>
+              <option value="Free 5-min extension|50">⏱️ Free 5-min extension · 50 pts</option>
+              <option value="Free digital copy upgrade|50">🖼️ Free digital copy upgrade · 50 pts</option>
+              <option value="Free 4R print|80">🖨️ Free 4R print · 80 pts</option>
+              <option value="Extra edited photo|100">📸 Extra edited photo · 100 pts</option>
+              <option value="Free 8x10 framed print|100">🖼️ Free 8x10 framed print · 100 pts</option>
+              <option value="BTS video clip|100">🎬 BTS video clip · 100 pts</option>
+              <option value="Free A4 framed print|300">🖼️ Free A4 framed print · 300 pts</option>
+              <option value="Social media feature|300">📲 Social media feature · 300 pts</option>
+              <option value="Mini birthday session (10 mins)|300">🎉 Mini birthday session · 300 pts</option>
+              <option value="Free Basic HMU|500">💄 Free Basic HMU — Gold+ · 500 pts</option>
+              <option value="Free 30-min self shoot|500">🕐 Free 30-min self shoot — Gold+ · 500 pts</option>
+              <option value="Bring 1 friend FREE|500">👥 Bring 1 friend FREE — Gold+ · 500 pts</option>
+              <option value="Free photographer session (20 mins)|1000">📷 Free photographer session — VIP · 1,000 pts</option>
+              <option value="Free full set design|1000">🎨 Free full set design — VIP · 1,000 pts</option>
             </optgroup>
           </select>
         </div>
@@ -857,9 +869,9 @@ function saveClient() {
     if(data.referredBy) {
       const ref=DB.clients.find(c=>c.name.toLowerCase()===data.referredBy.toLowerCase());
       if(ref){
-        const refPts = getTier(ref.points).name==='VIP' ? DB.config.refVip : DB.config.ref;
+        const refPts = 15;
         ref.points += refPts; ref.referralsMade = (ref.referralsMade||0)+1;
-        addActivity('bonus',ref,`Referral bonus — referred ${name}`,`Verified: new client ${name} enrolled`,refPts);
+        addActivity('bonus',ref,`🤝 Referral bonus — referred ${name}`,`Verified: new client ${name} enrolled`,refPts);
         toast(`✓ ${ref.name} earned +${refPts} referral points!`,4000);
       }
     }
@@ -939,7 +951,12 @@ function verifyClient() {
   const c=DB.clients.find(x=>x.name.toLowerCase().includes(q)||x.phone.includes(q));
   if(!c){box.innerHTML=`<div class="verify-box"><div class="verify-icon">🔍</div><p style="font-size:.85rem;color:var(--text-light);">No client found. Check the name or phone number.</p></div>`;return;}
   const t=getTier(c.points);
-  const perks={Bronze:['Digital ClickCard membership','Birthday month surprise gift','Access to member-only promos','Priority booking via DM','1 free backdrop change'],Silver:['All Bronze perks','FREE 5-min session extension','10% discount on add-ons','Early access to new set designs','1 free digital copy upgrade','Name in CLS Wall of Fans'],Gold:['All Silver perks','FREE Basic HMU (1× per year)','15% off add-ons','1 free outfit change per session','Complimentary 4R print per visit','Featured on CLS social media','Dedicated booking slot'],VIP:['All Gold perks','FREE annual mini session (20 mins)','20% off ALL add-ons','Exclusive VIP-only set designs','First access to new packages','Behind-the-scenes studio tour','Personal thank-you from the team','Referral bonus: +10 pts per friend']};
+  const perks={
+    Bronze:['Digital ClickCard membership','Birthday month surprise gift','Access to member-only promos','Priority booking via DM','1 free backdrop change'],
+    Silver:['All Bronze perks','Free 5-min extension (50 pts)','Free digital copy upgrade (50 pts)','Free outfit change (30 pts)','Early access to new set designs','Name in CLS Wall of Fans'],
+    Gold:['All Silver perks','Free 4R print (80 pts)','Free Basic HMU (800 pts)','Featured on CLS social media','Dedicated booking slot (no waitlist)'],
+    VIP:['All Gold perks','Free annual mini session (1,500 pts)','Exclusive VIP-only set designs','First access to new packages','Behind-the-scenes studio tour','Personal thank-you from the team','Referral bonus: +15 pts per friend']
+  };
   const recentActs=[...DB.activity].filter(a=>a.clientId===c.id).reverse().slice(0,3);
   box.innerHTML=`
     <div style="background:var(--green-lt);border-radius:12px;padding:1.2rem;margin-top:.8rem;">
@@ -974,12 +991,21 @@ function verifyCode() {
 }
 // Perk point costs map
 const PERK_COSTS = {
-  'Free 5-min extension': 10,
-  'Free digital copy upgrade': 15,
-  'Free 4R print': 20,
-  'Free outfit change': 25,
-  'Free Basic HMU': 50,
-  'Free annual mini session (20 mins)': 100,
+  'Free Outfit Change': 30,
+  'Free 5-min extension': 50,
+  'Free digital copy upgrade': 50,
+  'Free 4R print': 80,
+  'Extra edited photo': 100,
+  'Free 8x10 framed print': 100,
+  'BTS video clip': 100,
+  'Free A4 framed print': 300,
+  'Social media feature': 300,
+  'Mini birthday session (10 mins)': 300,
+  'Free Basic HMU': 500,
+  'Free 30-min self shoot': 500,
+  'Bring 1 friend FREE': 500,
+  'Free photographer session (20 mins)': 1000,
+  'Free full set design': 1000,
 };
 
 function getPerkFromSelect() {
