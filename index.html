@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CLS ClickCard Admin</title>
+<title>ClickLounge Studio — ClickCard Loyalty Hub</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -229,8 +229,8 @@ tr:hover td{background:var(--cream);}
 <!-- AUTH -->
 <div id="auth-screen">
   <div class="auth-box">
-    <div class="auth-logo">ClickLounge</div>
-    <div class="auth-sub">Studio · Loyalty Admin</div>
+    <div class="auth-logo">ClickLounge Studio</div>
+    <div class="auth-sub">ClickCard Loyalty Hub</div>
     <div class="auth-divider"></div>
 
     <div class="auth-field">
@@ -656,23 +656,26 @@ tr:hover td{background:var(--cream);}
 <!-- CLIENT MODAL -->
 <div class="modal-bg" id="modal-client">
   <div class="modal">
-    <div class="modal-head">
-      <h3 id="modal-client-title">Add Client</h3>
-      <button class="modal-close" onclick="closeModal('modal-client')">✕</button>
+    <div class="modal-head" style="background:var(--slate);">
+      <div>
+        <div style="font-family:'Poppins',sans-serif;font-size:.7rem;font-weight:500;color:var(--gold);text-transform:uppercase;letter-spacing:.12em;margin-bottom:2px;" id="modal-client-label">Client Info</div>
+        <h3 id="modal-client-title" style="font-family:'Poppins',sans-serif;font-size:1rem;font-weight:600;color:#fff;"></h3>
+      </div>
+      <button class="modal-close" style="background:rgba(255,255,255,.1);color:#fff;" onclick="closeModal('modal-client')">✕</button>
     </div>
     <div class="modal-body">
       <input type="hidden" id="edit-client-id">
       <div class="form-row-2">
-        <div class="form-row"><label class="form-label">Full Name *</label><input class="form-input" id="c-name" placeholder="e.g. Maria Santos"></div>
-        <div class="form-row"><label class="form-label">Phone</label><input class="form-input" id="c-phone" placeholder="09XXXXXXXXX"></div>
+        <div class="form-row"><label class="form-label">Full Name *</label><input class="form-input" id="c-name" placeholder="e.g. Maria Santos" style="font-family:'Poppins',sans-serif;"></div>
+        <div class="form-row"><label class="form-label">Phone</label><input class="form-input" id="c-phone" placeholder="09XXXXXXXXX" style="font-family:'Poppins',sans-serif;"></div>
       </div>
-      <div class="form-row"><label class="form-label">Email</label><input class="form-input" id="c-email" placeholder="email@example.com"></div>
+      <div class="form-row"><label class="form-label">Email</label><input class="form-input" id="c-email" placeholder="email@example.com" style="font-family:'Poppins',sans-serif;"></div>
       <div class="form-row-2">
-        <div class="form-row"><label class="form-label">Birthday (MM/DD)</label><input class="form-input" id="c-bday" placeholder="03/15"></div>
-        <div class="form-row"><label class="form-label">Referred by</label><input class="form-input" id="c-referred" placeholder="Name of referrer"></div>
+        <div class="form-row"><label class="form-label">Birthday (MM/DD)</label><input class="form-input" id="c-bday" placeholder="03/15" style="font-family:'Poppins',sans-serif;"></div>
+        <div class="form-row"><label class="form-label">Referred by</label><input class="form-input" id="c-referred" placeholder="Name of referrer" style="font-family:'Poppins',sans-serif;"></div>
       </div>
-      <div class="form-row"><label class="form-label">Notes</label><input class="form-input" id="c-notes" placeholder="Any notes"></div>
-      <button class="btn btn-green" style="width:100%;margin-top:.3rem;" onclick="saveClient()">Save Client →</button>
+      <div class="form-row"><label class="form-label">Notes</label><input class="form-input" id="c-notes" placeholder="Any notes" style="font-family:'Poppins',sans-serif;"></div>
+      <button class="btn btn-teal" style="width:100%;margin-top:.3rem;font-family:'Poppins',sans-serif;font-weight:600;border-radius:9px;padding:.75rem;" onclick="saveClient()">Save Changes →</button>
     </div>
   </div>
 </div>
@@ -883,6 +886,9 @@ function syncClients() {
       existing.txPts=txPts; existing.ogPts=ogPts; existing.bonusPts=bonusPts;
       existing.points=totalPts; existing.sessions=m.txSessions+m.ogSessions;
       existing.sources=m.sources; existing.txRows=m.txRows; existing.ogRows=m.ogRows;
+      // Heal any bad phone values that leaked from type columns
+      if (existing.phone) existing.phone = normPhone(existing.phone);
+      if (existing.birthday) existing.birthday = normBirthday(existing.birthday);
     } else {
       DB.clients.push({
         id:uid(), name:m.name, email:'', phone:'', birthday:'', type:'',
@@ -1146,7 +1152,7 @@ function renderClients() {
       <div class="cl-tags">
         <span class="cl-tag ${tierCls}">${t.emoji} ${t.name}</span>
         ${srcChips}
-        ${c.phone?`<span class="cl-tag cl-tag-slate">📞 ${c.phone}</span>`:''}
+        ${c.phone?`<span class="cl-tag cl-tag-slate">📞 ${normPhone(c.phone)}</span>`:''}
       </div>
 
       <!-- Recent visits -->
@@ -1432,6 +1438,7 @@ function copyEmailHtml(){
 // CLIENT HISTORY MODAL
 // ══════════════════════════════════════════════════════════
 function openHistory(id) {
+  const c = DB.clients.find(x=>x.id===id); if(!c) return;   // ← was missing
   const t = getTier(c.points||0);
   document.getElementById('history-name').textContent = c.name;
 
@@ -1513,25 +1520,58 @@ function switchHTab(id, btn) {
   if(btn) btn.classList.add('active');
 }
 
+// ── Format birthday: converts ISO timestamp / YYYY-MM-DD → MM/DD
+function normBirthday(val) {
+  if (!val) return '';
+  // ISO timestamp: 2026-05-06T07:00:00.000Z
+  if (typeof val === 'string' && val.includes('T')) {
+    const d = new Date(val);
+    return String(d.getUTCMonth()+1).padStart(2,'0') + '/' + String(d.getUTCDate()).padStart(2,'0');
+  }
+  // YYYY-MM-DD
+  if (/^\d{4}-\d{2}-\d{2}$/.test(val)) {
+    const [,m,d] = val.split('-');
+    return m + '/' + d;
+  }
+  // Google Sheets serial number (days since 1899-12-30)
+  if (typeof val === 'number' && val > 30000) {
+    const d = new Date((val - 25569) * 86400 * 1000);
+    return String(d.getUTCMonth()+1).padStart(2,'0') + '/' + String(d.getUTCDate()).padStart(2,'0');
+  }
+  return String(val); // already MM/DD or unknown
+}
+
+// ── Sanitize phone: strip non-phone values that leak from type/source columns
+function normPhone(val) {
+  if (!val) return '';
+  const v = String(val).trim();
+  // Reject type values that aren't phone numbers
+  if (/^(walkin|booked|walk-in|manual|pos|og|sales)$/i.test(v)) return '';
+  return v;
+}
+
 // ══════════════════════════════════════════════════════════
 // CLIENT ADD / EDIT
 // ══════════════════════════════════════════════════════════
 function openAddClient() {
   ['c-name','c-phone','c-email','c-bday','c-referred','c-notes'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('edit-client-id').value='';
-  document.getElementById('modal-client-title').textContent='Add Client';
+  document.getElementById('modal-client-label').textContent = 'New Client';
+  document.getElementById('modal-client-title').textContent = 'Add a new client';
   openModal('modal-client');
 }
+
 function openEditClient(id) {
-  const c=DB.clients.find(x=>x.id===id); if(!c) return;
-  document.getElementById('edit-client-id').value=id;
-  document.getElementById('c-name').value=c.name;
-  document.getElementById('c-phone').value=c.phone||'';
-  document.getElementById('c-email').value=c.email||'';
-  document.getElementById('c-bday').value=c.birthday||'';
-  document.getElementById('c-referred').value=c.referredBy||'';
-  document.getElementById('c-notes').value=c.notes||'';
-  document.getElementById('modal-client-title').textContent='Edit Client';
+  const c = DB.clients.find(x=>x.id===id); if(!c) return;
+  document.getElementById('edit-client-id').value = id;
+  document.getElementById('c-name').value     = c.name;
+  document.getElementById('c-phone').value    = normPhone(c.phone);
+  document.getElementById('c-email').value    = c.email||'';
+  document.getElementById('c-bday').value     = normBirthday(c.birthday);
+  document.getElementById('c-referred').value = c.referredBy||'';
+  document.getElementById('c-notes').value    = c.notes||'';
+  document.getElementById('modal-client-label').textContent = 'Client Details';
+  document.getElementById('modal-client-title').textContent = c.name;
   openModal('modal-client');
 }
 function saveClient() {
