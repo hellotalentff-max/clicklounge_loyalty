@@ -287,7 +287,7 @@ tr:hover td{background:var(--cream);}
     <div class="card" style="margin-top:.8rem;">
       <div class="card-title">Top Clients by Points</div>
       <div style="overflow-x:auto;">
-        <table><thead><tr><th>Client</th><th>Points</th><th>Tier</th><th>Sessions</th><th>TX Spend</th><th>OG Spend</th><th>Source</th></tr></thead>
+        <table><thead><tr><th>Client</th><th>Points</th><th>Tier</th><th>Sessions</th><th>POS Spend</th><th>Sales 2023 Spend</th><th>Source</th></tr></thead>
         <tbody id="dash-top"></tbody></table>
       </div>
     </div>
@@ -300,7 +300,7 @@ tr:hover td{background:var(--cream);}
       <select class="search-in" style="max-width:140px;" id="client-source-filter" onchange="renderClients()">
         <option value="">All sources</option>
         <option value="pos">POS only</option>
-        <option value="sales2023">OG Sales only</option>
+        <option value="sales2023">Sales 2023 only</option>
         <option value="both">Both</option>
       </select>
       <select class="search-in" style="max-width:130px;" id="client-tier-filter" onchange="renderClients()">
@@ -620,7 +620,7 @@ tr:hover td{background:var(--cream);}
         <button class="btn btn-green" onclick="saveConfig()">Save Config →</button>
       </div>
 
-      <!-- OG Sales Sync -->
+      <!-- Sales 2023 Sync -->
       <div class="card">
         <div class="card-title">SALES 2023 Sync</div>
         <p style="font-size:.82rem;color:var(--text-light);margin-bottom:.8rem;">
@@ -638,7 +638,7 @@ tr:hover td{background:var(--cream);}
         <div class="card-title">Debug — Raw Sheet Data</div>
         <p style="font-size:.82rem;color:var(--text-light);margin-bottom:.8rem;">Use this to verify what the Apps Script is returning. Check the browser Console (F12) after syncing for field names.</p>
         <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
-          <button class="btn btn-outline btn-sm" onclick="debugSheet('getOGSales','sales')">🔍 Check OG Sales Response</button>
+          <button class="btn btn-outline btn-sm" onclick="debugSheet('getOGSales','sales')">🔍 Check Sales 2023 Response</button>
           <button class="btn btn-outline btn-sm" onclick="debugSheet('getTransactions','data')">🔍 Check Transactions Response</button>
         </div>
         <div id="debug-result" style="margin-top:.8rem;font-size:.75rem;font-family:Poppins,sans-serif;background:var(--cream-dk);border-radius:8px;padding:.8rem;color:var(--text-mid);max-height:200px;overflow-y:auto;white-space:pre-wrap;display:none;"></div>
@@ -691,7 +691,7 @@ tr:hover td{background:var(--cream);}
       <div id="history-summary" style="display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-bottom:1rem;"></div>
       <div class="htabs">
         <button class="htab active" onclick="switchHTab('h-sessions',this)">Sessions (POS)</button>
-        <button class="htab" onclick="switchHTab('h-og',this)">OG Sales 2023</button>
+        <button class="htab" onclick="switchHTab('h-og',this)">Sales 2023</button>
         <button class="htab" onclick="switchHTab('h-bonus',this)">Bonus Points</button>
         <button class="htab" onclick="switchHTab('h-redeem',this)">Redemptions</button>
       </div>
@@ -796,7 +796,7 @@ async function doSync() {
     syncing = false;
     const t = new Date(DB.lastSync).toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'});
     setSyncBadge(`✓ Synced ${t}`, 'rgba(74,160,130,.4)');
-    toast(`✓ Synced — ${DB.clients.length} clients · ${TX.length} TX · ${OG.length} OG Sales rows`);
+    toast(`✓ Synced — ${DB.clients.length} clients · ${TX.length} TX · ${OG.length} Sales 2023 rows`);
     renderAll();
   } catch(err) {
     syncing = false;
@@ -834,7 +834,7 @@ function syncClients() {
     txMap[key].txRows.push(tx);
   });
 
-  // ── Step 2: Aggregate OG — same nameMatch merge + capture email/phone
+  // ── Step 2: Aggregate Sales 2023 — same nameMatch merge + capture email/phone
   const ogMap = {}; // canonical lowerName → { name, ogSpend, ogSessions, ogRows, email, phone }
   OG.forEach(row => {
     const raw  = row['Name'] || row['name'] || '';
@@ -963,9 +963,9 @@ function srcBadge(sources=[]) {
   if (!sources||!sources.length) return '';
   const hasPos = sources.includes('pos');
   const hasOG  = sources.includes('sales2023');
-  if (hasPos && hasOG) return '<span class="src-badge src-both">TX+OG</span>';
+  if (hasPos && hasOG) return '<span class="src-badge src-both">POS + Sales 2023</span>';
   if (hasPos) return '<span class="src-badge src-pos">POS</span>';
-  return '<span class="src-badge src-og">OG 2023</span>';
+  return '<span class="src-badge src-og">Sales 2023</span>';
 }
 
 // ══════════════════════════════════════════════════════════
@@ -1015,10 +1015,10 @@ function renderDashboard() {
   const ogSessions = cl.reduce((s,c)=>s+(c.ogSessions||0),0);
 
   document.getElementById('dash-stats').innerHTML = `
-    <div class="stat"><div class="stat-label">Total Clients</div><div class="stat-val">${cl.length}</div><div class="stat-sub">${cl.filter(c=>c.sources&&c.sources.includes('pos')).length} POS · ${cl.filter(c=>c.sources&&c.sources.includes('sales2023')).length} OG</div></div>
+    <div class="stat"><div class="stat-label">Total Clients</div><div class="stat-val">${cl.length}</div><div class="stat-sub">${cl.filter(c=>c.sources&&c.sources.includes('pos')).length} POS · ${cl.filter(c=>c.sources&&c.sources.includes('sales2023')).length} Sales 2023</div></div>
     <div class="stat"><div class="stat-label">Points Issued</div><div class="stat-val">${fmt(totalPts)}</div><div class="stat-sub">across all clients</div></div>
     <div class="stat"><div class="stat-label">TX Sessions</div><div class="stat-val">${txSessions}</div><div class="stat-sub">from Transactions sheet</div></div>
-    <div class="stat"><div class="stat-label">OG Sessions</div><div class="stat-val">${ogSessions}</div><div class="stat-sub">from SALES 2023</div></div>
+    <div class="stat"><div class="stat-label">Sales 2023 Sessions</div><div class="stat-val">${ogSessions}</div><div class="stat-sub">from Sales 2023</div></div>
     <div class="stat" style="cursor:pointer;" onclick="doSync()"><div class="stat-label">Last Sync</div><div class="stat-val" style="font-size:1rem;margin-top:.3rem;">${DB.lastSync?new Date(DB.lastSync).toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'}):'—'}</div><div class="stat-sub" style="color:var(--green);">tap to sync ↻</div></div>`;
 
   document.getElementById('dash-tiers').innerHTML = Object.entries(tiers).map(([n,c])=>`
@@ -1109,14 +1109,14 @@ function renderClients() {
     // Source chips
     const srcChips = (c.sources||[]).map(s =>
       s==='pos'       ? '<span class="cl-tag cl-tag-teal">POS</span>'
-    : s==='sales2023' ? '<span class="cl-tag cl-tag-slate">OG 2023</span>'
+    : s==='sales2023' ? '<span class="cl-tag cl-tag-slate">Sales 2023</span>'
     :                   '<span class="cl-tag cl-tag-slate">Manual</span>'
     ).join('');
 
     // Points chips
     const ptsChips =
       `<span class="cl-pts-chip" style="background:rgba(81,137,125,.1);color:var(--teal-dk);">POS <b>+${fmt(c.txPts||0)}</b></span>` +
-      (c.ogPts>0 ? `<span class="cl-pts-chip" style="background:rgba(176,90,42,.08);color:#7a3e18;">OG <b>+${fmt(c.ogPts)}</b></span>` : '') +
+      (c.ogPts>0 ? `<span class="cl-pts-chip" style="background:rgba(176,90,42,.08);color:#7a3e18;">Sales 2023 <b>+${fmt(c.ogPts)}</b></span>` : '') +
       (bonusPts>0 ? `<span class="cl-pts-chip" style="background:rgba(196,154,26,.1);color:#6a4a00;">Bonus <b>+${fmt(bonusPts)}</b></span>` : '');
 
     // Visit rows
@@ -1457,8 +1457,8 @@ function openHistory(id) {
   const bonusPts = DB.activity.filter(a=>a.clientId===id&&a.type==='bonus').reduce((s,a)=>s+(a.points||0),0);
   const redCt    = DB.activity.filter(a=>a.clientId===id&&a.type==='redemption').length;
   document.getElementById('history-summary').innerHTML = `
-    <div class="stat"><div class="stat-label">TX Points</div><div class="stat-val" style="font-size:1.3rem;color:var(--green);">+${fmt(c.txPts||0)}</div><div class="stat-sub">₱${fmt(c.txSpend||0)} spent</div></div>
-    <div class="stat"><div class="stat-label">OG Points</div><div class="stat-val" style="font-size:1.3rem;color:var(--rust);">+${fmt(c.ogPts||0)}</div><div class="stat-sub">₱${fmt(c.ogSpend||0)} spent</div></div>
+    <div class="stat"><div class="stat-label">POS Points</div><div class="stat-val" style="font-size:1.3rem;color:var(--green);">+${fmt(c.txPts||0)}</div><div class="stat-sub">₱${fmt(c.txSpend||0)} spent</div></div>
+    <div class="stat"><div class="stat-label">Sales 2023 Pts</div><div class="stat-val" style="font-size:1.3rem;color:var(--rust);">+${fmt(c.ogPts||0)}</div><div class="stat-sub">₱${fmt(c.ogSpend||0)} spent</div></div>
     <div class="stat"><div class="stat-label">Total Points</div><div class="stat-val" style="font-size:1.3rem;">${fmt(c.points||0)}</div><div class="stat-sub"><span class="tier ${t.cls}">${t.emoji} ${t.name}</span></div></div>
     <div class="stat"><div class="stat-label">Redemptions</div><div class="stat-val" style="font-size:1.3rem;">${redCt}</div><div class="stat-sub">perks claimed</div></div>`;
 
@@ -1478,7 +1478,7 @@ function openHistory(id) {
     </tr>`).join('')}</tbody></table>` :
     '<div style="padding:1.2rem;text-align:center;color:var(--text-light);font-size:.84rem;">No Transactions records found.</div>';
 
-  // OG Sales
+  // Sales 2023
   const ogRows = OG.filter(row => {
     const n = (row['Name'] || row['name'] || '').trim();
     return n && nameMatch(c.name, n);
@@ -1519,7 +1519,7 @@ function openHistory(id) {
     </tr>`).join('')}</tbody></table>` :
     '<div style="padding:1.2rem;text-align:center;color:var(--text-light);font-size:.84rem;">No redemptions yet.</div>';
 
-  // Reset to first tab — auto-switch to OG if no POS sessions
+  // Reset to first tab — auto-switch to Sales 2023 if client has no POS sessions
   const defaultTab = txRows.length ? 'h-sessions' : ogRows.length ? 'h-og' : 'h-sessions';
   switchHTab(defaultTab, document.querySelector('.htab[onclick*="' + defaultTab + '"]'));
   openModal('modal-history');
