@@ -638,7 +638,7 @@ tr:hover td{background:var(--cream);}
         <div class="card-title">Debug — Raw Sheet Data</div>
         <p style="font-size:.82rem;color:var(--text-light);margin-bottom:.8rem;">Use this to verify what the Apps Script is returning. Check the browser Console (F12) after syncing for field names.</p>
         <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
-          <button class="btn btn-outline btn-sm" onclick="debugSheet('getOGSales','sales')">🔍 Check Sales 2023 Response</button>
+          <button class="btn btn-outline btn-sm" onclick="debugSheet('getSales2023','sales')">🔍 Check Sales 2023 Response</button>
           <button class="btn btn-outline btn-sm" onclick="debugSheet('getTransactions','data')">🔍 Check Transactions Response</button>
         </div>
         <div id="debug-result" style="margin-top:.8rem;font-size:.75rem;font-family:Poppins,sans-serif;background:var(--cream-dk);border-radius:8px;padding:.8rem;color:var(--text-mid);max-height:200px;overflow-y:auto;white-space:pre-wrap;display:none;"></div>
@@ -769,15 +769,12 @@ async function doSync() {
     // Fetch transactions and SALES 2023 data
     const tRes = await callScript('getTransactions');
 
-    // Try getSales2023 first (reads from "SALES 2023" tab directly),
-    // fall back to getOGSales for backward compatibility
+    // Fetch SALES 2023 data (reads directly from "SALES 2023" tab)
     let ogRes;
     try {
-      const s23 = await callScript('getSales2023');
-      if (s23 && (s23.data?.length || s23.sales?.length)) ogRes = s23;
-      else throw new Error('empty');
+      ogRes = await callScript('getSales2023');
     } catch(e) {
-      ogRes = await callScript('getOGSales');
+      ogRes = { sales: [], data: [] };
     }
 
     // Transactions — internal keys from Apps Script HEADERS.transactions
