@@ -68,14 +68,63 @@
 body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;}
 
 /* AUTH */
-#auth-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(160deg,var(--green-dk),#1a3d35);}
-.auth-box{background:#fff;border-radius:20px;padding:2.5rem;width:min(90vw,380px);box-shadow:0 20px 60px rgba(0,0,0,.3);}
-.auth-logo{font-family:'Instrument Serif',serif;font-size:1.6rem;color:var(--green-dk);text-align:center;margin-bottom:.2rem;}
-.auth-sub{font-size:.72rem;color:var(--text-light);text-align:center;letter-spacing:.14em;text-transform:uppercase;font-family:'DM Mono',monospace;margin-bottom:2rem;}
-.auth-input{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:.75rem 1rem;font-family:'DM Sans',sans-serif;font-size:.9rem;color:var(--text);outline:none;transition:border-color .2s;background:var(--cream);margin-bottom:.8rem;}
-.auth-input:focus{border-color:var(--green);}
-.auth-btn{width:100%;background:var(--green);color:#fff;font-family:'DM Mono',monospace;font-size:.82rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;padding:.85rem;border-radius:10px;border:none;cursor:pointer;}
-.auth-err{color:var(--red);font-size:.82rem;text-align:center;margin-top:.6rem;display:none;}
+#auth-screen{
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;
+  background:linear-gradient(160deg,var(--slate) 0%,var(--teal-dk) 100%);
+  font-family:'Poppins',sans-serif;
+  padding:20px;
+}
+.auth-box{
+  background:#fff;border-radius:20px;
+  padding:2.4rem 2.2rem;
+  width:min(92vw,380px);
+  box-shadow:0 24px 64px rgba(0,0,0,.28);
+}
+.auth-logo{
+  font-family:'Poppins',sans-serif;font-size:1.3rem;font-weight:700;
+  color:var(--slate);text-align:center;letter-spacing:1.5px;text-transform:uppercase;
+  margin-bottom:3px;
+}
+.auth-sub{
+  font-size:.7rem;color:var(--muted);text-align:center;
+  letter-spacing:.18em;text-transform:uppercase;
+  font-family:'Poppins',sans-serif;font-weight:400;
+  margin-bottom:.5rem;
+}
+.auth-divider{
+  width:36px;height:2px;background:var(--gold);
+  border-radius:2px;margin:.8rem auto 1.6rem;
+}
+.auth-field-label{
+  font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--muted);font-weight:600;font-family:'Poppins',sans-serif;
+  display:block;margin-bottom:.35rem;
+}
+.auth-input{
+  width:100%;border:1.5px solid var(--light2);border-radius:9px;
+  padding:.7rem .95rem;font-family:'Poppins',sans-serif;
+  font-size:.88rem;color:var(--slate);outline:none;
+  transition:border-color .18s,box-shadow .18s;
+  background:var(--light);margin-bottom:0;
+}
+.auth-input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(81,137,125,.12);background:#fff;}
+.auth-field{margin-bottom:.9rem;}
+.auth-btn{
+  width:100%;background:var(--teal);color:#fff;
+  font-family:'Poppins',sans-serif;font-size:.88rem;font-weight:600;
+  letter-spacing:.04em;padding:.82rem;border-radius:9px;border:none;
+  cursor:pointer;transition:background .15s;margin-top:.4rem;
+}
+.auth-btn:hover{background:var(--teal-dk);}
+.auth-err{
+  color:var(--danger);font-size:.78rem;text-align:center;
+  margin-top:.6rem;display:none;font-family:'Poppins',sans-serif;
+}
+.auth-hint{
+  font-size:.68rem;color:var(--muted);text-align:center;
+  margin-top:1rem;font-family:'Poppins',sans-serif;line-height:1.6;
+}
 
 /* APP */
 #app{display:none;min-height:100vh;}
@@ -180,18 +229,24 @@ tr:hover td{background:var(--cream);}
 <!-- AUTH -->
 <div id="auth-screen">
   <div class="auth-box">
-    <div class="auth-logo">Click Lounge Studio</div>
-    <div class="auth-sub">ClickCard Loyalty Admin</div>
-    <div class="form-row">
-      <label class="form-label">Staff Name</label>
-      <input class="auth-input" id="auth-name" placeholder="Your name">
+    <div class="auth-logo">ClickLounge</div>
+    <div class="auth-sub">Studio · Loyalty Admin</div>
+    <div class="auth-divider"></div>
+
+    <div class="auth-field">
+      <label class="auth-field-label" for="auth-name">Staff Name</label>
+      <input class="auth-input" id="auth-name" placeholder="Your name" autocomplete="off"
+             onkeydown="if(event.key==='Enter')document.getElementById('auth-pin').focus()">
     </div>
-    <div class="form-row">
-      <label class="form-label">PIN</label>
-      <input class="auth-input" id="auth-pin" type="password" placeholder="••••" onkeydown="if(event.key==='Enter')login()">
+    <div class="auth-field">
+      <label class="auth-field-label" for="auth-pin">PIN</label>
+      <input class="auth-input" id="auth-pin" type="password" placeholder="••••" maxlength="6"
+             onkeydown="if(event.key==='Enter')login()">
     </div>
+
     <button class="auth-btn" onclick="login()">Sign In →</button>
-    <div class="auth-err" id="auth-err">Incorrect PIN. Try again.</div>
+    <div class="auth-err" id="auth-err">Incorrect PIN. Please try again.</div>
+    <div class="auth-hint">Default PIN is <b>1234</b> — change it in Settings after signing in.</div>
   </div>
 </div>
 
@@ -1353,7 +1408,7 @@ async function sendViaAppsScript(){
   note.style.display='block'; note.style.color='var(--muted)';
   note.textContent='⏳ Sending via Apps Script…';
   try{
-    const res=await gasCall('sendEmail',{to,subject:subj,html,clientName:c?.name||'',staff:CURR_USER});
+    const res=await gasCall('sendEmail',{to,subject:subj,html,clientName:c?.name||'',staff:currentStaff});
     if(res&&res.ok){
       note.textContent='✅ Email sent to '+to+'!'; note.style.color='var(--success)';
       addActivity('email',c,'✉️ Email sent: '+subj,'',0); saveDB();
@@ -1372,7 +1427,8 @@ function copyEmailHtml(){
 
 // ══════════════════════════════════════════════════════════
 // CLIENT HISTORY MODAL
-  const c = DB.clients.find(x=>x.id===id); if(!c) return;
+// ══════════════════════════════════════════════════════════
+function openHistory(id) {
   const t = getTier(c.points||0);
   document.getElementById('history-name').textContent = c.name;
 
@@ -1435,7 +1491,7 @@ function copyEmailHtml(){
     <tbody>${redems.map(r=>`<tr>
       <td style="font-size:.75rem;font-family:'DM Mono',monospace;">${fmtDateTime(r.ts)}</td>
       <td style="font-size:.8rem;">${r.detail.replace('Perk redeemed: ','')}</td>
-      <td style="text-align:center;">${r.points===0?'<span style="background:var(--green-lt);color:var(--green);border-radius:100px;padding:.12rem .55rem;font-size:.7rem;font-weight:700;font-family:DM Mono,monospace;">FREE</span>':`<span style="background:var(--red-lt);color:var(--red);border-radius:100px;padding:.12rem .55rem;font-size:.7rem;font-weight:700;font-family:DM Mono,monospace;">${r.points} pts</span>`}</td>
+      <td style="text-align:center;">${r.points===0?'<span style="background:var(--green-lt);color:var(--green);border-radius:100px;padding:.12rem .55rem;font-size:.7rem;font-weight:700;font-family:DM Mono,monospace;">FREE</span>':'<span style="background:var(--red-lt);color:var(--red);border-radius:100px;padding:.12rem .55rem;font-size:.7rem;font-weight:700;font-family:DM Mono,monospace;">'+r.points+' pts</span>'}</td>
       <td style="font-size:.75rem;color:var(--text-light);">${r.proof||'—'}</td>
       <td style="font-size:.75rem;color:var(--text-light);">${r.staff||'—'}</td>
     </tr>`).join('')}</tbody></table>` :
@@ -1647,7 +1703,7 @@ function renderRedemptions() {
       <td style="font-weight:500;">${a.clientName}</td>
       <td><span class="tier ${t.cls}">${t.emoji} ${t.name}</span></td>
       <td>${a.detail.replace('Perk redeemed: ','')}</td>
-      <td style="text-align:center;">${a.points===0?'<span style="background:var(--green-lt);color:var(--green);border-radius:100px;padding:.12rem .55rem;font-size:.7rem;font-weight:700;">FREE</span>':`<span style="background:var(--red-lt);color:var(--red);border-radius:100px;padding:.12rem .55rem;font-size:.7rem;font-weight:700;">${a.points} pts</span>`}</td>
+      <td style="text-align:center;">${a.points===0?'<span style="background:var(--green-lt);color:var(--green);border-radius:100px;padding:.12rem .55rem;font-size:.7rem;font-weight:700;">FREE</span>':'<span style="background:var(--red-lt);color:var(--red);border-radius:100px;padding:.12rem .55rem;font-size:.7rem;font-weight:700;">'+a.points+' pts</span>'}</td>
       <td style="font-size:.78rem;">${a.proof||'—'}</td>
       <td style="font-size:.75rem;color:var(--text-light);">${a.staff||'—'}</td>
     </tr>`;
