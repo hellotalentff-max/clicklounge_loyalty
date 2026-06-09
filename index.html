@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CLS ClickCard Admin</title>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
   --green:#2d6e5f;--green-dk:#1e4d42;--green-lt:#e8f4f0;
@@ -14,6 +14,52 @@
   --white:#fff;
   --text:#1a2824;--text-mid:#4a6058;--text-light:#8fa89e;
   --border:rgba(45,110,95,.14);
+
+  /* ── POS design tokens (used on client cards to match POS UI) ── */
+  --teal:#51897d;--teal-dk:#3d6b61;--teal-lt:#e8f4f0;
+  --gold:#d79068;--gold-lt:#e8b08a;
+  --slate:#2f4f4f;
+  --light:#f4f7f6;--light2:#e8efee;
+  --muted:#6b8c8c;
+  --success:#3d8c6e;--danger:#c0544a;
+  --pos-border:rgba(81,137,125,0.15);
+  --pos-white:#fff;
+  --radius:10px;--pos-radius:12px;
+}
+
+/* ── POS-style client card grid ── */
+.cl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;}
+.cl-card{background:var(--pos-white);border:1px solid var(--pos-border);border-radius:var(--pos-radius);padding:18px 20px;cursor:default;transition:all .18s;position:relative;font-family:'Poppins',sans-serif;}
+.cl-card:hover{border-color:var(--teal);box-shadow:0 4px 20px rgba(61,107,97,.1);transform:translateY(-2px);}
+.cl-card-header{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.cl-avatar{width:42px;height:42px;border-radius:50%;background:var(--slate);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0;font-family:'Poppins',sans-serif;}
+.cl-name{font-size:14px;font-weight:600;color:var(--slate);margin-bottom:2px;font-family:'Poppins',sans-serif;}
+.cl-email{font-size:11px;color:var(--muted);}
+.cl-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px;}
+.cl-stat{text-align:center;padding:7px 4px;background:var(--light);border-radius:7px;}
+.cl-stat-val{font-size:15px;font-weight:700;color:var(--teal);font-family:'Poppins',sans-serif;}
+.cl-stat-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-top:1px;}
+.cl-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px;}
+.cl-tag{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:500;font-family:'Poppins',sans-serif;}
+.cl-tag-teal{background:rgba(81,137,125,.1);color:var(--teal-dk);}
+.cl-tag-gold{background:rgba(215,144,104,.12);color:#7a4a20;}
+.cl-tag-slate{background:rgba(47,79,79,.08);color:var(--slate);}
+.cl-tag-green{background:rgba(61,140,110,.1);color:var(--success);}
+.cl-pts-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.cl-pts-chip{font-size:11px;padding:3px 9px;border-radius:7px;font-family:'Poppins',sans-serif;}
+.cl-visits{border-top:1px solid var(--light2);padding-top:9px;margin-bottom:10px;}
+.cl-visits-title{font-size:9px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:600;margin-bottom:6px;font-family:'Poppins',sans-serif;}
+.cl-visit-row{display:flex;align-items:center;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--light2);font-size:11px;gap:6px;}
+.cl-visit-row:last-child{border-bottom:none;padding-bottom:0;}
+.cl-visit-meta{color:var(--muted);white-space:nowrap;flex-shrink:0;}
+.cl-visit-label{color:var(--slate);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px;}
+.cl-visit-pts{color:var(--gold);font-weight:600;white-space:nowrap;flex-shrink:0;}
+.cl-actions{display:flex;gap:6px;border-top:1px solid var(--light2);padding-top:10px;flex-wrap:wrap;}
+.cl-btn{padding:6px 12px;border-radius:6px;border:none;font-size:11px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif;transition:all .15s;flex:1;min-width:90px;}
+.cl-btn-gold{background:var(--gold);color:#fff;}
+.cl-btn-gold:hover{background:var(--gold-lt);}
+.cl-btn-outline{background:none;border:1px solid var(--pos-border);color:var(--muted);}
+.cl-btn-outline:hover{border-color:var(--teal);color:var(--teal);}
   --red:#c0392b;--red-lt:#fdf0ef;
   --blue:#2470a0;--blue-lt:#eef4fb;
   --radius:12px;
@@ -212,14 +258,44 @@ tr:hover td{background:var(--cream);}
       <button class="btn btn-outline btn-sm" onclick="doSync()">↻ Sync</button>
       <button class="btn btn-green btn-sm" onclick="openAddClient()">+ Add</button>
     </div>
-    <div id="clients-count" style="font-size:.78rem;color:var(--text-light);margin-bottom:.6rem;font-family:'DM Mono',monospace;"></div>
-    <div style="overflow-x:auto;">
-      <table><thead><tr>
-        <th>Name</th><th>Source</th><th>Contact</th>
-        <th>TX Pts</th><th>OG Pts</th><th>Bonus</th><th>Total Pts</th>
-        <th>Tier</th><th>Sessions</th><th>TX Spend</th><th>OG Spend</th><th>Joined</th><th></th>
-      </tr></thead>
-      <tbody id="clients-table"></tbody></table>
+    <div id="clients-count" style="font-size:.78rem;color:var(--text-light);margin-bottom:.8rem;font-family:'DM Mono',monospace;"></div>
+    <div id="clients-cards" style="display:flex;flex-direction:column;gap:.7rem;"></div>
+  </div>
+
+  <!-- QUICK ADD POINTS MODAL -->
+  <div id="quick-pts-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;align-items:center;justify-content:center;padding:1rem;">
+    <div style="background:#fff;border-radius:14px;width:min(94vw,400px);padding:1.5rem;box-shadow:0 20px 60px rgba(0,0,0,.3);">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+        <div style="font-weight:700;font-size:1rem;color:var(--text);">➕ Add Points to <span id="qp-name" style="color:var(--amber);"></span></div>
+        <button onclick="closeQuickPts()" style="background:var(--light);border:none;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:.85rem;">✕</button>
+      </div>
+      <div style="margin-bottom:.7rem;">
+        <label style="font-size:.7rem;font-weight:600;color:var(--text-light);display:block;margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.06em;">Points to Add</label>
+        <input type="number" id="qp-pts" min="1" max="9999" placeholder="e.g. 10" style="width:100%;padding:.65rem .8rem;border:1.5px solid var(--border-color,#ddd);border-radius:8px;font-size:.95rem;font-family:inherit;">
+      </div>
+      <div style="margin-bottom:.7rem;">
+        <label style="font-size:.7rem;font-weight:600;color:var(--text-light);display:block;margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.06em;">Reason</label>
+        <select id="qp-reason" style="width:100%;padding:.65rem .8rem;border:1.5px solid var(--border-color,#ddd);border-radius:8px;font-size:.9rem;font-family:inherit;">
+          <option value="SM Consent (+5)">SM Consent (+5 pts)</option>
+          <option value="Feedback / Review (+10)">Feedback / Review (+10 pts)</option>
+          <option value="Refer a Friend (+15)">Refer a Friend (+15 pts)</option>
+          <option value="Early Bird Booking (+15)">Early Bird Booking (+15 pts)</option>
+          <option value="Birthday Month (+5)">Birthday Month (+5 pts)</option>
+          <option value="Google Review (+10)">Google Review (+10 pts)</option>
+          <option value="Facebook Review (+10)">Facebook Review (+10 pts)</option>
+          <option value="Tag on IG/FB (+5)">Tag on IG/FB (+5 pts)</option>
+          <option value="Manual Adjustment">Manual Adjustment</option>
+        </select>
+      </div>
+      <div style="margin-bottom:1rem;">
+        <label style="font-size:.7rem;font-weight:600;color:var(--text-light);display:block;margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.06em;">Note (optional)</label>
+        <input type="text" id="qp-note" placeholder="e.g. proof link, reference…" style="width:100%;padding:.65rem .8rem;border:1.5px solid var(--border-color,#ddd);border-radius:8px;font-size:.9rem;font-family:inherit;">
+      </div>
+      <input type="hidden" id="qp-cid">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;">
+        <button onclick="closeQuickPts()" style="padding:.7rem;border-radius:9px;border:1.5px solid var(--border-color,#ddd);background:#fff;cursor:pointer;font-family:inherit;font-size:.85rem;">Cancel</button>
+        <button onclick="saveQuickPts()" style="padding:.7rem;border-radius:9px;border:none;background:var(--amber);color:#fff;font-weight:700;cursor:pointer;font-family:inherit;font-size:.85rem;">Add Points ✓</button>
+      </div>
     </div>
   </div>
 
@@ -618,62 +694,61 @@ function parseAmt(val) {
 }
 
 function syncClients() {
-  // ── Step 1: Aggregate TX by client name
-  const txMap = {}; // lowerName → { name, txSpend, txSessions }
+  // ── Step 1: Aggregate TX — use nameMatch so "Maria Santos" & "Maria R. Santos" merge
+  const txMap = {}; // canonical lowerName → { name, txSpend, txSessions, txRows }
   TX.forEach(tx => {
-    // Apps Script returns 'clientName' (internal key)
-    const raw = tx['clientName'] || tx['Client Name'] || tx['client_name'] || '';
+    const raw  = tx['clientName'] || tx['Client Name'] || tx['client_name'] || '';
     const name = String(raw).trim();
     if (!name) return;
-    const key = name.toLowerCase();
-    if (!txMap[key]) txMap[key] = { name, txSpend:0, txSessions:0 };
-    // Apps Script returns 'total' (internal key)
+    // Find existing key that matches this name (2-word rule)
+    const existKey = Object.keys(txMap).find(k => nameMatch(name, txMap[k].name));
+    const key = existKey || name.toLowerCase();
+    if (!txMap[key]) txMap[key] = { name, txSpend:0, txSessions:0, txRows:[] };
     const amt = parseAmt(tx['total'] || tx['Total'] || tx['subtotal']);
     if (amt > 0) { txMap[key].txSpend += amt; txMap[key].txSessions++; }
+    txMap[key].txRows.push(tx);
   });
 
-  // ── Step 2: Aggregate SALES 2023 by client name (exact headers: Name, Total)
-  const ogMap = {}; // lowerName → { name, ogSpend, ogSessions }
+  // ── Step 2: Aggregate OG — same nameMatch merge
+  const ogMap = {}; // canonical lowerName → { name, ogSpend, ogSessions, ogRows }
   OG.forEach(row => {
     const raw  = row['Name'] || row['name'] || '';
     const name = String(raw).trim();
     if (!name) return;
-    const key  = name.toLowerCase();
-    if (!ogMap[key]) ogMap[key] = { name, ogSpend:0, ogSessions:0 };
+    const existKey = Object.keys(ogMap).find(k => nameMatch(name, ogMap[k].name));
+    const key = existKey || name.toLowerCase();
+    if (!ogMap[key]) ogMap[key] = { name, ogSpend:0, ogSessions:0, ogRows:[] };
     const amt = parseAmt(row['Total'] || row['total'] || row['TOTAL']);
     if (amt > 0) { ogMap[key].ogSpend += amt; ogMap[key].ogSessions++; }
+    ogMap[key].ogRows.push(row);
   });
 
-  // ── Step 3: Merge — same person across both sheets (2-word rule)
-  const merged = {}; // canonical key → merged record
-
-  // Seed with TX clients
+  // ── Step 3: Merge TX + OG (2-word rule across sheets)
+  const merged = {};
   Object.values(txMap).forEach(tx => {
     const key = tx.name.toLowerCase();
-    merged[key] = { name:tx.name, txSpend:tx.txSpend, txSessions:tx.txSessions, ogSpend:0, ogSessions:0, sources:['pos'] };
+    merged[key] = { name:tx.name, txSpend:tx.txSpend, txSessions:tx.txSessions, txRows:tx.txRows,
+                    ogSpend:0, ogSessions:0, ogRows:[], sources:['pos'] };
   });
-
-  // Fold in OG clients
   Object.values(ogMap).forEach(og => {
-    const ogKey = og.name.toLowerCase();
-    // Find existing TX entry that matches by 2-word rule
+    const ogKey   = og.name.toLowerCase();
     const matchKey = Object.keys(merged).find(k => nameMatch(og.name, merged[k].name));
     if (matchKey) {
       merged[matchKey].ogSpend    += og.ogSpend;
       merged[matchKey].ogSessions += og.ogSessions;
+      merged[matchKey].ogRows     = (merged[matchKey].ogRows||[]).concat(og.ogRows);
       if (!merged[matchKey].sources.includes('sales2023')) merged[matchKey].sources.push('sales2023');
     } else {
-      // OG-only client
-      merged[ogKey] = { name:og.name, txSpend:0, txSessions:0, ogSpend:og.ogSpend, ogSessions:og.ogSessions, sources:['sales2023'] };
+      merged[ogKey] = { name:og.name, txSpend:0, txSessions:0, txRows:[],
+                        ogSpend:og.ogSpend, ogSessions:og.ogSessions, ogRows:og.ogRows, sources:['sales2023'] };
     }
   });
 
   // ── Step 4: Upsert into DB.clients
   Object.values(merged).forEach(m => {
     const existing = DB.clients.find(c => nameMatch(c.name, m.name));
-
-    const txPts   = Math.floor(m.txSpend / DB.config.rate);
-    const ogPts   = Math.floor(m.ogSpend / DB.config.rate);
+    const txPts    = Math.floor(m.txSpend / DB.config.rate);
+    const ogPts    = Math.floor(m.ogSpend / DB.config.rate);
     const bonusPts = DB.activity.filter(a => existing && a.clientId===existing.id && a.type==='bonus')
                         .reduce((s,a) => s+(a.points||0), 0);
     const redPts   = DB.activity.filter(a => existing && a.clientId===existing.id && a.type==='redemption' && a.points<0)
@@ -681,27 +756,20 @@ function syncClients() {
     const totalPts = txPts + ogPts + bonusPts - redPts;
 
     if (existing) {
-      existing.txSpend    = m.txSpend;
-      existing.txSessions = m.txSessions;
-      existing.ogSpend    = m.ogSpend;
-      existing.ogSessions = m.ogSessions;
-      existing.txPts      = txPts;
-      existing.ogPts      = ogPts;
-      existing.bonusPts   = bonusPts;
-      existing.points     = totalPts;
-      existing.sessions   = m.txSessions + m.ogSessions;
-      existing.sources    = m.sources;
+      existing.txSpend=m.txSpend; existing.txSessions=m.txSessions;
+      existing.ogSpend=m.ogSpend; existing.ogSessions=m.ogSessions;
+      existing.txPts=txPts; existing.ogPts=ogPts; existing.bonusPts=bonusPts;
+      existing.points=totalPts; existing.sessions=m.txSessions+m.ogSessions;
+      existing.sources=m.sources; existing.txRows=m.txRows; existing.ogRows=m.ogRows;
     } else {
       DB.clients.push({
-        id: uid(),
-        name: m.name,
-        email: '', phone: '', birthday: '', type: '',
-        joinedAt: new Date().toISOString(),
-        txSpend: m.txSpend, txSessions: m.txSessions,
-        ogSpend: m.ogSpend, ogSessions: m.ogSessions,
-        txPts, ogPts, bonusPts: 0, points: totalPts,
-        sessions: m.txSessions + m.ogSessions,
-        sources: m.sources
+        id:uid(), name:m.name, email:'', phone:'', birthday:'', type:'',
+        joinedAt:new Date().toISOString(),
+        txSpend:m.txSpend, txSessions:m.txSessions,
+        ogSpend:m.ogSpend, ogSessions:m.ogSessions,
+        txPts, ogPts, bonusPts:0, points:totalPts,
+        sessions:m.txSessions+m.ogSessions,
+        sources:m.sources, txRows:m.txRows, ogRows:m.ogRows
       });
     }
   });
@@ -848,49 +916,165 @@ function renderDashboard() {
 // CLIENTS
 // ══════════════════════════════════════════════════════════
 function renderClients() {
-  const q    = (document.getElementById('client-search')?.value||'').toLowerCase();
-  const srcF = document.getElementById('client-source-filter')?.value||'';
-  const tierF= document.getElementById('client-tier-filter')?.value||'';
+  const q     = (document.getElementById('client-search')?.value||'').toLowerCase();
+  const srcF  = document.getElementById('client-source-filter')?.value||'';
+  const tierF = document.getElementById('client-tier-filter')?.value||'';
 
-  let cl = DB.clients.filter(c=>{
-    const matchQ = !q || c.name.toLowerCase().includes(q) || (c.phone||'').includes(q) || (c.email||'').toLowerCase().includes(q);
+  let cl = DB.clients.filter(c => {
+    const matchQ   = !q || c.name.toLowerCase().includes(q) || (c.phone||'').includes(q) || (c.email||'').toLowerCase().includes(q);
     const matchSrc = !srcF ||
       (srcF==='pos'       && c.sources?.includes('pos')) ||
       (srcF==='sales2023' && c.sources?.includes('sales2023')) ||
       (srcF==='both'      && c.sources?.includes('pos') && c.sources?.includes('sales2023'));
     const matchTier = !tierF || getTier(c.points||0).name===tierF;
     return matchQ && matchSrc && matchTier;
-  });
+  }).sort((a,b) => (b.points||0)-(a.points||0));
 
   document.getElementById('clients-count').textContent = `Showing ${cl.length} of ${DB.clients.length} clients`;
 
-  document.getElementById('clients-table').innerHTML = cl.map(c=>{
-    const t = getTier(c.points||0);
-    const redCt = DB.activity.filter(a=>a.clientId===c.id&&a.type==='redemption').length;
-    return `<tr>
-      <td style="font-weight:500;color:var(--text);min-width:130px;">${c.name}</td>
-      <td>${srcBadge(c.sources)}</td>
-      <td style="font-size:.78rem;">${c.phone||'<span style="color:var(--text-light);">—</span>'}<br><span style="color:var(--text-light);">${c.email||''}</span></td>
-      <td style="font-family:'DM Mono',monospace;color:var(--green);">+${fmt(c.txPts||0)}</td>
-      <td style="font-family:'DM Mono',monospace;color:var(--rust);">+${fmt(c.ogPts||0)}</td>
-      <td style="font-family:'DM Mono',monospace;color:var(--amber);">+${fmt(c.bonusPts||0)}</td>
-      <td style="font-family:'DM Mono',monospace;font-weight:600;color:var(--text);">${fmt(c.points||0)}</td>
-      <td><span class="tier ${t.cls}">${t.emoji} ${t.name}</span></td>
-      <td>${(c.txSessions||0)+(c.ogSessions||0)} <span style="font-size:.72rem;color:var(--text-light);">(${c.txSessions||0}tx+${c.ogSessions||0}og)</span></td>
-      <td style="font-family:'DM Mono',monospace;font-size:.8rem;">₱${fmt(c.txSpend||0)}</td>
-      <td style="font-family:'DM Mono',monospace;font-size:.8rem;">₱${fmt(c.ogSpend||0)}</td>
-      <td style="font-size:.75rem;color:var(--text-light);">${fmtDate(c.joinedAt)}</td>
-      <td>
-        <button class="btn btn-outline btn-sm" onclick="openHistory('${c.id}')">📋${redCt?` <b style="color:var(--green);">${redCt}</b>`:''}</button>
-        <button class="btn btn-outline btn-sm" onclick="openEditClient('${c.id}')" style="margin-top:.2rem;">Edit</button>
-      </td>
-    </tr>`;
-  }).join('') || '<tr><td colspan="13" style="text-align:center;color:var(--text-light);padding:2rem;">No clients. Click ↻ Sync to load from Google Sheets.</td></tr>';
+  function recentVisits(c) {
+    const txRows = c.txRows || TX.filter(tx => nameMatch(c.name, String(tx['clientName']||tx['Client Name']||'').trim()));
+    const ogRows = c.ogRows || OG.filter(row => nameMatch(c.name, String(row['Name']||'').trim()));
+    const visits = [];
+    txRows.forEach(tx => {
+      const d = tx['date']||tx['Date'];
+      const ms = typeof d==='number'&&d>40000 ? (d-25569)*86400*1000 : new Date(d).getTime();
+      if (!isNaN(ms)) visits.push({ ms, date:fmtDate(d), label:tx['itemsSummary']||tx['Services']||tx['invoiceNum']||'POS Session', amount:parseAmt(tx['total']||tx['Total']||0), src:'pos' });
+    });
+    ogRows.forEach(r => {
+      const d = r['Date']||r['date'];
+      const ms = typeof d==='number'&&d>40000 ? (d-25569)*86400*1000 : new Date(d).getTime();
+      if (!isNaN(ms)) visits.push({ ms, date:fmtDate(d), label:r['Package']||r['package']||'2023 Session', amount:parseAmt(r['Total']||r['total']||r['TOTAL']||0), src:'og' });
+    });
+    return visits.sort((a,b) => b.ms-a.ms).slice(0,4);
+  }
+
+  if (!cl.length) {
+    document.getElementById('clients-cards').innerHTML =
+      '<div style="padding:2.5rem;text-align:center;color:var(--muted);font-family:\'Poppins\',sans-serif;font-size:13px;">No clients found. Click ↻ Sync to load.</div>';
+    return;
+  }
+
+  document.getElementById('clients-cards').innerHTML = '<div class="cl-grid">' + cl.map(c => {
+    const t          = getTier(c.points||0);
+    const bonusPts   = DB.activity.filter(a=>a.clientId===c.id&&a.type==='bonus').reduce((s,a)=>s+(a.points||0),0);
+    const totalSess  = (c.txSessions||0)+(c.ogSessions||0);
+    const totalSpend = (c.txSpend||0)+(c.ogSpend||0);
+    const visits     = recentVisits(c);
+    const ini        = c.name.split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase();
+
+    // Tier tag colour
+    const tierCls = {Bronze:'cl-tag-gold', Silver:'cl-tag-slate', Gold:'cl-tag-gold', VIP:'cl-tag-teal'}[t.name]||'cl-tag-slate';
+
+    // Source chips
+    const srcChips = (c.sources||[]).map(s =>
+      s==='pos'       ? '<span class="cl-tag cl-tag-teal">POS</span>'
+    : s==='sales2023' ? '<span class="cl-tag cl-tag-slate">OG 2023</span>'
+    :                   '<span class="cl-tag cl-tag-slate">Manual</span>'
+    ).join('');
+
+    // Points chips
+    const ptsChips =
+      `<span class="cl-pts-chip" style="background:rgba(81,137,125,.1);color:var(--teal-dk);">POS <b>+${fmt(c.txPts||0)}</b></span>` +
+      (c.ogPts>0 ? `<span class="cl-pts-chip" style="background:rgba(176,90,42,.08);color:#7a3e18;">OG <b>+${fmt(c.ogPts)}</b></span>` : '') +
+      (bonusPts>0 ? `<span class="cl-pts-chip" style="background:rgba(196,154,26,.1);color:#6a4a00;">Bonus <b>+${fmt(bonusPts)}</b></span>` : '');
+
+    // Visit rows
+    const visitRows = visits.length
+      ? visits.map(v => `
+        <div class="cl-visit-row">
+          <span style="font-size:12px;flex-shrink:0;">${v.src==='pos'?'🧾':'📋'}</span>
+          <span class="cl-visit-meta">${v.date}</span>
+          <span class="cl-visit-label">${v.label}</span>
+          <span class="cl-visit-pts">₱${fmt(v.amount)} <span style="font-size:9px;color:var(--gold);">+${Math.floor(v.amount/DB.config.rate)}pts</span></span>
+        </div>`).join('')
+      : `<div style="font-size:11px;color:var(--muted);padding:3px 0;">No visit records yet.</div>`;
+
+    return `<div class="cl-card">
+      <!-- Header: avatar + name + edit -->
+      <div class="cl-card-header">
+        <div class="cl-avatar">${ini}</div>
+        <div style="flex:1;min-width:0;">
+          <div class="cl-name">${c.name}</div>
+          <div class="cl-email">${c.email||c.phone||'No contact info'}</div>
+        </div>
+        <button class="cl-btn cl-btn-outline" style="flex:0;min-width:auto;padding:4px 10px;" onclick="openEditClient('${c.id}')">✏ Edit</button>
+      </div>
+
+      <!-- Stats: sessions / total pts / total spend -->
+      <div class="cl-stats">
+        <div class="cl-stat">
+          <div class="cl-stat-val">${totalSess}</div>
+          <div class="cl-stat-lbl">Visits</div>
+        </div>
+        <div class="cl-stat">
+          <div class="cl-stat-val">${fmt(c.points||0)}</div>
+          <div class="cl-stat-lbl">Points</div>
+        </div>
+        <div class="cl-stat">
+          <div class="cl-stat-val" style="font-size:12px;">₱${fmt(totalSpend)}</div>
+          <div class="cl-stat-lbl">Spent</div>
+        </div>
+      </div>
+
+      <!-- Points breakdown chips -->
+      <div class="cl-pts-row">${ptsChips}</div>
+
+      <!-- Tags: tier + source -->
+      <div class="cl-tags">
+        <span class="cl-tag ${tierCls}">${t.emoji} ${t.name}</span>
+        ${srcChips}
+        ${c.phone?`<span class="cl-tag cl-tag-slate">📞 ${c.phone}</span>`:''}
+      </div>
+
+      <!-- Recent visits -->
+      <div class="cl-visits">
+        <div class="cl-visits-title">Recent Visits</div>
+        ${visitRows}
+      </div>
+
+      <!-- Actions -->
+      <div class="cl-actions">
+        <button class="cl-btn cl-btn-gold" onclick="openQuickPts('${c.id}')">➕ Add Points</button>
+        <button class="cl-btn cl-btn-outline" onclick="openHistory('${c.id}')">📋 History</button>
+      </div>
+    </div>`;
+  }).join('') + '</div>';
 }
 
 // ══════════════════════════════════════════════════════════
-// CLIENT HISTORY MODAL
+// QUICK ADD POINTS (from client card)
 // ══════════════════════════════════════════════════════════
+function openQuickPts(clientId) {
+  const c = DB.clients.find(x=>x.id===clientId); if(!c) return;
+  document.getElementById('qp-name').textContent = c.name;
+  document.getElementById('qp-cid').value  = clientId;
+  document.getElementById('qp-pts').value  = '';
+  document.getElementById('qp-note').value = '';
+  document.getElementById('qp-reason').selectedIndex = 0;
+  const m = document.getElementById('quick-pts-modal');
+  m.style.display = 'flex';
+}
+function closeQuickPts() {
+  document.getElementById('quick-pts-modal').style.display = 'none';
+}
+function saveQuickPts() {
+  const clientId = document.getElementById('qp-cid').value;
+  const pts      = parseInt(document.getElementById('qp-pts').value)||0;
+  const reason   = document.getElementById('qp-reason').value;
+  const note     = document.getElementById('qp-note').value.trim();
+  if (!pts || pts < 1) { alert('Please enter a valid points amount.'); return; }
+  const c = DB.clients.find(x=>x.id===clientId); if(!c) return;
+  // Add to activity log
+  addActivity('bonus', c, `${reason}${note?' — '+note:''}`, note, pts);
+  // Update client totals
+  c.bonusPts = (c.bonusPts||0) + pts;
+  c.points   = (c.points||0)   + pts;
+  saveDB();
+  closeQuickPts();
+  renderClients();
+  toast(`✓ +${pts} pts added to ${c.name}`, 3000);
+}
 function openHistory(id) {
   const c = DB.clients.find(x=>x.id===id); if(!c) return;
   const t = getTier(c.points||0);
