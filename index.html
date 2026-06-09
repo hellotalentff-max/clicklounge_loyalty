@@ -766,11 +766,19 @@ async function doSync() {
   syncing = true;
   setSyncBadge('⏳ Syncing…', 'rgba(255,255,255,.15)');
   try {
-    // Fetch both sheets in parallel
-    const [tRes, ogRes] = await Promise.all([
-      callScript('getTransactions'),
-      callScript('getOGSales')
-    ]);
+    // Fetch transactions and SALES 2023 data
+    const tRes = await callScript('getTransactions');
+
+    // Try getSales2023 first (reads from "SALES 2023" tab directly),
+    // fall back to getOGSales for backward compatibility
+    let ogRes;
+    try {
+      const s23 = await callScript('getSales2023');
+      if (s23 && (s23.data?.length || s23.sales?.length)) ogRes = s23;
+      else throw new Error('empty');
+    } catch(e) {
+      ogRes = await callScript('getOGSales');
+    }
 
     // Transactions — internal keys from Apps Script HEADERS.transactions
     // keys: id, invoiceNum, date, time, staff, clientName, items, itemsSummary,
